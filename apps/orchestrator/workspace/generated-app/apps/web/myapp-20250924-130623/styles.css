@@ -1,0 +1,14 @@
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,'Noto Sans',sans-serif;background:#f6f7fb;color:#111}
+.topbar{position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:#0ea5e9;color:#fff}
+.topbar .brand{font-weight:700}
+.topbar .nav-links a{color:#fff;text-decoration:none;margin-left:16px;opacity:.9}
+.topbar .nav-links a.active,.topbar .nav-links a:hover{opacity:1;text-decoration:underline}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 16px;background:linear-gradient(180deg,#0ea5e9,#60a5fa);color:#fff;text-align:center}
+.container{max-width:1000px;margin:24px auto;padding:0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.footer{margin-top:40px;padding:20px;text-align:center;color:#555}
+.form{display:grid;gap:12px}
+.form input,.form textarea{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px}
+.form button{padding:10px 14px;border:0;border-radius:8px;background:#0ea5e9;color:#fff;cursor:pointer}
+.form button:hover{filter:brightness(.95)}

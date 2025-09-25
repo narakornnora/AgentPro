@@ -1,0 +1,66 @@
+<!doctype html><html lang="th"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>AgentPro • Chat Builder</title>
+<style>
+:root{--bg:#0f172a;--panel:#0b1220;--ink:#e5e7eb;--dim:#a3afc5;--accent:#22d3ee;--ok:#22c55e;--err:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,Inter,Segoe UI,Roboto}
+.wrap{display:grid;grid-template-columns:380px 1fr;gap:12px;height:100vh;padding:12px}
+.pane{background:var(--panel);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.head{padding:12px 14px;border-bottom:1px solid #1f2a44;display:flex;justify-content:space-between;align-items:center}
+.list{flex:1;overflow:auto;padding:12px}
+.b{padding:10px 12px;border-radius:10px;margin:6px 0;max-width:92%}
+.me{background:#1b2a49;align-self:flex-end}
+.ai{background:#132136;border:1px solid #1e2b47}
+.ok{outline:2px solid var(--ok)} .err{outline:2px solid var(--err)}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid #1f2a44}
+input{flex:1;padding:12px;border-radius:10px;border:1px solid #1f2a44;background:#0a1326;color:var(--ink)}
+button{background:#1e40af;border:0;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
+.tabs{display:flex;gap:8px}.tab{padding:6px 10px;border:1px solid #1f2a44;border-radius:8px;cursor:pointer}.tab.on{background:#152345}
+iframe{width:100%;height:100%;border:0;background:#000}
+.slug{font-size:12px;color:var(--dim)}
+</style></head>
+<body>
+<div class="wrap">
+  <section class="pane">
+    <div class="head"><strong>AgentPro • Chat Builder</strong><span id="slug" class="slug"></span></div>
+    <div id="msgs" class="list"></div>
+    <div class="composer">
+      <input id="msg" placeholder="เช่น ทำเว็บร้านอาหาร 3 หน้า: หน้าแรก/เมนู/ติดต่อ (ภาษาไทย โทนมินิมัล)" autofocus/>
+      <button id="send">ส่ง</button>
+    </div>
+  </section>
+
+  <section class="pane">
+    <div class="head">
+      <div class="tabs">
+        <div class="tab on" id="tDesk">Desktop</div>
+        <div class="tab" id="tMob">Mobile</div>
+      </div>
+      <div><button id="openNew">เปิดหน้าใหม่</button></div>
+    </div>
+    <iframe id="pv"></iframe>
+  </section>
+</div>
+
+<script>
+const API = '/api/chat/ai'; // proxy → orchestrator:9000/chat/ai
+const $msgs=document.getElementById('msgs'), $msg=document.getElementById('msg'), $send=document.getElementById('send')
+const $pv=document.getElementById('pv'), $slug=document.getElementById('slug'), $tDesk=document.getElementById('tDesk'), $tMob=document.getElementById('tMob'), $open=document.getElementById('openNew')
+
+function say(t,who='ai',extra=''){const d=document.createElement('div');d.className=`b ${who} ${extra}`;d.textContent=t;$msgs.appendChild(d);$msgs.scrollTop=$msgs.scrollHeight}
+function setPreview(slug){$slug.textContent=`slug: ${slug}`;const url=`/app/${slug}/index.html`;$pv.src=url;$open.onclick=()=>window.open(url,'_blank')}
+
+async function send(){
+  const text=$msg.value.trim(); if(!text) return; say(text,'me'); $msg.value=''
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})})
+    if(!r.ok){const err=await r.text(); say(`ผิดพลาด (${r.status}): ${err}`,'ai','err'); return}
+    const data=await r.json(); if(data.ok){ say('สร้างไฟล์สำเร็จ ✅','ai','ok'); setPreview(data.slug) } else { say('ผิดพลาด: '+JSON.stringify(data),'ai','err') }
+  }catch(e){ say('เชิร์ฟเวอร์ไม่ตอบ ❌','ai','err') }
+}
+$send.onclick=send; $msg.onkeydown=e=>{ if(e.key==='Enter') send() }
+$tMob.onclick=()=>{ $tMob.classList.add('on'); $tDesk.classList.remove('on'); $pv.style.width='390px'; $pv.style.height='844px'; $pv.style.margin='10px auto' }
+$tDesk.onclick=()=>{ $tDesk.classList.add('on'); $tMob.classList.remove('on'); $pv.style.width='100%'; $pv.style.height='100%'; $pv.style.margin='0' }
+say('สวัสดีครับ 👋 พิมพ์ requirement สั้น ๆ แล้วกดส่งได้เลย (ระบบจะ “ให้ AI” สร้างไฟล์จริง ไม่มีเทมเพลต)', 'ai', 'ok')
+</script>
+</body></html>

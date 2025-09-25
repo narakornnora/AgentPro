@@ -1,0 +1,52 @@
+<!doctype html><html lang="th"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AgentPro · Project Dashboard</title>
+<link rel="stylesheet" href="/tokens.css">
+<style>
+.wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+.board{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.col{background:#151925;border:1px solid #23283b;border-radius:12px;padding:12px}
+.card2{background:#0e121b;border-radius:8px;padding:8px;margin:8px 0}
+</style></head><body>
+<div class="wrap">
+  <h2>AgentPro · Project Dashboard</h2>
+  <div class="card">
+    <input id="slug" class="input" placeholder="project slug" style="width:320px">
+    <input id="task" class="input" placeholder="เพิ่มงานใหม่ เช่น ออกแบบหน้า Profile" style="width:360px">
+    <button class="btn" onclick="add()">Add Task</button>
+    <button class="btn" onclick="load()">Reload</button>
+  </div>
+  <div id="board" class="board" style="margin-top:12px">
+    <div class="col"><h3>To Do</h3><div id="todo"></div></div>
+    <div class="col"><h3>Doing</h3><div id="doing"></div></div>
+    <div class="col"><h3>Done</h3><div id="done"></div></div>
+  </div>
+</div>
+<script>
+const API='http://localhost:9000';
+function el(html){const d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild}
+async function load(){
+  const slug=document.getElementById('slug').value.trim(); if(!slug) return;
+  const r=await fetch(`${API}/tracking/${encodeURIComponent(slug)}`); const d=await r.json();
+  for(const c of ['todo','doing','done']){
+    const box=document.getElementById(c); box.innerHTML='';
+    (d.columns?.[c]||[]).forEach(it=>{
+      const node=el(`<div class="card2">${it.title}<div style="float:right"><button class="btn" onclick="move(${it.id},'todo')">ToDo</button><button class="btn" onclick="move(${it.id},'doing')">Doing</button><button class="btn" onclick="move(${it.id},'done')">Done</button></div></div>`);
+      box.appendChild(node);
+    });
+  }
+}
+async function add(){
+  const slug=document.getElementById('slug').value.trim(); if(!slug) return;
+  const title=document.getElementById('task').value.trim(); if(!title) return;
+  await fetch(`${API}/tracking/${encodeURIComponent(slug)}/add`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title})});
+  document.getElementById('task').value='';
+  load();
+}
+async function move(id,to){
+  const slug=document.getElementById('slug').value.trim(); if(!slug) return;
+  await fetch(`${API}/tracking/${encodeURIComponent(slug)}/move`, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, to})});
+  load();
+}
+</script>
+</body></html>

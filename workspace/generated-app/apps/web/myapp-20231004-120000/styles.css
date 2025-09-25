@@ -1,0 +1,7 @@
+body { font-family: Arial, sans-serif; background-color: #f0f0f0; color: #333; }
+header { background-color: #003366; color: white; padding: 20px; text-align: center; }
+nav ul { list-style-type: none; padding: 0; }
+nav ul li { display: inline; margin: 0 15px; }
+a { color: white; text-decoration: none; }
+a:hover { text-decoration: underline; }
+footer { text-align: center; padding: 10px; background-color: #003366; color: white; position: relative; bottom: 0; width: 100%; }

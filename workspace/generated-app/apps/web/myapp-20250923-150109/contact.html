@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อเรา - MyApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-800">
+    <nav class="bg-green-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-lg font-bold">MyApp</a>
+            <div>
+                <a href="index.html" class="text-white px-4">หน้าแรก</a>
+                <a href="menu.html" class="text-white px-4">เมนู</a>
+                <a href="contact.html" class="text-white px-4">ติดต่อเรา</a>
+            </div>
+        </div>
+    </nav>
+    <section class="py-10 container mx-auto">
+        <h2 class="text-2xl font-bold text-center">ติดต่อเรา</h2>
+        <form class="mt-4">
+            <div class="mb-4">
+                <label class="block text-gray-700">ชื่อ:</label>
+                <input type="text" class="border rounded w-full py-2 px-3" placeholder="กรุณากรอกชื่อ">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">อีเมล:</label>
+                <input type="email" class="border rounded w-full py-2 px-3" placeholder="กรุณากรอกอีเมล">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">ข้อความ:</label>
+                <textarea class="border rounded w-full py-2 px-3" rows="4" placeholder="กรุณากรอกข้อความ"></textarea>
+            </div>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">ส่งข้อความ</button>
+        </form>
+    </section>
+    <footer class="py-4 bg-gray-800 text-white text-center">
+        <p>&copy; 2023 MyApp. สงวนลิขสิทธิ์.</p>
+    </footer>
+</body>
+</html>

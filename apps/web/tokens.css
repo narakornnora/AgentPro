@@ -1,0 +1,7 @@
+:root{--bg:#0f1115;--surface:#151925;--text:#e9eef5;--muted:#b9c2d0;--primary:#2f80ed;--radius:12px}
+body{background:var(--bg);color:var(--text);font:14px/1.6 system-ui}
+a{color:var(--primary)}
+.card{background:var(--surface);border:1px solid #23283b;border-radius:12px;padding:16px}
+.btn{background:#1b2133;border:1px solid #2b3553;border-radius:8px;color:#e9eef5;padding:.5rem .8rem;cursor:pointer}
+.input{background:#10131b;border:1px solid #27304a;border-radius:8px;color:#e9eef5;padding:.5rem}
+pre{background:#0e121b;padding:12px;border-radius:8px;overflow:auto}

@@ -1,0 +1,1 @@
+document.querySelector('form').addEventListener('submit', function(event) { event.preventDefault(); const item = document.getElementById('item').value; const quantity = document.getElementById('quantity').value; const receipt = document.getElementById('receipt'); receipt.innerHTML += `<p>รายการ: ${item}, จำนวน: ${quantity}</p>`; });

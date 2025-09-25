@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AgentPro · Builder</title>
+  <link rel="stylesheet" href="/tokens.css">
+  <style>
+    body{background:#0f1220;color:#e9eef5;font:14px/1.6 system-ui;margin:0}
+    .wrap{max-width:880px;margin:24px auto;padding:0 16px}
+    .box{background:#151925;border:1px solid #23283b;border-radius:12px;padding:16px}
+    .input{width:100%;background:#10131b;border:1px solid #27304a;border-radius:8px;color:#e9eef5;padding:.6rem}
+    .btn{background:#2f80ed;border:0;border-radius:8px;color:#fff;padding:.6rem .9rem;cursor:pointer}
+    pre{background:#0e121b;padding:12px;border-radius:8px;overflow:auto}
+    .row{display:flex;gap:8px;align-items:center}
+    .small{color:#b9c2d0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>AgentPro · Builder</h2>
+    <div class="box">
+      <div class="small">พิมพ์ความต้องการสั้น ๆ เช่น “สร้างเว็บร้านกาแฟ มีเมนูและหน้าติดต่อ”</div>
+      <textarea id="prompt" class="input" rows="4" placeholder="พิมพ์ requirement ที่นี่..."></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" onclick="build()">🚀 สร้างเว็บ</button>
+        <button class="btn" onclick="openLast()" title="เปิดเว็บล่าสุด">🔗 เปิดเว็บล่าสุด</button>
+      </div>
+    </div>
+    <div class="box" style="margin-top:12px">
+      <h3>ผลลัพธ์</h3>
+      <div class="small">ถ้าสำเร็จ จะมีลิงก์ไปหน้าเว็บด้านล่าง</div>
+      <pre id="out">(รอดำเนินการ)</pre>
+      <div id="open" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:9000';
+    let lastUrl = null;
+
+    async function build(){
+      const prompt = document.getElementById('prompt').value.trim();
+      if(!prompt) return alert('พิมพ์ requirement ก่อนครับ');
+      setOut('กำลังสร้าง...');
+
+      try{
+        const res = await fetch(API + '/plan_build', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        setOut(JSON.stringify(data, null, 2));
+        if(data.ok && data.web_url){
+          lastUrl = data.web_url;
+          document.getElementById('open').innerHTML =
+            `<a class="btn" href="${data.web_url}" target="_blank">เปิดเว็บที่สร้าง →</a>`;
+        }else{
+          document.getElementById('open').innerHTML = '';
+        }
+      }catch(e){
+        setOut('เกิดข้อผิดพลาด: ' + e);
+        document.getElementById('open').innerHTML = '';
+      }
+    }
+
+    function openLast(){
+      if(!lastUrl) return alert('ยังไม่มีเว็บล่าสุด ลองกดสร้างก่อนครับ');
+      window.open(lastUrl, '_blank');
+    }
+
+    function setOut(t){ document.getElementById('out').textContent = t; }
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.webmanifest">
+    <title>ติดต่อเรา - MyApp</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+</head>
+<body class="bg-yellow-50 text-brown-800">
+    <nav class="bg-yellow-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-lg font-bold">MyApp</a>
+            <div>
+                <a href="index.html" class="text-white px-4">หน้าหลัก</a>
+                <a href="menu.html" class="text-white px-4">เมนู</a>
+                <a href="contact.html" class="text-white px-4">ติดต่อเรา</a>
+            </div>
+        </div>
+    </nav>
+    <section class="p-8">
+        <h2 class="text-2xl font-bold mb-4">ติดต่อเรา</h2>
+        <form class="space-y-4">
+            <input type="text" placeholder="ชื่อ" class="border p-2 w-full">
+            <input type="email" placeholder="อีเมล" class="border p-2 w-full">
+            <textarea placeholder="ข้อความ" class="border p-2 w-full"></textarea>
+            <button type="submit" class="bg-yellow-600 text-white px-4 py-2 rounded">ส่งข้อความ</button>
+        </form>
+        <div class="mt-8">
+            <h3 class="font-bold">แผนที่</h3>
+            <iframe src="https://via.placeholder.com/600x400" width="600" height="400" class="border"></iframe>
+        </div>
+    </section>
+    <footer class="bg-yellow-600 p-4 text-center text-white">
+        <p>&copy; 2023 MyApp. สงวนลิขสิทธิ์.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyApp - ร้านอาหารไทย</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-800">
+    <nav class="bg-green-600 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-white text-lg font-bold">MyApp</a>
+            <div>
+                <a href="index.html" class="text-white px-4">หน้าแรก</a>
+                <a href="menu.html" class="text-white px-4">เมนู</a>
+                <a href="contact.html" class="text-white px-4">ติดต่อเรา</a>
+            </div>
+        </div>
+    </nav>
+    <header class="bg-cover bg-center h-96" style="background-image: url('https://picsum.photos/seed/food/1200/600');">
+        <div class="flex items-center justify-center h-full bg-black bg-opacity-50">
+            <h1 class="text-white text-4xl font-bold">ยินดีต้อนรับสู่ MyApp</h1>
+        </div>
+    </header>
+    <section class="py-10 container mx-auto">
+        <h2 class="text-2xl font-bold text-center">แนะนำร้าน</h2>
+        <p class="text-center mt-4">ร้านอาหารไทยที่ดีที่สุดในเมือง</p>
+    </section>
+    <section class="py-10 container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded shadow">
+            <img src="https://picsum.photos/seed/dish1/400/300" alt="จานที่ 1" class="w-full rounded">
+            <h3 class="font-bold mt-2">จานที่ 1</h3>
+            <p>รายละเอียดเกี่ยวกับจานที่ 1</p>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+            <img src="https://picsum.photos/seed/dish2/400/300" alt="จานที่ 2" class="w-full rounded">
+            <h3 class="font-bold mt-2">จานที่ 2</h3>
+            <p>รายละเอียดเกี่ยวกับจานที่ 2</p>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+            <img src="https://picsum.photos/seed/dish3/400/300" alt="จานที่ 3" class="w-full rounded">
+            <h3 class="font-bold mt-2">จานที่ 3</h3>
+            <p>รายละเอียดเกี่ยวกับจานที่ 3</p>
+        </div>
+    </section>
+    <section class="py-10 bg-green-100">
+        <h2 class="text-2xl font-bold text-center">รีวิวจากลูกค้า</h2>
+        <p class="text-center mt-4">ลูกค้าของเราพูดถึงเราอย่างไร</p>
+    </section>
+    <section class="py-10 bg-green-600 text-white text-center">
+        <h2 class="text-2xl font-bold">สั่งอาหารตอนนี้!</h2>
+        <a href="menu.html" class="bg-white text-green-600 px-4 py-2 rounded mt-4 inline-block">ดูเมนู</a>
+    </section>
+    <footer class="py-4 bg-gray-800 text-white text-center">
+        <p>&copy; 2023 MyApp. สงวนลิขสิทธิ์.</p>
+    </footer>
+</body>
+</html>
