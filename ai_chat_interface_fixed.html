@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>� AI Expert Consultant - ปรึกษา แนะนำ สร้างแอปสวยๆ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .chat-panel {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .preview-panel {
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Messages */
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafbfc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #4facfe;
+            color: white;
+        }
+
+        .message.ai .message-avatar {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .message-content {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            max-width: 80%;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: #4facfe;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            resize: none;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+            min-height: 50px;
+            max-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        #sendButton {
+            background: #4facfe;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #sendButton:hover {
+            background: #2196f3;
+            transform: scale(1.05);
+        }
+
+        #sendButton:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Preview Panel */
+        .preview-header {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .preview-header h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .preview-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: #666;
+        }
+
+        .preview-placeholder .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4facfe;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e3f2fd;
+            border-top: 2px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50px) scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Hover effects for interactive elements */
+        .interactive-element {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .interactive-element:hover {
+            transform: scale(1.05);
+            background: rgba(79, 172, 254, 0.1);
+        }
+
+        .interactive-element:active {
+            transform: scale(0.95);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .preview-panel {
+                display: none;
+            }
+        }
+
+        /* Success/Error indicators */
+        .success-indicator {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .error-indicator {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        /* App info styling */
+        .app-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .app-info h4 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .app-info p {
+            margin: 4px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h1>� AI Expert Consultant</h1>
+                <p>ปรึกษา แนะนำ แก้ไข ออกแบบ สร้างแอปสวยๆ มาตรฐานสากล</p>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div>🧠 สวัสดีครับ! ผมเป็น AI Expert Consultant ที่พร้อมให้คำปรึกษา</div>
+                        <div style="margin-top: 15px; background: rgba(79,172,254,0.1); padding: 12px; border-radius: 8px; border-left: 4px solid #4facfe;">
+                            <div style="font-weight: bold; margin-bottom: 8px;">💡 ผมสามารถช่วยคุณ:</div>
+                            <div style="font-size: 13px; line-height: 1.4;">
+                                🎨 <strong>ออกแบบ UI/UX</strong> - แนะนำ Modern Design System<br>
+                                🔧 <strong>Code Review</strong> - วิเคราะห์และปรับปรุงโค้ด<br>
+                                📚 <strong>Tech Stack</strong> - แนะนำ Libraries ทันสมัย<br>
+                                🚀 <strong>สร้างแอป/เว็บ</strong> - ระดับมาตรฐานสากล<br>
+                                🤔 <strong>ตอบคำถาม</strong> - เรื่องการพัฒนา Software
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                            <strong>ลองพูดว่า:</strong><br>
+                            📱 "สร้าง app ร้านกาแฟ มี เมนู ตะกร้า ชำระเงิน"<br>
+                            🌐 "สร้างเว็บไซต์ ขายเสื้อผ้า มี gallery shopping cart"
+                        </div>
+                        <div class="message-time">ระบบพร้อมใช้งาน</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="บอก AI ว่าต้องการสร้างแอปอะไร เช่น 'สร้าง app ร้านอาหาร มี เมนู สั่งอาหาร ชำระเงิน'..."
+                        rows="1"
+                    ></textarea>
+                    <button id="sendButton" disabled>🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h3>📱 App Preview</h3>
+                <div id="previewStatus">รอการสร้างแอป</div>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <div class="preview-placeholder">
+                    <div class="icon">📱</div>
+                    <h3>พร้อมสร้างแอปด้วย AI!</h3>
+                    <p>พิมพ์คำสั่งในช่องแชทเพื่อเริ่มต้น</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AIAppGenerator {
+            constructor() {
+                console.log('🚀 AIAppGenerator starting...');
+                
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.messages = document.getElementById('messages');
+                this.previewContent = document.getElementById('previewContent');
+                this.previewStatus = document.getElementById('previewStatus');
+                
+                this.selectedType = null; // Let AI decide based on user input
+                this.selectedFramework = null;
+                
+                this.initializeEventListeners();
+                console.log('✅ AIAppGenerator initialized successfully');
+            }
+            
+            initializeEventListeners() {
+                console.log('🔧 กำลังตั้งค่า Event Listeners...');
+                
+                // Message input
+                this.messageInput.addEventListener('input', () => {
+                    const hasText = this.messageInput.value.trim().length > 0;
+                    this.sendButton.disabled = !hasText;
+                    console.log('📝 Input changed - ปุ่มส่ง:', hasText ? 'เปิด' : 'ปิด');
+                });
+                
+                // Enhanced Enter key handling
+                this.messageInput.addEventListener('keypress', (e) => {
+                    console.log('🔔 Keypress:', e.key, 'Shift:', e.shiftKey);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter detected - กำลังส่งข้อความ');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    }
+                });
+                
+                // Keydown as backup
+                this.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter via keydown - กำลังส่งข้อความ');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    }
+                });
+                
+                // Send button
+                this.sendButton.addEventListener('click', (e) => {
+                    console.log('🖱️ ปุ่มส่งถูกคลิก');
+                    e.preventDefault();
+                    this.sendMessage();
+                });
+                
+                // Auto resize textarea
+                this.messageInput.addEventListener('input', () => {
+                    this.messageInput.style.height = 'auto';
+                    this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+                });
+                
+                // Focus input
+                setTimeout(() => {
+                    this.messageInput.focus();
+                    console.log('🎯 Auto focus ที่ช่องข้อความ');
+                }, 100);
+                
+                console.log('✅ Event Listeners ตั้งค่าเสร็จแล้ว');
+            }
+            
+            async sendMessage() {
+                console.log('🚀 sendMessage() called');
+                const message = this.messageInput.value.trim();
+                console.log('📝 ข้อความ:', message);
+                
+                if (!message) {
+                    console.log('❌ ไม่มีข้อความให้ส่ง');
+                    return;
+                }
+                
+                console.log('✅ Adding user message to chat');
+                // Add user message
+                this.addMessage('user', message);
+                
+                // Clear input
+                this.messageInput.value = '';
+                this.messageInput.style.height = 'auto';
+                this.sendButton.disabled = true;
+                
+                // AI Consultation Mode - analyze request and ask questions
+                await this.handleAIConsultation(message);
+                
+                // Focus back to input
+                this.messageInput.focus();
+            }
+            
+            async handleAIConsultation(message) {
+                console.log('🧠 AI Consultation Mode');
+                
+                // Initialize conversation state if not exists
+                if (!this.conversationState) {
+                    this.conversationState = {
+                        stage: 'initial',
+                        projectType: null,
+                        requirements: {},
+                        clarifications: [],
+                        readyToBuild: false
+                    };
+                }
+                
+                // Show AI thinking
+                const thinkingId = this.addMessage('ai', 
+                    '<div class="ai-thinking" style="' +
+                        'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ' +
+                        'color: white; ' +
+                        'padding: 12px; ' +
+                        'border-radius: 8px; ' +
+                        'margin-bottom: 10px;' +
+                    '">' +
+                        '<div style="display: flex; align-items: center; gap: 10px;">' +
+                            '<div class="spinner"></div>' +
+                            '<span style="font-weight: bold;">🧠 AI กำลังวิเคราะห์และเตรียมคำถาม...</span>' +
+                        '</div>' +
+                    '</div>'
+                );
+                
+                try {
+                    // Analyze user request intelligently
+                    const analysis = await this.analyzeUserRequest(message);
+                    
+                    // Remove thinking message
+                    const thinkingElement = document.getElementById(thinkingId);
+                    if (thinkingElement) {
+                        thinkingElement.remove();
+                    }
+                    
+                    // Handle response based on AI Expert analysis
+                    if (analysis.success && analysis.readyToBuild) {
+                        // AI Expert determined user has enough info, start building
+                        await this.startBuilding(message, analysis);
+                    } else if (analysis.success && analysis.expertAdvice) {
+                        // AI Expert providing consultation/recommendations
+                        this.showExpertAdvice(analysis);
+                    } else if (analysis.needsMoreInfo) {
+                        // AI Expert needs more information
+                        this.showConsultationQuestions(analysis);
+                    } else {
+                        // Error or fallback
+                        const errorMsg = analysis.error ? 
+                            '❌ เกิดข้อผิดพลาด: ' + analysis.error :
+                            '🤔 ขออภัย ผมไม่เข้าใจคำถามของคุณ กรุณาลองใหม่อีกครั้ง';
+                        this.addMessage('ai', errorMsg);
+                    }
+                    
+                } catch (error) {
+                    console.error('Consultation error:', error);
+                    const thinkingElement = document.getElementById(thinkingId);
+                    if (thinkingElement) {
+                        thinkingElement.remove();
+                    }
+                    this.addMessage('ai', '❌ เกิดข้อผิดพลาด ในการวิเคราะห์: ' + error.message);
+                }
+                
+                this.sendButton.disabled = false;
+            }
+            
+            async analyzeUserRequest(message) {
+                try {
+                    console.log('🧠 Calling AI Expert Consultant API...');
+                    
+                    const response = await fetch('http://localhost:8001/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            app_type: 'auto',
+                            framework: 'auto'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('🎉 AI Expert response:', data);
+                    
+                    // Transform API response to match frontend expectations
+                    return {
+                        readyToBuild: !data.needs_more_info && data.success,
+                        needsMoreInfo: data.needs_more_info,
+                        expertAdvice: data.ai_consultation,
+                        message: data.message,
+                        success: data.success,
+                        apiResponse: data // Keep full response for debugging
+                    };
+                    
+                } catch (error) {
+                    console.error('❌ AI Expert API Error:', error);
+                    return {
+                        readyToBuild: false,
+                        needsMoreInfo: false,
+                        error: error.message,
+                        success: false
+                    };
+                }
+            }
+            
+            detectProjectType(message) {
+                const msg = message.toLowerCase();
+                
+                // Mobile app indicators
+                const mobileKeywords = ['แอปมือถือ', 'mobile app', 'ios', 'android', 'react native', 'flutter', 'ดาวน์โหลด', 'app store', 'play store', 'notification', 'กล้องถ่ายรูป', 'gps', 'location'];
+                
+                // Web app indicators  
+                const webAppKeywords = ['web app', 'เว็บแอป', 'dashboard', 'admin panel', 'login', 'authentication', 'database', 'crud', 'api', 'backend', 'user management', 'real-time'];
+                
+                // Website indicators
+                const websiteKeywords = ['เว็บไซต์', 'website', 'landing page', 'portfolio', 'blog', 'company profile', 'showcase', 'brochure', 'information', 'static'];
+                
+                let scores = {
+                    mobile: 0,
+                    webapp: 0,
+                    website: 0
+                };
+                
+                // Count keyword matches
+                mobileKeywords.forEach(keyword => {
+                    if (msg.includes(keyword)) scores.mobile += 1;
+                });
+                
+                webAppKeywords.forEach(keyword => {
+                    if (msg.includes(keyword)) scores.webapp += 1;
+                });
+                
+                websiteKeywords.forEach(keyword => {
+                    if (msg.includes(keyword)) scores.website += 1;
+                });
+                
+                // Determine type based on highest score
+                let detectedType = 'unknown';
+                let maxScore = 0;
+                
+                Object.keys(scores).forEach(type => {
+                    if (scores[type] > maxScore) {
+                        maxScore = scores[type];
+                        detectedType = type;
+                    }
+                });
+                
+                return {
+                    type: detectedType,
+                    confidence: maxScore > 0 ? (maxScore / 5) * 100 : 0,
+                    scores: scores
+                };
+            }
+            
+            assessRequirementCompleteness(message, typeDetection) {
+                let score = 0;
+                const requirements = {};
+                const missing = [];
+                
+                // Basic requirements (20 points each)
+                if (message.length > 20) {
+                    score += 20;
+                    requirements.hasDescription = true;
+                } else {
+                    missing.push('คำอธิบายโครงการที่ชัดเจนมากขึ้น');
+                }
+                
+                // Project type clarity (20 points)
+                if (typeDetection.confidence >= 60) {
+                    score += 20;
+                    requirements.hasProjectType = true;
+                } else {
+                    missing.push('ประเภทของโครงการ (เว็บไซต์/เว็บแอป/แอปมือถือ)');
+                }
+                
+                // Business domain (20 points)
+                const businessKeywords = ['ร้าน', 'shop', 'business', 'company', 'service', 'clinic', 'hospital', 'school', 'restaurant', 'cafe', 'hotel', 'travel', 'education'];
+                if (businessKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+                    score += 20;
+                    requirements.hasBusiness = true;
+                } else {
+                    missing.push('ประเภทธุรกิจหรือหมวดหมู่');
+                }
+                
+                // Features mentioned (20 points)
+                const featureKeywords = ['login', 'register', 'payment', 'cart', 'search', 'booking', 'order', 'profile', 'dashboard', 'chat', 'notification'];
+                if (featureKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+                    score += 20;
+                    requirements.hasFeatures = true;
+                } else {
+                    missing.push('ฟีเจอร์หรือความสามารถที่ต้องการ');
+                }
+                
+                // Target audience (20 points)
+                const audienceKeywords = ['customer', 'client', 'user', 'ลูกค้า', 'ผู้ใช้', 'นักเรียน', 'คนไข้', 'นักท่องเที่ยว'];
+                if (audienceKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+                    score += 20;
+                    requirements.hasAudience = true;
+                } else {
+                    missing.push('กลุ่มเป้าหมายผู้ใช้งาน');
+                }
+                
+                return {
+                    score: score,
+                    requirements: requirements,
+                    missing: missing
+                };
+            }
+            
+            generateRelevantQuestions(typeDetection, completeness) {
+                const questions = [];
+                
+                // Project type clarification
+                if (!completeness.requirements.hasProjectType) {
+                    questions.push({
+                        type: 'choice',
+                        question: '🤔 คุณต้องการสร้างอะไรครับ?',
+                        options: [
+                            { value: 'website', label: '🌐 เว็บไซต์ (แสดงข้อมูล/โชว์ผลงาน)', desc: 'เหมาะสำหรับแนะนำบริษัท, portfolio, blog' },
+                            { value: 'webapp', label: '💻 เว็บแอปพลิเคชัน (ระบบจัดการ)', desc: 'มี login, database, dashboard, CRUD' },
+                            { value: 'mobile', label: '📱 แอปมือถือ', desc: 'ใช้งานบนมือถือ iOS/Android' }
+                        ]
+                    });
+                }
+                
+                // Business domain
+                if (!completeness.requirements.hasBusiness) {
+                    questions.push({
+                        type: 'text',
+                        question: '🏢 ธุรกิจหรือหมวดหมู่อะไรครับ?',
+                        placeholder: 'เช่น ร้านกาแฟ, คลินิกความงาม, โรงเรียน, ร้านค้าออนไลน์',
+                        examples: ['ร้านกาแฟ', 'คลินิกความงาม', 'โรงเรียนสอนภาษา', 'ร้านเสื้อผ้า']
+                    });
+                }
+                
+                // Features for web apps
+                if (typeDetection.type === 'webapp' && !completeness.requirements.hasFeatures) {
+                    questions.push({
+                        type: 'multiple',
+                        question: '⚡ ต้องการฟีเจอร์อะไรบ้างครับ?',
+                        options: [
+                            { value: 'auth', label: '🔐 ระบบ Login/Register' },
+                            { value: 'dashboard', label: '📊 Dashboard แสดงสถิติ' },
+                            { value: 'crud', label: '📝 เพิ่ม/แก้ไข/ลบข้อมูล' },
+                            { value: 'search', label: '🔍 ระบบค้นหา' },
+                            { value: 'payment', label: '💳 ระบบชำระเงิน' },
+                            { value: 'chat', label: '💬 ระบบแชท' }
+                        ]
+                    });
+                }
+                
+                return questions;
+            }
+            
+            showExpertAdvice(analysis) {
+                // Show AI Expert advice/recommendations
+                const message = analysis.message || analysis.apiResponse?.message || '🧠 AI Expert Consultant คำแนะนำ';
+                this.addMessage('ai', message);
+            }
+            
+            showConsultationQuestions(analysis) {
+                let questionHtml = '<div class="consultation-card" style="' +
+                    'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ' +
+                    'color: white; ' +
+                    'padding: 20px; ' +
+                    'border-radius: 12px; ' +
+                    'margin: 10px 0;' +
+                '">';
+                
+                questionHtml += '<h3 style="margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px;">' +
+                    '<span>🤖</span>' +
+                    '<span>AI Consultant</span>' +
+                '</h3>';
+                
+                questionHtml += '<div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin-bottom: 15px;">';
+                
+                if (analysis.projectType.confidence > 0) {
+                    questionHtml += '<p style="margin: 0 0 10px 0;">💡 ผมคิดว่าคุณต้องการสร้าง: <strong>' + 
+                        this.getProjectTypeLabel(analysis.projectType.type) + '</strong> (ความมั่นใจ ' + 
+                        Math.round(analysis.projectType.confidence) + '%)</p>';
+                }
+                
+                questionHtml += '<p style="margin: 0;">✅ ข้อมูลครบแล้ว: ' + analysis.completeness.score + '%</p>';
+                questionHtml += '</div>';
+                
+                if (analysis.questions && analysis.questions.length > 0) {
+                    questionHtml += '<div class="questions-section">';
+                    questionHtml += '<p style="margin: 0 0 15px 0; font-weight: bold;">ช่วยตอบคำถามเพิ่มเติมนิดนึงนะครับ เพื่อให้ผมสร้างให้ตรงใจคุณที่สุด:</p>';
+                    
+                    analysis.questions.forEach((q, index) => {
+                        questionHtml += this.renderQuestion(q, index);
+                    });
+                    
+                    questionHtml += '</div>';
+                } else {
+                    questionHtml += '<p>🎯 ข้อมูลเพียงพอแล้ว กำลังเตรียมสร้าง...</p>';
+                }
+                
+                questionHtml += '</div>';
+                
+                this.addMessage('ai', questionHtml);
+            }
+            
+            renderQuestion(question, index) {
+                let html = '<div class="question-item" style="margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px;">';
+                
+                html += '<p style="margin: 0 0 10px 0; font-weight: bold;">' + question.question + '</p>';
+                
+                if (question.type === 'choice') {
+                    question.options.forEach((option, optIndex) => {
+                        html += '<div class="option-button" onclick="chatInterface.selectOption(' + index + ', \'' + option.value + '\')" ' +
+                            'style="' +
+                                'display: block; ' +
+                                'width: 100%; ' +
+                                'padding: 12px; ' +
+                                'margin: 8px 0; ' +
+                                'background: rgba(255,255,255,0.1); ' +
+                                'border: 2px solid rgba(255,255,255,0.2); ' +
+                                'border-radius: 8px; ' +
+                                'color: white; ' +
+                                'cursor: pointer; ' +
+                                'text-align: left; ' +
+                                'transition: all 0.3s ease;' +
+                            '" ' +
+                            'onmouseover="this.style.background=\'rgba(255,255,255,0.2)\'; this.style.transform=\'scale(1.02)\';" ' +
+                            'onmouseout="this.style.background=\'rgba(255,255,255,0.1)\'; this.style.transform=\'scale(1)\';">' +
+                            '<div style="font-weight: bold;">' + option.label + '</div>' +
+                            (option.desc ? '<div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">' + option.desc + '</div>' : '') +
+                        '</div>';
+                    });
+                } else if (question.type === 'text') {
+                    html += '<input type="text" id="question-' + index + '" placeholder="' + question.placeholder + '" ' +
+                        'style="' +
+                            'width: 100%; ' +
+                            'padding: 12px; ' +
+                            'border: 2px solid rgba(255,255,255,0.3); ' +
+                            'border-radius: 8px; ' +
+                            'background: rgba(255,255,255,0.1); ' +
+                            'color: white; ' +
+                            'font-size: 14px;' +
+                        '" ' +
+                        'onkeypress="if(event.key===\'Enter\') chatInterface.submitTextAnswer(' + index + ')">';
+                    
+                    if (question.examples) {
+                        html += '<div style="margin-top: 8px; font-size: 12px; opacity: 0.7;">ตัวอย่าง: ' + question.examples.join(', ') + '</div>';
+                    }
+                }
+                
+                html += '</div>';
+                return html;
+            }
+            
+            getProjectTypeLabel(type) {
+                const labels = {
+                    'website': '🌐 เว็บไซต์',
+                    'webapp': '💻 เว็บแอปพลิเคชัน',
+                    'mobile': '📱 แอปมือถือ',
+                    'unknown': '❓ ยังไม่ระบุ'
+                };
+                return labels[type] || labels.unknown;
+            }
+            
+            // Methods to handle user responses to questions
+            selectOption(questionIndex, value) {
+                this.addMessage('user', '✅ เลือก: ' + value);
+                
+                // Update conversation state
+                if (!this.conversationState.answers) {
+                    this.conversationState.answers = {};
+                }
+                this.conversationState.answers[questionIndex] = value;
+                
+                // Continue consultation or build
+                setTimeout(() => {
+                    this.continueConsultation();
+                }, 500);
+            }
+            
+            submitTextAnswer(questionIndex) {
+                const input = document.getElementById('question-' + questionIndex);
+                const value = input.value.trim();
+                
+                if (value) {
+                    this.addMessage('user', '📝 ตอบ: ' + value);
+                    
+                    // Update conversation state
+                    if (!this.conversationState.answers) {
+                        this.conversationState.answers = {};
+                    }
+                    this.conversationState.answers[questionIndex] = value;
+                    
+                    // Continue consultation or build
+                    setTimeout(() => {
+                        this.continueConsultation();
+                    }, 500);
+                }
+            }
+            
+            async continueConsultation() {
+                // Check if we have enough information to build
+                const hasEnoughInfo = this.checkIfReadyToBuild();
+                
+                if (hasEnoughInfo) {
+                    // Start building process
+                    this.addMessage('ai', '🎉 <strong>ข้อมูลครบแล้ว!</strong><br>ตอนนี้ผมจะเริ่มสร้างโครงการให้คุณเลย...');
+                    
+                    // Compile final requirements
+                    const finalRequirements = this.compileFinalRequirements();
+                    
+                    setTimeout(async () => {
+                        await this.startBuilding(finalRequirements.prompt, finalRequirements.analysis);
+                    }, 1000);
+                } else {
+                    // Ask more questions or thank user
+                    this.addMessage('ai', '👍 <strong>ขอบคุณครับ!</strong><br>ผมจะถามอีกนิดนึงเพื่อให้ได้โครงการที่สมบูรณ์แบบ...');
+                }
+            }
+            
+            checkIfReadyToBuild() {
+                // Simple check - if user has answered at least 2 questions, we're ready
+                return this.conversationState.answers && Object.keys(this.conversationState.answers).length >= 2;
+            }
+            
+            compileFinalRequirements() {
+                let prompt = 'สร้างโครงการตามความต้องการต่อไปนี้:\n\n';
+                
+                // Add user answers to prompt
+                if (this.conversationState.answers) {
+                    Object.values(this.conversationState.answers).forEach((answer, index) => {
+                        prompt += '- ' + answer + '\n';
+                    });
+                }
+                
+                return {
+                    prompt: prompt,
+                    analysis: {
+                        projectType: { type: 'webapp', confidence: 90 },
+                        completeness: { score: 100 },
+                        readyToBuild: true
+                    }
+                };
+            }
+            
+            async startBuilding(prompt, analysis) {
+                // Show building progress
+                const thinkingId = this.addMessage('ai', 
+                    '<div class="ai-working-header" style="' +
+                        'background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); ' +
+                        'color: white; ' +
+                        'padding: 12px; ' +
+                        'border-radius: 8px; ' +
+                        'margin-bottom: 15px;' +
+                    '">' +
+                        '<div style="display: flex; align-items: center; gap: 10px;">' +
+                            '<div class="spinner"></div>' +
+                            '<span style="font-weight: bold;">🤖 AI กำลังสร้างแอปของคุณ...</span>' +
+                        '</div>' +
+                        '<div style="font-size: 12px; opacity: 0.9; margin-top: 5px;">Full-Stack Development ในครั้งเดียว</div>' +
+                    '</div>' +
+                    
+                    '<div class="progress-section">' +
+                        '<div class="loading" style="margin-bottom: 10px;">' +
+                            '<span id="status-text" style="font-weight: bold; color: #4facfe;">🔍 AI กำลังวิเคราะห์ความต้องการ...</span>' +
+                        '</div>' +
+                        
+                        '<div id="progress-bar" style="width: 100%; background: #f0f0f0; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">' +
+                            '<div id="progress-fill" style="width: 0%; height: 10px; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); transition: width 0.8s ease;"></div>' +
+                        '</div>' +
+                        
+                        '<div style="display: flex; justify-content: space-between; font-size: 11px; color: #666;">' +
+                            '<span id="file-count">ไฟล์ที่สร้าง: 0</span>' +
+                            '<span id="progress-percent">0%</span>' +
+                        '</div>' +
+                    '</div>'
+                );
+                
+                this.previewStatus.innerHTML = '<div class="loading"><div class="spinner"></div><span>AI กำลังสร้าง...</span></div>';
+                
+                try {
+                    // Show realistic progress with steps
+                    await this.showProgressSteps(thinkingId);
+                    
+                    // Call AI generation API
+                    const result = await this.generateWithAI(prompt);
+                    
+                    // Remove thinking message
+                    const thinkingElement = document.getElementById(thinkingId);
+                    if (thinkingElement) {
+                        thinkingElement.remove();
+                    }
+                    
+                    if (result.success) {
+                        // Add success message
+                        this.addMessage('ai', this.formatSuccessMessage(result));
+                        
+                        // Update preview
+                        this.updatePreview(result);
+                        
+                        this.previewStatus.innerHTML = '<span class="success-indicator">✅ สร้างสำเร็จ!</span>';
+                    } else {
+                        // Add error message
+                        this.addMessage('ai', this.formatErrorMessage(result));
+                        this.previewStatus.innerHTML = '<span class="error-indicator">❌ เกิดข้อผิดพลาด</span>';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    
+                    // Remove thinking message
+                    const thinkingElement = document.getElementById(thinkingId);
+                    if (thinkingElement) {
+                        thinkingElement.remove();
+                    }
+                    
+                    this.addMessage('ai', '❌ เกิดข้อผิดพลาด: ' + error.message);
+                    this.previewStatus.innerHTML = '<span class="error-indicator">❌ เกิดข้อผิดพลาด</span>';
+                }
+            }
+            
+            async showProgressSteps(thinkingId) {
+                const detailedSteps = [
+                    { 
+                        text: '🔍 AI กำลังวิเคราะห์ความต้องการ...', 
+                        progress: 5,
+                        details: 'กำลังประมวลผลภาษาธรรมชาติและระบุคีย์เวิร์ด',
+                        files: []
+                    },
+                    { 
+                        text: '🧠 กำลังออกแบบ Database Schema...', 
+                        progress: 15,
+                        details: 'สร้างตาราง users, products, orders, categories',
+                        files: ['database/schema.sql', 'models/User.js', 'models/Product.js']
+                    },
+                    { 
+                        text: '📐 กำลังออกแบบ Screen Flow และ Navigation...', 
+                        progress: 25,
+                        details: 'ออกแบบ 7 หน้าจอ: Login → Home → Products → Cart → Checkout',
+                        files: ['navigation/AppNavigator.js', 'screens/HomeScreen.js']
+                    },
+                    { 
+                        text: '⚛️ กำลังสร้าง React Native Components...', 
+                        progress: 40,
+                        details: 'สร้าง ProductCard, CartItem, CustomButton components',
+                        files: ['components/ProductCard.js', 'components/CartItem.js', 'components/CustomButton.js']
+                    },
+                    { 
+                        text: '🎨 กำลังออกแบบ UI/UX และ Styling...', 
+                        progress: 55,
+                        details: 'กำหนดธีม สี และ responsive design สำหรับทุกหน้าจอ',
+                        files: ['styles/theme.js', 'styles/colors.js', 'styles/typography.js']
+                    },
+                    { 
+                        text: '🔧 กำลังสร้าง API Backend...', 
+                        progress: 70,
+                        details: 'สร้าง REST API: GET /products, POST /orders, PUT /users',
+                        files: ['api/products.js', 'api/orders.js', 'api/auth.js', 'server.js']
+                    },
+                    { 
+                        text: '🗄️ กำลังตั้งค่า Database และ Seed Data...', 
+                        progress: 85,
+                        details: 'สร้างฐานข้อมูล MongoDB และเพิ่มข้อมูลตัวอย่าง 50 สินค้า',
+                        files: ['database/connection.js', 'database/seeders/products.js']
+                    },
+                    { 
+                        text: '🔄 กำลังเชื่อมต่อ Frontend กับ Backend...', 
+                        progress: 95,
+                        details: 'ตั้งค่า Axios, Redux Store, และ API integration',
+                        files: ['store/index.js', 'services/api.js', 'utils/httpClient.js']
+                    },
+                    { 
+                        text: '� กำลังสร้าง Build Scripts และ Deployment...', 
+                        progress: 98,
+                        details: 'สร้าง package.json, Docker, และเตรียม production build',
+                        files: ['package.json', 'Dockerfile', 'docker-compose.yml']
+                    },
+                    { 
+                        text: '🎉 เสร็จสิ้น! แอปพร้อมใช้งาน!', 
+                        progress: 100,
+                        details: 'สร้างไฟล์ทั้งหมด 28 ไฟล์ พร้อม database และ API',
+                        files: ['README.md', 'DEPLOYMENT.md']
+                    }
+                ];
+                
+                for (let i = 0; i < detailedSteps.length; i++) {
+                    const step = detailedSteps[i];
+                    
+                    // Update main status text
+                    const statusElement = document.getElementById('status-text');
+                    if (statusElement) {
+                        statusElement.innerHTML = step.text;
+                    }
+                    
+                    // Update progress bar
+                    const progressElement = document.getElementById('progress-fill');
+                    if (progressElement) {
+                        progressElement.style.width = step.progress + '%';
+                    }
+                    
+                    // Add detailed progress info to the message
+                    const thinkingElement = document.getElementById(thinkingId);
+                    if (thinkingElement) {
+                        const existingProgress = thinkingElement.querySelector('#progress-details');
+                        if (existingProgress) {
+                            existingProgress.remove();
+                        }
+                        
+                        const detailsHTML = 
+                            '<div id="progress-details" style="' +
+                                'margin-top: 15px; ' +
+                                'padding: 12px; ' +
+                                'background: #f8f9fa; ' +
+                                'border-radius: 8px; ' +
+                                'border-left: 4px solid #4facfe; ' +
+                                'font-size: 13px; ' +
+                                'line-height: 1.4;' +
+                            '">' +
+                                '<div style="color: #666; margin-bottom: 8px;">' +
+                                    '<strong>📋 รายละเอียด:</strong> ' + step.details +
+                                '</div>' +
+                                (step.files.length > 0 ? 
+                                    '<div style="color: #4facfe; font-family: monospace; font-size: 11px;">' +
+                                        '<strong>📁 ไฟล์ที่สร้าง:</strong><br>' +
+                                        step.files.map(file => '&nbsp;&nbsp;✅ ' + file).join('<br>') +
+                                    '</div>' : ''
+                                ) +
+                            '</div>';
+                        
+                        thinkingElement.insertAdjacentHTML('beforeend', detailsHTML);
+                        
+                        // Update file counter
+                        const fileCountElement = thinkingElement.querySelector('#file-count');
+                        const progressPercentElement = thinkingElement.querySelector('#progress-percent');
+                        if (fileCountElement) {
+                            const totalFiles = detailedSteps.reduce((sum, s) => sum + s.files.length, 0);
+                            const currentFiles = detailedSteps.slice(0, i + 1).reduce((sum, s) => sum + s.files.length, 0);
+                            fileCountElement.textContent = `ไฟล์ที่สร้าง: ${currentFiles}/${totalFiles}`;
+                        }
+                        if (progressPercentElement) {
+                            progressPercentElement.textContent = step.progress + '%';
+                        }
+                    }
+                    
+                    // Update preview status with mini progress
+                    this.previewStatus.innerHTML = 
+                        '<div class="loading">' +
+                            '<div class="spinner"></div>' +
+                            '<span style="font-weight: bold;">' + step.text + '</span>' +
+                        '</div>' +
+                        '<div style="font-size: 11px; color: #666; margin: 5px 0;">' + step.details + '</div>' +
+                        '<div style="width: 100%; background: #f0f0f0; border-radius: 10px; overflow: hidden;">' +
+                            '<div style="width: ' + step.progress + '%; height: 6px; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); transition: width 0.8s ease;"></div>' +
+                        '</div>' +
+                        '<div style="text-align: right; font-size: 10px; color: #999; margin-top: 2px;">' + step.progress + '% เสร็จสิ้น</div>';
+                    
+                    // Add some realistic file creation animation
+                    if (step.files.length > 0) {
+                        await this.animateFileCreation(step.files);
+                    }
+                    
+                    // Wait between steps with varying time based on complexity
+                    const waitTime = step.files.length > 2 ? 1200 : 800;
+                    await this.sleep(waitTime);
+                }
+                
+                // Final celebration wait
+                await this.sleep(300);
+            }
+            
+            async animateFileCreation(files) {
+                // Show live coding simulation
+                const codeSnippets = {
+                    'components/ProductCard.js': 'export const ProductCard = ({ product }) => {\n  return (\n    <View style={styles.card}>\n      <Image source={{ uri: product.image }} />\n      <Text>{product.name}</Text>\n    </View>\n  );\n};',
+                    'api/products.js': 'app.get("/api/products", async (req, res) => {\n  const products = await Product.find();\n  res.json({ success: true, data: products });\n});',
+                    'database/schema.sql': 'CREATE TABLE products (\n  id SERIAL PRIMARY KEY,\n  name VARCHAR(255) NOT NULL,\n  price DECIMAL(10,2),\n  image_url TEXT\n);'
+                };
+                
+                for (let i = 0; i < Math.min(files.length, 2); i++) {
+                    const file = files[i];
+                    console.log('📄 Creating file:', file);
+                    
+                    // Show mini code preview for key files
+                    if (codeSnippets[file]) {
+                        this.showMiniCodePreview(file, codeSnippets[file]);
+                        await this.sleep(400);
+                    } else {
+                        await this.sleep(150);
+                    }
+                }
+            }
+            
+            showMiniCodePreview(filename, code) {
+                console.log(`💻 [${filename}]:\n${code.substring(0, 100)}...`);
+                
+                // Create a mini toast notification for file creation
+                const toast = document.createElement('div');
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #2d3748;
+                    color: #68d391;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 11px;
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                `;
+                
+                toast.innerHTML = `
+                    <div style="color: #a0aec0; margin-bottom: 2px;">📄 ${filename}</div>
+                    <div style="font-size: 10px; opacity: 0.8;">✅ Created successfully</div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Auto remove after 2 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 1500);
+                
+                // Add CSS animations if not exist
+                if (!document.getElementById('toast-animations')) {
+                    const style = document.createElement('style');
+                    style.id = 'toast-animations';
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { transform: translateX(100%); opacity: 0; }
+                            to { transform: translateX(0); opacity: 1; }
+                        }
+                        @keyframes slideOut {
+                            from { transform: translateX(0); opacity: 1; }
+                            to { transform: translateX(100%); opacity: 0; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            showInteractiveQuestions(initialResult) {
+                const questions = this.generateSmartQuestions(initialResult);
+                
+                let questionsHTML = '<div class="interactive-questions">' +
+                    '<h4 style="margin: 0 0 15px 0; color: #4facfe;">🤔 AI อยากถามเพิ่มเติมเพื่อให้ผลงานสมบูรณ์ขึ้น:</h4>';
+                
+                questions.forEach((question, index) => {
+                    questionsHTML += '<div class="question-card" style="' +
+                        'background: #f8f9fa; ' +
+                        'border: 1px solid #e9ecef; ' +
+                        'border-radius: 8px; ' +
+                        'padding: 15px; ' +
+                        'margin-bottom: 10px; ' +
+                        'cursor: pointer; ' +
+                        'transition: all 0.3s ease;' +
+                    '" onmouseover="this.style.borderColor=\'#4facfe\'" onmouseout="this.style.borderColor=\'#e9ecef\'" onclick="handleQuestionClick(' + index + ', \'' + question.type + '\', \'' + question.question.replace(/'/g, '\\\'') + '\')">' +
+                        '<div style="display: flex; align-items: center; gap: 10px;">' +
+                            '<span style="font-size: 20px;">' + question.icon + '</span>' +
+                            '<div>' +
+                                '<strong style="color: #333;">' + question.question + '</strong>' +
+                                '<div style="font-size: 12px; color: #666; margin-top: 3px;">' + question.hint + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                });
+                
+                questionsHTML += '<div style="margin-top: 15px; text-align: center;">' +
+                    '<button onclick="skipQuestions()" style="' +
+                        'background: #6c757d; ' +
+                        'color: white; ' +
+                        'border: none; ' +
+                        'padding: 10px 20px; ' +
+                        'border-radius: 20px; ' +
+                        'cursor: pointer; ' +
+                        'margin-right: 10px;' +
+                    '">ข้ามไป</button>' +
+                    '<button onclick="useRecommended()" style="' +
+                        'background: #4facfe; ' +
+                        'color: white; ' +
+                        'border: none; ' +
+                        'padding: 10px 20px; ' +
+                        'border-radius: 20px; ' +
+                        'cursor: pointer;' +
+                    '">ใช้การตั้งค่าแนะนำ</button>' +
+                '</div>' +
+                '</div>';
+                
+                // Store initial result for later use
+                window.currentProjectData = initialResult;
+                window.pendingQuestions = questions;
+                window.questionAnswers = {};
+                
+                this.addMessage('ai', questionsHTML);
+            }
+            
+            generateSmartQuestions(result) {
+                const questions = [];
+                const projectType = result.project_type || 'mobile';
+                const prompt = result.original_prompt || '';
+                
+                // Always ask about brand/business name if not clear
+                if (!this.hasBusinessName(prompt)) {
+                    questions.push({
+                        type: 'business_name',
+                        icon: '🏷️',
+                        question: 'ชื่อแบรนด์หรือชื่อธุรกิจของคุณคืออะไร?',
+                        hint: 'เช่น "Cafe Paradise" หรือ "ร้านกาแฟบ้านสวน"',
+                        required: true
+                    });
+                }
+                
+                // Ask about color preferences
+                questions.push({
+                    type: 'colors',
+                    icon: '🎨',
+                    question: 'คุณชอบโทนสีแบบไหน?',
+                    hint: 'เช่น "สีน้ำเงิน-ขาว" "สีอบอุ่น" "สีสดใส" หรือ "สีธรรมชาติ"',
+                    options: ['สีน้ำเงิน-ขาว', 'สีอบอุ่น', 'สีสดใส', 'สีธรรมชาติ', 'สีดำ-ขาว', 'สีอื่นๆ']
+                });
+                
+                // Ask about images/photos
+                questions.push({
+                    type: 'images',
+                    icon: '📷',
+                    question: 'คุณมีรูปภาพประกอบที่ต้องการใช้หรือไม่?',
+                    hint: 'เช่น โลโก้ รูปสินค้า รูปร้าน หรือให้ AI หาให้',
+                    options: ['มีรูปภาพแล้ว', 'ให้ AI หาให้', 'ใช้รูปจาก Unsplash', 'ไม่ต้องการรูปภาพ']
+                });
+                
+                // Ask about target audience
+                questions.push({
+                    type: 'audience',
+                    icon: '👥',
+                    question: 'กลุ่มเป้าหมายหลักคือใคร?',
+                    hint: 'ช่วยให้ AI ออกแบบให้เหมาะกับผู้ใช้',
+                    options: ['วัยรุ่น (13-25)', 'วัยทำงาน (25-45)', 'ครอบครัว (25-55)', 'ผู้สูงอายุ (45+)', 'ทุกวัย']
+                });
+                
+                return questions.slice(0, 4); // จำกัดไว้ 4 คำถาม
+            }
+            
+            hasBusinessName(prompt) {
+                const indicators = ['ร้าน', 'cafe', 'บริษัท', 'shop', 'clinic', 'hotel', 'bakery'];
+                return indicators.some(word => prompt.toLowerCase().includes(word));
+            }
+            
+            async generateWithAI(prompt) {
+                try {
+                    console.log('🤖 Calling AI API with prompt:', prompt);
+                    
+                    // Auto-detect app type from prompt
+                    const detectedType = this.detectAppType(prompt);
+                    console.log('🔍 Detected type:', detectedType);
+                    
+                    const response = await fetch('http://localhost:8001/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: prompt,
+                            app_type: detectedType.type,
+                            framework: detectedType.framework
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('🎉 AI response received:', data);
+                    
+                    return data;
+                } catch (error) {
+                    console.error('❌ AI API Error:', error);
+                    return {
+                        success: false,
+                        message: '❌ ไม่สามารถเชื่อมต่อ AI ได้: ' + error.message,
+                        error: error.message
+                    };
+                }
+            }
+            
+            addMessage(sender, content) {
+                const messageId = 'msg-' + Date.now();
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message ' + sender;
+                messageDiv.id = messageId;
+                
+                const avatar = sender === 'user' ? '👤' : '🤖';
+                const time = new Date().toLocaleTimeString('th-TH', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                messageDiv.innerHTML = 
+                    '<div class="message-avatar">' + avatar + '</div>' +
+                    '<div class="message-content">' +
+                        '<div>' + content + '</div>' +
+                        '<div class="message-time">' + time + '</div>' +
+                    '</div>';
+                
+                this.messages.appendChild(messageDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+                
+                return messageId;
+            }
+            
+            formatSuccessMessage(result) {
+                let message = '<div class="success-indicator">🎉 สร้างแอปสำเร็จ!</div>';
+                
+                message += '<div class="app-info">';
+                message += '<h4>' + (result.app_name || 'แอปที่สร้างใหม่') + '</h4>';
+                message += '<p><strong>ประเภท:</strong> 📱 Mobile App</p>';
+                
+                if (result.files_created) {
+                    message += '<p><strong>ไฟล์ที่สร้าง:</strong> ' + result.files_created + ' ไฟล์</p>';
+                }
+                
+                if (result.app_path) {
+                    message += '<p><strong>ที่อยู่:</strong> ' + result.app_path + '</p>';
+                }
+                
+                message += '</div>';
+                
+                return message;
+            }
+            
+            formatErrorMessage(result) {
+                let message = '<div class="error-indicator">❌ ไม่สามารถสร้างได้</div>';
+                message += '<p style="margin-top: 10px; color: #666;">';
+                message += 'เหตุผล: ' + (result.error || 'ไม่ทราบสาเหตุ') + '<br>';
+                message += 'กรุณาลองใหม่หรือปรับแต่งคำขอ';
+                message += '</p>';
+                return message;
+            }
+            
+            detectAppType(prompt) {
+                const text = prompt.toLowerCase();
+                
+                // Check for web-specific keywords
+                const webKeywords = ['เว็บไซต์', 'website', 'web', 'เว็บ', 'ขายออนไลน์', 'landing page', 'homepage'];
+                const mobileKeywords = ['app', 'แอป', 'application', 'mobile', 'มือถือ', 'โทรศัพท์'];
+                
+                let webScore = 0;
+                let mobileScore = 0;
+                
+                // Calculate scores
+                webKeywords.forEach(keyword => {
+                    if (text.includes(keyword)) webScore += 2;
+                });
+                
+                mobileKeywords.forEach(keyword => {
+                    if (text.includes(keyword)) mobileScore += 2;
+                });
+                
+                // Additional context clues
+                if (text.includes('react') && text.includes('native')) mobileScore += 3;
+                if (text.includes('react') && !text.includes('native')) webScore += 3;
+                if (text.includes('next.js') || text.includes('nextjs')) webScore += 3;
+                if (text.includes('html') || text.includes('css')) webScore += 2;
+                if (text.includes('bootstrap') || text.includes('tailwind')) webScore += 2;
+                
+                console.log('📊 Type detection scores - Web:', webScore, 'Mobile:', mobileScore);
+                
+                if (webScore > mobileScore) {
+                    return { type: 'web', framework: 'react' };
+                } else if (mobileScore > webScore) {
+                    return { type: 'mobile', framework: 'react_native' };
+                } else {
+                    // Default based on common patterns
+                    if (text.includes('ร้าน') || text.includes('shop') || text.includes('store')) {
+                        return { type: 'mobile', framework: 'react_native' }; // Commerce usually mobile
+                    } else {
+                        return { type: 'web', framework: 'react' }; // Default to web
+                    }
+                }
+            }
+            
+            updatePreview(result) {
+                const appName = result.app_name || 'แอปใหม่';
+                const isInstagram = appName.toLowerCase().includes('insta') || appName.toLowerCase().includes('social');
+                const isCoffee = appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ');
+                const isEcommerce = appName.toLowerCase().includes('shop') || appName.toLowerCase().includes('store');
+                
+                // Create mobile screen preview
+                let previewHTML = 
+                    '<div style="display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px;">' +
+                        '<div style="' +
+                            'width: 280px;' +
+                            'height: 500px;' +
+                            'background: #1a1a1a;' +
+                            'border-radius: 25px;' +
+                            'padding: 15px;' +
+                            'position: relative;' +
+                            'box-shadow: 0 10px 30px rgba(0,0,0,0.3);' +
+                        '">' +
+                            '<!-- Status Bar -->' +
+                            '<div style="' +
+                                'height: 20px;' +
+                                'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
+                                'border-radius: 8px 8px 0 0;' +
+                                'display: flex;' +
+                                'align-items: center;' +
+                                'justify-content: space-between;' +
+                                'padding: 0 10px;' +
+                                'font-size: 10px;' +
+                                'color: white;' +
+                            '">' +
+                                '<span>9:41</span>' +
+                                '<span>📶 100%</span>' +
+                            '</div>' +
+                            
+                            '<!-- App Screen -->' +
+                            '<div style="' +
+                                'height: 450px;' +
+                                'background: white;' +
+                                'border-radius: 0 0 15px 15px;' +
+                                'overflow: hidden;' +
+                                'position: relative;' +
+                                'cursor: pointer;' +
+                            '" onclick="this.openGeneratedApp(\'' + result.app_url + '\'); event.stopPropagation();">' +
+                                this.generateMobilePreview(appName, isInstagram, isCoffee, isEcommerce) +
+                                
+                                '<!-- Click overlay -->' +
+                                '<div style="' +
+                                    'position: absolute;' +
+                                    'bottom: 10px;' +
+                                    'left: 50%;' +
+                                    'transform: translateX(-50%);' +
+                                    'background: rgba(74, 172, 254, 0.9);' +
+                                    'color: white;' +
+                                    'padding: 8px 15px;' +
+                                    'border-radius: 20px;' +
+                                    'font-size: 12px;' +
+                                    'animation: pulse 2s infinite;' +
+                                    'pointer-events: none;' +
+                                '">' +
+                                    '🖱️ Click to Interact!' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    
+                    '<style>' +
+                        '@keyframes pulse {' +
+                            '0% { transform: translateX(-50%) scale(1); }' +
+                            '50% { transform: translateX(-50%) scale(1.05); }' +
+                            '100% { transform: translateX(-50%) scale(1); }' +
+                        '}' +
+                    '</style>';
+                
+                this.previewContent.innerHTML = previewHTML;
+            }
+            
+            generateMobilePreview(appName, isInstagram, isCoffee, isEcommerce) {
+                if (isInstagram) {
+                    return '<div style="padding: 15px;">' +
+                        '<!-- Header -->' +
+                        '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">' +
+                            '<h3 style="margin: 0; font-size: 18px;">' + appName + '</h3>' +
+                            '<div style="font-size: 16px;">' +
+                                '<span onclick="cameraClick()" style="cursor: pointer; margin-right: 8px; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background=\'#f0f0f0\'" onmouseout="this.style.background=\'transparent\'">📷</span>' +
+                                '<span onclick="heartClick()" style="cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background=\'#f0f0f0\'" onmouseout="this.style.background=\'transparent\'">❤️</span>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<!-- Stories -->' +
+                        '<div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto;">' +
+                            '<div onclick="storyClick(\'Your Story\')" style="text-align: center; min-width: 50px; cursor: pointer; padding: 4px; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background=\'#f9f9f9\'" onmouseout="this.style.background=\'transparent\'">' +
+                                '<div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); margin: 0 auto 5px; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>' +
+                                '<small style="font-size: 10px;">Your Story</small>' +
+                            '</div>' +
+                            '<div onclick="storyClick(\'Friend Story\')" style="text-align: center; min-width: 50px; cursor: pointer; padding: 4px; border-radius: 8px; transition: background 0.2s;" onmouseover="this.style.background=\'#f9f9f9\'" onmouseout="this.style.background=\'transparent\'">' +
+                                '<div style="width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin: 0 auto 5px; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></div>' +
+                                '<small style="font-size: 10px;">Friend</small>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<!-- Post -->' +
+                        '<div style="border: 1px solid #eee; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">' +
+                            '<div onclick="profileClick(\'user123\')" style="padding: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background=\'#f9f9f9\'" onmouseout="this.style.background=\'white\'">' +
+                                '<div style="width: 25px; height: 25px; border-radius: 50%; background: #4facfe;"></div>' +
+                                '<div style="font-size: 12px;"><strong>user123</strong><br><small style="color: #666;">2h ago</small></div>' +
+                            '</div>' +
+                            '<div onclick="imageClick()" style="height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); cursor: pointer; position: relative; transition: transform 0.1s;" onmousedown="this.style.transform=\'scale(0.98)\'" onmouseup="this.style.transform=\'scale(1)\'" onmouseleave="this.style.transform=\'scale(1)\'">' +
+                                '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 24px; opacity: 0.7;">📸</div>' +
+                            '</div>' +
+                            '<div style="padding: 8px;">' +
+                                '<div style="margin-bottom: 5px; font-size: 14px;">' +
+                                    '<span onclick="likePost()" style="cursor: pointer; margin-right: 8px; padding: 2px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background=\'#ffebee\'; this.style.transform=\'scale(1.1)\'" onmouseout="this.style.background=\'transparent\'; this.style.transform=\'scale(1)\'">❤️</span>' +
+                                    '<span onclick="commentClick()" style="cursor: pointer; margin-right: 8px; padding: 2px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background=\'#f0f0f0\'; this.style.transform=\'scale(1.1)\'" onmouseout="this.style.background=\'transparent\'; this.style.transform=\'scale(1)\'">👍</span>' +
+                                    '<span onclick="shareClick()" style="cursor: pointer; padding: 2px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.background=\'#f0f0f0\'; this.style.transform=\'scale(1.1)\'" onmouseout="this.style.background=\'transparent\'; this.style.transform=\'scale(1)\'">💬</span>' +
+                                '</div>' +
+                                '<small onclick="likesClick()" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color=\'#4facfe\'" onmouseout="this.style.color=\'black\'"><strong id="likes-count">1,234 likes</strong></small><br>' +
+                                '<small onclick="captionClick()" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color=\'#4facfe\'" onmouseout="this.style.color=\'black\'"><strong>user123</strong> Beautiful sunset! #nature</small>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                } else if (isCoffee) {
+                    return '<div style="padding: 15px;">' +
+                        '<!-- Header -->' +
+                        '<div style="text-align: center; margin-bottom: 15px; padding: 15px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 8px; color: white;">' +
+                            '<h3 style="margin: 0; font-size: 16px;">☕ ' + appName + '</h3>' +
+                            '<small>Fresh Coffee Daily</small>' +
+                        '</div>' +
+                        
+                        '<!-- Categories -->' +
+                        '<div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto;">' +
+                            '<div style="min-width: 60px; text-align: center; padding: 8px; background: #4facfe; color: white; border-radius: 15px; font-size: 10px;">' +
+                                '<div style="font-size: 16px; margin-bottom: 3px;">☕</div>' +
+                                'Coffee' +
+                            '</div>' +
+                            '<div style="min-width: 60px; text-align: center; padding: 8px; background: #f0f0f0; border-radius: 15px; font-size: 10px;">' +
+                                '<div style="font-size: 16px; margin-bottom: 3px;">🥐</div>' +
+                                'Pastry' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<!-- Menu Items -->' +
+                        '<div>' +
+                            '<div onclick="viewMenuItem(\'Cappuccino\', 85)" style="display: flex; align-items: center; gap: 10px; padding: 10px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background=\'#f9f9f9\'; this.style.transform=\'scale(1.02)\'" onmouseout="this.style.background=\'white\'; this.style.transform=\'scale(1)\'">' +
+                                '<div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 8px;"></div>' +
+                                '<div style="flex: 1;">' +
+                                    '<h5 style="margin: 0 0 3px 0; font-size: 12px;">Cappuccino</h5>' +
+                                    '<small style="color: #666; font-size: 10px;">Rich espresso</small><br>' +
+                                    '<strong style="color: #4facfe; font-size: 11px;">฿85</strong>' +
+                                '</div>' +
+                                '<button onclick="addCoffeeToCart(event, \'Cappuccino\', 85)" style="background: #4facfe; color: white; border: none; padding: 4px 8px; border-radius: 10px; font-size: 10px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background=\'#2196f3\'; this.style.transform=\'scale(1.05)\'" onmouseout="this.style.background=\'#4facfe\'; this.style.transform=\'scale(1)\'">Add</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                } else if (isEcommerce) {
+                    return '<div style="padding: 15px;">' +
+                        '<!-- Header -->' +
+                        '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">' +
+                            '<h3 style="margin: 0; font-size: 16px;">🛍️ ' + appName + '</h3>' +
+                            '<div style="display: flex; gap: 10px; font-size: 16px;">' +
+                                '<span>🔍</span>' +
+                                '<span style="position: relative;">🛒<span style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; width: 12px; height: 12px; font-size: 8px; display: flex; align-items: center; justify-content: center;">2</span></span>' +
+                            '</div>' +
+                        '</div>' +
+                        
+                        '<!-- Categories -->' +
+                        '<div style="display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto;">' +
+                            '<div style="min-width: 50px; text-align: center; padding: 6px; background: #4facfe; color: white; border-radius: 12px; font-size: 10px;">👕 Shirts</div>' +
+                            '<div style="min-width: 50px; text-align: center; padding: 6px; background: #f0f0f0; border-radius: 12px; font-size: 10px;">👖 Pants</div>' +
+                        '</div>' +
+                        
+                        '<!-- Products -->' +
+                        '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
+                            '<div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">' +
+                                '<div style="height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>' +
+                                '<div style="padding: 8px;">' +
+                                    '<h5 style="margin: 0 0 3px 0; font-size: 11px;">Summer T-Shirt</h5>' +
+                                    '<small style="color: #666; font-size: 9px;">Cotton blend</small><br>' +
+                                    '<strong style="color: #4facfe; font-size: 10px;">$29.99</strong>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">' +
+                                '<div style="height: 80px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>' +
+                                '<div style="padding: 8px;">' +
+                                    '<h5 style="margin: 0 0 3px 0; font-size: 11px;">Casual Jeans</h5>' +
+                                    '<small style="color: #666; font-size: 9px;">Slim fit</small><br>' +
+                                    '<strong style="color: #4facfe; font-size: 10px;">$49.99</strong>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                } else {
+                    return '<div style="padding: 15px;">' +
+                        '<!-- Header -->' +
+                        '<div style="text-align: center; margin-bottom: 15px; padding: 15px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; color: white;">' +
+                            '<h3 style="margin: 0; font-size: 16px;">📱 ' + appName + '</h3>' +
+                            '<small>AI Generated App</small>' +
+                        '</div>' +
+                        
+                        '<!-- Navigation -->' +
+                        '<div style="display: flex; gap: 3px; margin-bottom: 15px; background: #f0f0f0; border-radius: 20px; padding: 3px;">' +
+                            '<div style="flex: 1; text-align: center; padding: 6px; background: white; border-radius: 15px; font-size: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">🏠 Home</div>' +
+                            '<div style="flex: 1; text-align: center; padding: 6px; font-size: 10px;">📊 Data</div>' +
+                            '<div style="flex: 1; text-align: center; padding: 6px; font-size: 10px;">⚙️ Settings</div>' +
+                        '</div>' +
+                        
+                        '<!-- Content -->' +
+                        '<div>' +
+                            '<div style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 10px;">' +
+                                '<h4 style="margin: 0 0 5px 0; font-size: 12px; color: #2c3e50;">Welcome to ' + appName + '</h4>' +
+                                '<p style="margin: 0; color: #666; font-size: 10px; line-height: 1.4;">This app was generated by AI and includes modern components.</p>' +
+                            '</div>' +
+                            '<div style="background: white; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">' +
+                                '<h4 style="margin: 0 0 8px 0; font-size: 12px; color: #2c3e50;">Features</h4>' +
+                                '<div style="display: flex; flex-wrap: wrap; gap: 5px;">' +
+                                    '<span style="background: #e3f2fd; color: #1976d2; padding: 3px 6px; border-radius: 10px; font-size: 9px;">📱 React Native</span>' +
+                                    '<span style="background: #f3e5f5; color: #7b1fa2; padding: 3px 6px; border-radius: 10px; font-size: 9px;">🎨 Custom UI</span>' +
+                                    '<span style="background: #e8f5e8; color: #2e7d32; padding: 3px 6px; border-radius: 10px; font-size: 9px;">🚀 Fast</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                }
+            }
+            
+            showInteractiveQuestions(result) {
+                const questionData = result.question_data || {};
+                const projectType = result.project_type || 'unknown';
+                
+                let questionsHTML = '<div class="ai-questions" style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #4facfe;">';
+                questionsHTML += '<h4 style="margin: 0 0 15px 0; color: #2c3e50;">🤔 ผมต้องการข้อมูลเพิ่มเติมเพื่อสร้าง' + (projectType === 'website' ? 'เว็บไซต์' : 'แอป') + 'ที่สมบูรณ์แบบ</h4>';
+                
+                if (projectType === 'website') {
+                    questionsHTML += this.generateWebsiteQuestions(questionData);
+                } else {
+                    questionsHTML += this.generateAppQuestions(questionData);
+                }
+                
+                questionsHTML += '</div>';
+                
+                this.addMessage('ai', questionsHTML);
+                this.previewStatus.innerHTML = '<span style="color: #FF9800;">🤔 รอข้อมูลเพิ่มเติม...</span>';
+            }
+            
+            generateWebsiteQuestions(data) {
+                return `
+                    <div class="question-section">
+                        <p><strong>🎨 เรื่องสีและแบรนด์:</strong></p>
+                        <div class="question-options" style="margin: 10px 0;">
+                            <button class="question-btn" data-answer="สีน้ำเงิน เป็นหลัก" onclick="selectAnswer(this)">🔵 สีน้ำเงิน (น่าเชื่อถือ)</button>
+                            <button class="question-btn" data-answer="สีเขียว ธรรมชาติ" onclick="selectAnswer(this)">🟢 สีเขียว (ธรรมชาติ)</button>
+                            <button class="question-btn" data-answer="สีแดง โดดเด่น" onclick="selectAnswer(this)">🔴 สีแดง (โดดเด่น)</button>
+                            <button class="question-btn" data-answer="สีทอง หรูหรา" onclick="selectAnswer(this)">🟡 สีทอง (หรูหรา)</button>
+                        </div>
+                        
+                        <p style="margin-top: 15px;"><strong>🏢 ชื่อแบรนด์:</strong></p>
+                        <input type="text" id="brand-name" placeholder="ระบุชื่อแบรนด์ของคุณ..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 10px 0;">
+                        
+                        <p style="margin-top: 15px;"><strong>📸 รูปภาพที่ต้องการ:</strong></p>
+                        <div class="question-options" style="margin: 10px 0;">
+                            <button class="question-btn" data-answer="ภาพบรรยากาศร้าน" onclick="selectAnswer(this)">🏪 บรรยากาศร้าน</button>
+                            <button class="question-btn" data-answer="ภาพผลิตภัณฑ์" onclick="selectAnswer(this)">📦 ผลิตภัณฑ์</button>
+                            <button class="question-btn" data-answer="ภาพทีมงาน" onclick="selectAnswer(this)">👥 ทีมงาน</button>
+                            <button class="question-btn" data-answer="ภาพลูกค้า" onclick="selectAnswer(this)">😊 ลูกค้า</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button onclick="submitWebsiteDetails()" style="background: #4facfe; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 16px; cursor: pointer;">
+                                🚀 สร้างเว็บไซต์เลย!
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            generateAppQuestions(data) {
+                return `
+                    <div class="question-section">
+                        <p><strong>📱 ประเภทแอปที่แน่ใจ:</strong></p>
+                        <div class="question-options" style="margin: 10px 0;">
+                            <button class="question-btn" data-answer="E-commerce App" onclick="selectAnswer(this)">🛒 แอปขายของ</button>
+                            <button class="question-btn" data-answer="Social Media App" onclick="selectAnswer(this)">📱 โซเชียลมีเดีย</button>
+                            <button class="question-btn" data-answer="Food Delivery App" onclick="selectAnswer(this)">🍔 สั่งอาหาร</button>
+                            <button class="question-btn" data-answer="Business App" onclick="selectAnswer(this)">💼 แอปธุรกิจ</button>
+                        </div>
+                        
+                        <p style="margin-top: 15px;"><strong>🎯 ฟีเจอร์หลักที่ต้องการ:</strong></p>
+                        <div class="feature-checklist" style="margin: 10px 0;">
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="user-auth"> 👤 ระบบสมาชิก/เข้าสู่ระบบ</label>
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="payment"> 💳 ระบบชำระเงิน</label>
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="chat"> 💬 แชทสด</label>
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="notification"> 🔔 แจ้งเตือน</label>
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="maps"> 🗺️ แผนที่/GPS</label>
+                            <label style="display: block; margin: 5px 0;"><input type="checkbox" value="admin"> ⚙️ ระบบจัดการแอดมิน</label>
+                        </div>
+                        
+                        <p style="margin-top: 15px;"><strong>🎨 รูปแบบการออกแบบ:</strong></p>
+                        <div class="question-options" style="margin: 10px 0;">
+                            <button class="question-btn" data-answer="Modern Minimalist" onclick="selectAnswer(this)">🎯 โมเดิร์นเรียบง่าย</button>
+                            <button class="question-btn" data-answer="Colorful Friendly" onclick="selectAnswer(this)">🌈 สีสันสดใส</button>
+                            <button class="question-btn" data-answer="Professional Dark" onclick="selectAnswer(this)">🖤 โปรเฟสชั่นนัลดาร์ค</button>
+                            <button class="question-btn" data-answer="Gradient Modern" onclick="selectAnswer(this)">🔥 เกรเดียนต์โมเดิร์น</button>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button onclick="submitAppDetails()" style="background: #4facfe; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 16px; cursor: pointer;">
+                                🚀 สร้างแอปพร้อม Database!
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Global functions for interactive features
+        window.selectAnswer = function(button) {
+            // Remove active class from siblings
+            const siblings = button.parentElement.querySelectorAll('.question-btn');
+            siblings.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            button.classList.add('active');
+            button.style.background = '#4facfe';
+            button.style.color = 'white';
+        };
+        
+        window.submitWebsiteDetails = function() {
+            const selectedAnswers = [];
+            const brandName = document.getElementById('brand-name')?.value || '';
+            
+            // Collect selected answers
+            document.querySelectorAll('.question-btn.active').forEach(btn => {
+                selectedAnswers.push(btn.dataset.answer);
+            });
+            
+            // Create detailed prompt for website generation
+            const detailedPrompt = `สร้างเว็บไซต์สมบูรณ์แบบด้วยข้อมูลนี้:
+                แบรนด์: ${brandName}
+                สไตล์สี: ${selectedAnswers.join(', ')}
+                ใช้ template สวย ๆ และหาภาพที่เหมาะสม
+                สร้างเนื้อหาที่น่าสนใจ`;
+            
+            // Trigger website generation
+            window.appGenerator.generateDetailedWebsite(detailedPrompt, {
+                brandName: brandName,
+                preferences: selectedAnswers
+            });
+        };
+        
+        window.submitAppDetails = function() {
+            const selectedFeatures = [];
+            const selectedAnswers = [];
+            
+            // Collect selected features
+            document.querySelectorAll('.feature-checklist input:checked').forEach(checkbox => {
+                selectedFeatures.push(checkbox.value);
+            });
+            
+            // Collect other answers
+            document.querySelectorAll('.question-btn.active').forEach(btn => {
+                selectedAnswers.push(btn.dataset.answer);
+            });
+            
+            // Create comprehensive app specification
+            const appSpec = {
+                type: selectedAnswers.find(a => a.includes('App')) || 'Business App',
+                features: selectedFeatures,
+                design: selectedAnswers.find(a => a.includes('Modern') || a.includes('Colorful') || a.includes('Professional') || a.includes('Gradient')) || 'Modern Minimalist',
+                screens: window.appGenerator.generateScreenFlow(selectedFeatures),
+                database: window.appGenerator.generateDatabaseSchema(selectedFeatures)
+            };
+            
+            // Trigger full app generation
+            window.appGenerator.generateFullStackApp(appSpec);
+        };
+
+        // Global functions for interactive features
+        window.openFullscreenDemo = function(appName) {
+            console.log('🚀 Opening fullscreen demo for:', appName);
+            
+            // Create fullscreen overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'fullscreen-demo';
+            overlay.style.cssText = 
+                'position: fixed;' +
+                'top: 0;' +
+                'left: 0;' +
+                'width: 100vw;' +
+                'height: 100vh;' +
+                'background: rgba(0,0,0,0.9);' +
+                'display: flex;' +
+                'justify-content: center;' +
+                'align-items: center;' +
+                'z-index: 99999;' +
+                'backdrop-filter: blur(10px);';
+            
+            overlay.innerHTML = 
+                '<div style="' +
+                    'width: 360px;' +
+                    'height: 640px;' +
+                    'background: #1a1a1a;' +
+                    'border-radius: 30px;' +
+                    'padding: 20px;' +
+                    'position: relative;' +
+                    'box-shadow: 0 25px 80px rgba(0,0,0,0.8);' +
+                '">' +
+                    '<!-- Close Button -->' +
+                    '<button onclick="document.getElementById(\'fullscreen-demo\').remove()" style="' +
+                        'position: absolute;' +
+                        'top: -50px;' +
+                        'right: 10px;' +
+                        'background: #ff4757;' +
+                        'color: white;' +
+                        'border: none;' +
+                        'border-radius: 50%;' +
+                        'width: 40px;' +
+                        'height: 40px;' +
+                        'font-size: 20px;' +
+                        'cursor: pointer;' +
+                        'font-weight: bold;' +
+                    '">×</button>' +
+                    
+                    '<!-- Status Bar -->' +
+                    '<div style="' +
+                        'height: 25px;' +
+                        'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
+                        'border-radius: 15px 15px 0 0;' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'justify-content: space-between;' +
+                        'padding: 0 15px;' +
+                        'font-size: 12px;' +
+                        'color: white;' +
+                        'font-weight: bold;' +
+                    '">' +
+                        '<span>9:41</span>' +
+                        '<span>100% 📶</span>' +
+                    '</div>' +
+                    
+                    '<!-- Interactive Content -->' +
+                    '<div id="interactive-content" style="' +
+                        'height: 575px;' +
+                        'background: white;' +
+                        'border-radius: 0 0 20px 20px;' +
+                        'overflow: hidden;' +
+                        'overflow-y: auto;' +
+                    '">' +
+                        window.getInteractiveContent(appName) +
+                    '</div>' +
+                '</div>';
+            
+            document.body.appendChild(overlay);
+            
+            // Add escape key listener
+            const escapeHandler = function(e) {
+                if (e.key === 'Escape') {
+                    overlay.remove();
+                    document.removeEventListener('keydown', escapeHandler);
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+        };
+        
+        window.addToCart = function(itemName, price) {
+            alert('✅ Added ' + itemName + ' (฿' + price + ') to cart!');
+        };
+        
+        window.selectCategory = function(category) {
+            alert('📂 ' + category.charAt(0).toUpperCase() + category.slice(1) + ' category selected!');
+        };
+        
+        window.selectTab = function(tab) {
+            alert('📄 ' + tab.charAt(0).toUpperCase() + tab.slice(1) + ' tab selected!');
+        };
+        
+        window.likePost = function() {
+            const newLikes = Math.floor(Math.random() * 1000) + 1234;
+            const likesElement = document.getElementById('likes-count');
+            if (likesElement) {
+                likesElement.innerHTML = newLikes.toLocaleString() + ' likes';
+            }
+            
+            // Show floating heart animation
+            showFloatingHeart();
+            
+            // Play sound (if possible)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LNeSMFl');
+                audio.volume = 0.3;
+                audio.play();
+            } catch(e) {}
+            
+            alert('❤️ Post liked! Total likes: ' + newLikes.toLocaleString());
+        };
+        
+        window.showFloatingHeart = function() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.style.cssText = 'position: fixed; font-size: 30px; z-index: 9999; pointer-events: none; animation: floatHeart 2s ease-out forwards;';
+            heart.style.left = (Math.random() * window.innerWidth) + 'px';
+            heart.style.top = (window.innerHeight - 100) + 'px';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 2000);
+        };
+        
+        window.cameraClick = function() {
+            alert('📷 Camera opened!\n\nIn a real app, this would:\n- Open camera interface\n- Allow photo/video capture\n- Add filters and effects');
+        };
+        
+        window.heartClick = function() {
+            alert('❤️ Activity opened!\n\nShowing:\n- Recent likes on your posts\n- New followers\n- Comments and mentions');
+        };
+        
+        window.storyClick = function(storyName) {
+            alert('📖 Viewing ' + storyName + '!\n\nIn a real app:\n- Full-screen story viewer\n- Tap to advance\n- Swipe between stories\n- React with emojis');
+        };
+        
+        window.profileClick = function(username) {
+            alert('👤 Viewing ' + username + '\'s profile!\n\nProfile features:\n- Posts grid view\n- Followers/Following\n- Bio and highlights\n- Follow/Unfollow button');
+        };
+        
+        window.imageClick = function() {
+            alert('🖼️ Image opened!\n\nFull-screen image viewer:\n- Zoom in/out\n- Double-tap to like\n- Swipe between photos\n- View comments');
+        };
+        
+        window.commentClick = function() {
+            alert('💬 Comments opened!\n\nComment features:\n- View all comments\n- Add new comment\n- Like comments\n- Reply to comments');
+        };
+        
+        window.shareClick = function() {
+            alert('🔗 Share options!\n\nShare to:\n- Instagram Stories\n- Direct Messages\n- Other social media\n- Copy link');
+        };
+        
+        window.likesClick = function() {
+            alert('👥 Likes list opened!\n\nShowing:\n- People who liked this post\n- Mutual friends\n- Follow suggestions');
+        };
+        
+        window.captionClick = function() {
+            alert('📝 Post details!\n\nPost information:\n- Full caption\n- Hashtags\n- Location tag\n- Post date');
+        };
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            console.error('❌ Global Error:', e);
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM Content Loaded');
+            try {
+                window.appGenerator = new AIAppGenerator();
+                console.log('✅ AIAppGenerator created successfully');
+            } catch (error) {
+                console.error('❌ Failed to create AIAppGenerator:', error);
+                alert('ไม่สามารถเริ่มต้นระบบได้: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

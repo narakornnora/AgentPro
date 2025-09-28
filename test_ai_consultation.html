@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Consultation Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .test-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🤖 AI Consultation System Test</h1>
+        
+        <p style="text-align: center; color: #666; margin-bottom: 30px;">
+            ทดสอบระบบ AI Consultant ที่จะถามคำถามเพิ่มเติมแทนการสร้างทันที
+        </p>
+        
+        <a href="ai_chat_interface_fixed.html" class="test-button">
+            🧪 เริ่มทดสอบ AI Chat Interface
+        </a>
+        
+        <button class="test-button" onclick="testConsultation()">
+            📝 ทดสอบ Consultation Flow
+        </button>
+        
+        <button class="test-button" onclick="checkBackend()">
+            🔍 ตรวจสอบ Backend Status
+        </button>
+        
+        <div id="results" class="result" style="display: none;">
+            <h3>ผลการทดสอบ:</h3>
+            <div id="result-content"></div>
+        </div>
+    </div>
+    
+    <script>
+        async function testConsultation() {
+            showResult("🧠 ทดสอบ Consultation Flow...");
+            
+            try {
+                // Test cases for different user inputs
+                const testCases = [
+                    {
+                        input: "อยากได้ร้านกาแฟ",
+                        expected: "Should ask for project type, features, target audience"
+                    },
+                    {
+                        input: "สร้างเว็บแอปร้านกาแฟให้หน่อย มี login, payment, order system สำหรับลูกค้าและเจ้าของร้าน",
+                        expected: "Should have enough info to build"
+                    },
+                    {
+                        input: "mobile app",
+                        expected: "Should ask for business domain and features"
+                    }
+                ];
+                
+                let results = "<h4>Test Cases:</h4>";
+                
+                testCases.forEach((test, index) => {
+                    results += `
+                        <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <strong>Test ${index + 1}:</strong><br>
+                            <em>Input:</em> "${test.input}"<br>
+                            <em>Expected:</em> ${test.expected}<br>
+                            <span style="color: green;">✅ Ready for testing</span>
+                        </div>
+                    `;
+                });
+                
+                results += `
+                    <div style="margin-top: 20px; padding: 15px; background: #e8f5e8; border-radius: 8px;">
+                        <strong>🎯 How to Test:</strong><br>
+                        1. เปิด AI Chat Interface<br>
+                        2. ลองพิมพ์ข้อความทดสอบข้างต้น<br>
+                        3. ดูว่า AI จะถามคำถามเพิ่มเติมหรือไม่<br>
+                        4. ตอบคำถามและดูว่าจะสร้างแอปเมื่อข้อมูลครบ
+                    </div>
+                `;
+                
+                showResult(results);
+            } catch (error) {
+                showResult("❌ Error: " + error.message);
+            }
+        }
+        
+        async function checkBackend() {
+            showResult("🔍 กำลังตรวจสอบ Backend...");
+            
+            try {
+                const response = await fetch('http://localhost:8001/health', {
+                    method: 'GET'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`
+                        ✅ Backend ทำงานปกติ<br>
+                        Status: ${data.status}<br>
+                        Time: ${data.timestamp}
+                    `);
+                } else {
+                    showResult(`❌ Backend Error: HTTP ${response.status}`);
+                }
+            } catch (error) {
+                showResult(`❌ Backend Connection Failed: ${error.message}<br>
+                    <small>ให้รันคำสั่ง: python ai_chat_backend.py</small>`);
+            }
+        }
+        
+        function showResult(content) {
+            const resultsDiv = document.getElementById('results');
+            const resultContent = document.getElementById('result-content');
+            
+            resultContent.innerHTML = content;
+            resultsDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Gate Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-card.success .metric-value { color: #27ae60; }
+        .metric-card.warning .metric-value { color: #f39c12; }
+        .metric-card.info .metric-value { color: #3498db; }
+        .metric-card.primary .metric-value { color: #667eea; }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .panel-content {
+            padding: 1.5rem;
+        }
+        
+        .generate-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .reports-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .report-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-info {
+            flex: 1;
+        }
+        
+        .report-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .report-meta {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .report-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            color: white;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .score-excellent { background: #27ae60; }
+        .score-good { background: #f39c12; }
+        .score-poor { background: #e74c3c; }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        .status-success { background: #27ae60; }
+        .status-processing { background: #f39c12; animation: pulse 2s infinite; }
+        .status-failed { background: #e74c3c; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .settings-panel {
+            grid-column: span 2;
+            margin-top: 2rem;
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .setting-item input {
+            padding: 0.8rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+        }
+        
+        .save-settings-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Quality Gate Dashboard</h1>
+            <p>AI-powered UI/UX quality control system ensuring excellent app standards</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card success">
+                <div class="metric-value" id="pass-rate">--</div>
+                <div class="metric-label">Pass Rate</div>
+            </div>
+            <div class="metric-card info">
+                <div class="metric-value" id="avg-score">--</div>
+                <div class="metric-label">Avg Quality Score</div>
+            </div>
+            <div class="metric-card primary">
+                <div class="metric-value" id="total-apps">--</div>
+                <div class="metric-label">Total Apps</div>
+            </div>
+            <div class="metric-card warning">
+                <div class="metric-value" id="queue-size">--</div>
+                <div class="metric-label">Queue Size</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    🚀 Generate New App
+                </div>
+                <div class="panel-content">
+                    <div id="generation-alert" style="display: none;"></div>
+                    <form class="generate-form" id="generate-form">
+                        <div class="form-group">
+                            <label for="app-type">App Type</label>
+                            <select id="app-type" name="app_type">
+                                <option value="website">Website</option>
+                                <option value="web_app">Web App</option>
+                                <option value="mobile_app">Mobile App</option>
+                                <option value="desktop_app">Desktop App</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="app-name">App Name</label>
+                            <input type="text" id="app-name" name="app_name" placeholder="e.g., my-awesome-app">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="requirements">Requirements</label>
+                            <textarea id="requirements" name="requirements" rows="4" 
+                                placeholder="Describe what you want to build..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="generate-btn" id="generate-btn">
+                            Generate App with Quality Control
+                        </button>
+                    </form>
+                    
+                    <div id="progress-section" style="display: none; margin-top: 1rem;">
+                        <div class="report-item">
+                            <div class="report-info">
+                                <div class="report-name" id="progress-app-name">Generating...</div>
+                                <div class="report-meta" id="progress-status">Initializing...</div>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">
+                    📊 Recent Quality Reports
+                </div>
+                <div class="panel-content">
+                    <div class="reports-list" id="reports-list">
+                        <div style="text-align: center; color: #666; padding: 2rem;">
+                            No reports yet. Generate your first app!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel settings-panel">
+            <div class="panel-header">
+                ⚙️ Quality Standards Configuration
+            </div>
+            <div class="panel-content">
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>Minimum Quality Score</label>
+                        <input type="number" id="min-score" min="0" max="100" value="85">
+                    </div>
+                    <div class="setting-item">
+                        <label>Max Critical Issues</label>
+                        <input type="number" id="max-critical" min="0" value="0">
+                    </div>
+                    <div class="setting-item">
+                        <label>Max Major Issues</label>
+                        <input type="number" id="max-major" min="0" value="1">
+                    </div>
+                    <div class="setting-item">
+                        <label>Auto-fix Attempts</label>
+                        <input type="number" id="auto-fix" min="1" max="10" value="5">
+                    </div>
+                </div>
+                <button class="save-settings-btn" onclick="saveSettings()">
+                    Save Quality Standards
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentJobId = null;
+        let progressInterval = null;
+        
+        // Load system status
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/system-status');
+                const data = await response.json();
+                
+                document.getElementById('pass-rate').textContent = data.pass_rate;
+                document.getElementById('avg-score').textContent = data.average_score;
+                document.getElementById('total-apps').textContent = data.total_apps;
+                document.getElementById('queue-size').textContent = data.queue_size;
+            } catch (error) {
+                console.error('Failed to load system status:', error);
+            }
+        }
+        
+        // Load quality reports
+        async function loadReports() {
+            try {
+                const response = await fetch('/api/quality-reports');
+                const data = await response.json();
+                
+                const reportsList = document.getElementById('reports-list');
+                
+                if (data.reports.length === 0) {
+                    reportsList.innerHTML = `
+                        <div style="text-align: center; color: #666; padding: 2rem;">
+                            No reports yet. Generate your first app!
+                        </div>
+                    `;
+                    return;
+                }
+                
+                reportsList.innerHTML = data.reports.map(report => {
+                    const scoreClass = report.quality_score >= 90 ? 'score-excellent' :
+                                     report.quality_score >= 70 ? 'score-good' : 'score-poor';
+                    
+                    const statusClass = report.passed ? 'status-success' : 'status-failed';
+                    
+                    return `
+                        <div class="report-item">
+                            <div class="report-info">
+                                <div class="report-name">
+                                    <span class="status-indicator ${statusClass}"></span>
+                                    ${report.app_name}
+                                </div>
+                                <div class="report-meta">
+                                    ${report.app_type} • ${new Date(report.timestamp).toLocaleString()}
+                                    • ${report.processing_time.toFixed(1)}s
+                                </div>
+                            </div>
+                            <div class="report-score ${scoreClass}">
+                                ${report.quality_score.toFixed(0)}%
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Failed to load reports:', error);
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('generate-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            if (!data.app_name) {
+                data.app_name = `app_${Date.now()}`;
+            }
+            
+            try {
+                document.getElementById('generate-btn').disabled = true;
+                document.getElementById('generate-btn').textContent = 'Starting...';
+                
+                const response = await fetch('/api/generate-app', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentJobId = result.job_id;
+                    showProgress(data.app_name);
+                    startProgressTracking();
+                    
+                    showAlert('App generation started! Monitoring progress...', 'success');
+                } else {
+                    showAlert('Failed to start app generation', 'error');
+                }
+            } catch (error) {
+                console.error('Generation failed:', error);
+                showAlert('Error starting app generation', 'error');
+            }
+        });
+        
+        function showProgress(appName) {
+            document.getElementById('progress-section').style.display = 'block';
+            document.getElementById('progress-app-name').textContent = appName;
+            document.getElementById('progress-status').textContent = 'Queued...';
+            document.getElementById('progress-fill').style.width = '0%';
+        }
+        
+        function startProgressTracking() {
+            if (progressInterval) clearInterval(progressInterval);
+            
+            progressInterval = setInterval(async () => {
+                if (!currentJobId) return;
+                
+                try {
+                    const response = await fetch(`/api/job-status/${currentJobId}`);
+                    const job = await response.json();
+                    
+                    document.getElementById('progress-status').textContent = 
+                        job.current_step || job.status;
+                    document.getElementById('progress-fill').style.width = 
+                        `${job.progress || 0}%`;
+                    
+                    if (job.status === 'completed') {
+                        clearInterval(progressInterval);
+                        document.getElementById('progress-section').style.display = 'none';
+                        document.getElementById('generate-btn').disabled = false;
+                        document.getElementById('generate-btn').textContent = 
+                            'Generate App with Quality Control';
+                        
+                        if (job.result && job.result.quality_gate_passed) {
+                            showAlert(`✅ App generated successfully! Quality score: ${job.result.quality_score.toFixed(1)}/100`, 'success');
+                        } else {
+                            showAlert(`❌ App needs improvement. Score: ${job.result ? job.result.quality_score.toFixed(1) : 'N/A'}/100`, 'error');
+                        }
+                        
+                        loadReports();
+                        loadSystemStatus();
+                        currentJobId = null;
+                    } else if (job.status === 'failed') {
+                        clearInterval(progressInterval);
+                        document.getElementById('progress-section').style.display = 'none';
+                        document.getElementById('generate-btn').disabled = false;
+                        document.getElementById('generate-btn').textContent = 
+                            'Generate App with Quality Control';
+                        
+                        showAlert('App generation failed: ' + (job.error || 'Unknown error'), 'error');
+                        currentJobId = null;
+                    }
+                } catch (error) {
+                    console.error('Progress tracking error:', error);
+                }
+            }, 1000);
+        }
+        
+        function showAlert(message, type) {
+            const alert = document.getElementById('generation-alert');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Load quality standards
+        async function loadQualityStandards() {
+            try {
+                const response = await fetch('/api/quality-standards');
+                const data = await response.json();
+                
+                document.getElementById('min-score').value = data.minimum_score;
+                document.getElementById('max-critical').value = data.max_critical_issues;
+                document.getElementById('max-major').value = data.max_major_issues;
+                document.getElementById('auto-fix').value = data.auto_fix_attempts;
+            } catch (error) {
+                console.error('Failed to load quality standards:', error);
+            }
+        }
+        
+        // Save quality standards
+        async function saveSettings() {
+            const settings = {
+                minimum_score: parseFloat(document.getElementById('min-score').value),
+                max_critical_issues: parseInt(document.getElementById('max-critical').value),
+                max_major_issues: parseInt(document.getElementById('max-major').value),
+                auto_fix_attempts: parseInt(document.getElementById('auto-fix').value)
+            };
+            
+            try {
+                const response = await fetch('/api/quality-standards', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(settings)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Quality standards updated successfully!', 'success');
+                } else {
+                    showAlert('Failed to update quality standards', 'error');
+                }
+            } catch (error) {
+                console.error('Failed to save settings:', error);
+                showAlert('Error saving quality standards', 'error');
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSystemStatus();
+            loadReports();
+            loadQualityStandards();
+            
+            // Refresh data every 10 seconds
+            setInterval(() => {
+                loadSystemStatus();
+                if (!currentJobId) {
+                    loadReports();
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+</html>

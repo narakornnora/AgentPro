@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Lovable Clone - AI App Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            background: white;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #e9ecef;
+        }
+
+        .right-panel {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .preview-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.ai .message-content {
+            background: white;
+            border: 2px solid #e9ecef;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        #messageInput:focus {
+            border-color: #667eea;
+        }
+
+        #sendBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 15px 20px;
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+            margin: 15px 20px;
+            border-radius: 0 10px 10px 0;
+            font-weight: bold;
+        }
+
+        .building-status {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-left-color: #ff9800;
+        }
+
+        .success-status {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-left-color: #4caf50;
+        }
+
+        .apps-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .app-card {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-card h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .typing {
+            display: none;
+            padding: 15px;
+            font-style: italic;
+            color: #666;
+        }
+
+        .typing.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .examples {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .example-btn {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 10px 15px;
+            margin: 5px;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                margin: 10px;
+                border-radius: 10px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .input-container {
+                flex-direction: column;
+            }
+
+            #sendBtn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Lovable Clone</h1>
+            <p>สร้างแอปจริงจาก Chat เหมือน Lovable.dev</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message ai">
+                    <div class="message-content">
+                        <strong>👋 สวัสดีครับ!</strong><br>
+                        ผมช่วยสร้างแอปจริงๆ ให้คุณได้เหมือน Lovable.dev<br>
+                        <br>
+                        <strong>🎯 บอกมาเลยว่าต้องการแอปแบบไหน:</strong><br>
+                        • เว็บไซต์ธุรกิจ<br>
+                        • แอปจัดการข้อมูล<br>
+                        • ระบบจัดการสมาชิก<br>
+                        • หรืออะไรก็ได้ที่คิดออก!<br>
+                        <br>
+                        <em>💡 ผมจะถามคำถามสั้นๆ และสร้างแอปจริงให้เลย</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing" id="typing">
+                🤖 AI กำลังคิด...
+            </div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="อยากได้แอปแบบไหน? เล่ามาเลย..."
+                    autocomplete="off"
+                >
+                <button id="sendBtn">ส่ง 🚀</button>
+            </div>
+        </div>
+
+        <div class="examples">
+            <h3>💡 ตัวอย่าง:</h3>
+            <span class="example-btn" onclick="sendExample('สร้างเว็บไซต์ร้านกาแฟสวยๆ')">🍵 ร้านกาแฟ</span>
+            <span class="example-btn" onclick="sendExample('แอปจัดการสินค้าคลังสินค้า')">📦 คลังสินค้า</span>
+            <span class="example-btn" onclick="sendExample('ระบบลงทะเบียนสมาชิก')">👥 สมาชิก</span>
+            <span class="example-btn" onclick="sendExample('เว็บไซต์ขายของออนไลน์')">🛒 ขายของออนไลน์</span>
+        </div>
+    </div>
+
+    <script>
+        class LovableClone {
+            constructor() {
+                this.sessionId = null;
+                this.websocket = null;
+                this.isBuilding = false;
+                
+                this.messagesContainer = document.getElementById('messages');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.typing = document.getElementById('typing');
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.sendBtn.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendMessage();
+                });
+            }
+            
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message || this.isBuilding) return;
+                
+                // แสดงข้อความผู้ใช้
+                this.addMessage(message, 'user');
+                this.messageInput.value = '';
+                this.showTyping();
+                
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            session_id: this.sessionId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    this.sessionId = result.session_id;
+                    
+                    this.hideTyping();
+                    
+                    if (result.type === 'question') {
+                        // AI ถามคำถาม
+                        this.addMessage(result.message, 'ai');
+                        
+                    } else if (result.type === 'start_building') {
+                        // เริ่มสร้างแอป
+                        this.addMessage(result.message, 'ai');
+                        this.startBuilding(result.requirements);
+                        
+                    } else if (result.type === 'error') {
+                        this.addMessage(`❌ ${result.message}`, 'ai');
+                    }
+                    
+                } catch (error) {
+                    this.hideTyping();
+                    this.addMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'ai');
+                }
+            }
+            
+            async startBuilding(requirements) {
+                this.isBuilding = true;
+                this.sendBtn.disabled = true;
+                this.sendBtn.textContent = 'กำลังสร้าง...';
+                
+                // เชื่อมต่อ WebSocket
+                this.setupWebSocket(requirements);
+                
+                // แสดงสถานะ
+                this.addStatus('🚀 เริ่มสร้างแอปแล้ว...', 'building-status');
+            }
+            
+            setupWebSocket(requirements) {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/ws/${this.sessionId}`;
+                
+                this.websocket = new WebSocket(wsUrl);
+                
+                this.websocket.onopen = () => {
+                    console.log('WebSocket connected');
+                    // ส่งคำสั่งสร้างแอป
+                    this.websocket.send(JSON.stringify({
+                        action: 'build_app',
+                        requirements: requirements
+                    }));
+                };
+                
+                this.websocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'status_update') {
+                        this.updateStatus(data.status);
+                        
+                    } else if (data.type === 'app_completed') {
+                        this.onAppCompleted(data.result);
+                    }
+                };
+                
+                this.websocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    this.addMessage('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ', 'ai');
+                    this.resetBuilding();
+                };
+                
+                this.websocket.onclose = () => {
+                    console.log('WebSocket closed');
+                };
+            }
+            
+            updateStatus(statusText) {
+                // อัปเดตสถานะล่าสุด
+                const statusElements = document.querySelectorAll('.status');
+                const lastStatus = statusElements[statusElements.length - 1];
+                
+                if (lastStatus && lastStatus.classList.contains('building-status')) {
+                    lastStatus.textContent = statusText;
+                } else {
+                    this.addStatus(statusText, 'building-status');
+                }
+            }
+            
+            onAppCompleted(result) {
+                this.addStatus('✅ แอปสร้างเสร็จแล้ว!', 'success-status');
+                
+                const completionMessage = `
+🎉 <strong>สร้างแอปเสร็จแล้ว!</strong><br><br>
+📱 <strong>แอป:</strong> ${result.plan?.app_name || 'แอปใหม่'}<br>
+📁 <strong>ที่อยู่:</strong> ${result.app_path}<br>
+📄 <strong>ไฟล์ที่สร้าง:</strong> ${result.files_created?.length || 0} ไฟล์<br><br>
+
+<strong>🚀 วิธีรันแอป:</strong><br>
+1. เปิด Command Prompt<br>
+2. ไปที่โฟลเดอร์: <code>cd "${result.app_path}"</code><br>
+3. รันคำสั่ง: <code>pip install -r requirements.txt</code><br>
+4. รันคำสั่ง: <code>start.bat</code><br>
+5. เปิดเบราเซอร์: <a href="http://localhost:5000" target="_blank">http://localhost:5000</a><br><br>
+
+<em>💡 หรือดับเบิลคลิกที่ไฟล์ start.bat ในโฟลเดอร์</em>
+                `;
+                
+                this.addMessage(completionMessage, 'ai');
+                this.resetBuilding();
+                
+                // ปิด WebSocket
+                if (this.websocket) {
+                    this.websocket.close();
+                    this.websocket = null;
+                }
+            }
+            
+            resetBuilding() {
+                this.isBuilding = false;
+                this.sendBtn.disabled = false;
+                this.sendBtn.textContent = 'ส่ง 🚀';
+            }
+            
+            addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+                
+                this.messagesContainer.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+            
+            addStatus(status, className = 'status') {
+                const statusDiv = document.createElement('div');
+                statusDiv.className = className;
+                statusDiv.textContent = status;
+                
+                this.messagesContainer.appendChild(statusDiv);
+                this.scrollToBottom();
+            }
+            
+            showTyping() {
+                this.typing.classList.add('show');
+                this.scrollToBottom();
+            }
+            
+            hideTyping() {
+                this.typing.classList.remove('show');
+            }
+            
+            scrollToBottom() {
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+        }
+        
+        // ตัวอย่าง
+        function sendExample(message) {
+            document.getElementById('messageInput').value = message;
+            app.sendMessage();
+        }
+        
+        // เริ่มแอป
+        const app = new LovableClone();
+        
+        // เพิ่ม Enter key support
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Real Full-Stack App Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .typing-animation {
+            border-right: 2px solid #4f46e5;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { border-color: #4f46e5; }
+            51%, 100% { border-color: transparent; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const RealFullStackGenerator = () => {
+            const [message, setMessage] = useState('');
+            const [messages, setMessages] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [generatedApps, setGeneratedApps] = useState([]);
+            const messagesEndRef = useRef(null);
+
+            const API_BASE = 'http://localhost:8001';
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+
+            useEffect(scrollToBottom, [messages]);
+
+            // Load generated apps
+            const loadApps = async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/apps`);
+                    const data = await response.json();
+                    setGeneratedApps(data.apps || []);
+                } catch (error) {
+                    console.error('Error loading apps:', error);
+                }
+            };
+
+            useEffect(() => {
+                loadApps();
+            }, []);
+
+            const sendMessage = async () => {
+                if (!message.trim() || loading) return;
+
+                const userMessage = message.trim();
+                setMessage('');
+                
+                // Add user message
+                setMessages(prev => [...prev, {
+                    type: 'user',
+                    content: userMessage,
+                    timestamp: new Date().toLocaleTimeString('th-TH')
+                }]);
+
+                setLoading(true);
+
+                try {
+                    const response = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: userMessage,
+                            app_type: 'fullstack',
+                            framework: 'auto'
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    // Add AI response
+                    setMessages(prev => [...prev, {
+                        type: 'ai',
+                        content: result.message,
+                        success: result.success,
+                        appName: result.app_name,
+                        appPath: result.app_path,
+                        appUrl: result.app_url,
+                        filesCreated: result.files_created,
+                        codePreview: result.code_preview,
+                        description: result.description,
+                        error: result.error,
+                        timestamp: new Date().toLocaleTimeString('th-TH')
+                    }]);
+
+                    // Reload apps list if successful
+                    if (result.success) {
+                        setTimeout(loadApps, 1000);
+                    }
+
+                } catch (error) {
+                    setMessages(prev => [...prev, {
+                        type: 'ai',
+                        content: `❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}`,
+                        success: false,
+                        error: error.message,
+                        timestamp: new Date().toLocaleTimeString('th-TH')
+                    }]);
+                }
+
+                setLoading(false);
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            };
+
+            const examplePrompts = [
+                "สร้างร้านค้าออนไลน์ มีสินค้า ตะกร้า สั่งซื้อ และจัดการสต็อก",
+                "สร้างเว็บไซต์ร้านกาแฟ มีเมนู สั่งออนไลน์ และระบบจัดการ",
+                "สร้างระบบจัดการโรงเรียน มีนักเรียน ครู คะแนน และตารางเรียน",
+                "สร้างแอป Todo List มีหมวดหมู่ แจ้งเตือน และ sync ข้อมูล"
+            ];
+
+            return (
+                <div className="min-h-screen p-4">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            {/* Main Chat */}
+                            <div className="lg:col-span-2">
+                                <div className="glass rounded-2xl p-6 h-[80vh] flex flex-col">
+                                    
+                                    {/* Header */}
+                                    <div className="text-center mb-6">
+                                        <h1 className="text-3xl font-bold text-white mb-2">
+                                            🚀 Real Full-Stack App Generator
+                                        </h1>
+                                        <p className="text-white/80">
+                                            สร้างแอปจริงที่ใช้งานได้ - Database + Backend + Frontend
+                                        </p>
+                                    </div>
+
+                                    {/* Messages */}
+                                    <div className="flex-1 overflow-y-auto space-y-4 mb-6">
+                                        {messages.length === 0 && (
+                                            <div className="text-center text-white/60 py-12">
+                                                <div className="text-6xl mb-4">🤖</div>
+                                                <h3 className="text-xl font-semibold mb-2">พร้อมสร้างแอปให้คุณ!</h3>
+                                                <p>บอกฉันว่าคุณต้องการแอปอะไร แล้วฉันจะสร้างให้เป็นจริง</p>
+                                                
+                                                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {examplePrompts.map((prompt, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => setMessage(prompt)}
+                                                            className="bg-white/10 hover:bg-white/20 text-white text-sm p-3 rounded-lg border border-white/20 transition-all duration-200 text-left"
+                                                        >
+                                                            {prompt}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {messages.map((msg, index) => (
+                                            <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[80%] rounded-2xl p-4 ${
+                                                    msg.type === 'user'
+                                                        ? 'bg-blue-500 text-white'
+                                                        : msg.success
+                                                        ? 'bg-green-50 text-green-800 border border-green-200'
+                                                        : 'bg-red-50 text-red-800 border border-red-200'
+                                                }`}>
+                                                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                                                    
+                                                    {/* App Success Info */}
+                                                    {msg.success && msg.appName && (
+                                                        <div className="mt-4 p-3 bg-white/50 rounded-lg border">
+                                                            <div className="font-semibold text-green-700 mb-2">
+                                                                ✅ แอป: {msg.appName}
+                                                            </div>
+                                                            <div className="text-sm text-green-600 mb-2">
+                                                                📁 ไฟล์ที่สร้าง: {msg.filesCreated} ไฟล์
+                                                            </div>
+                                                            {msg.description && (
+                                                                <div className="text-sm text-green-600 mb-2">
+                                                                    📝 {msg.description}
+                                                                </div>
+                                                            )}
+                                                            {msg.codePreview && (
+                                                                <details className="mt-2">
+                                                                    <summary className="text-sm cursor-pointer text-green-700 hover:underline">
+                                                                        👀 ดูโค้ดตัวอย่าง
+                                                                    </summary>
+                                                                    <pre className="text-xs bg-gray-100 p-2 rounded mt-2 overflow-x-auto">
+                                                                        <code>{msg.codePreview}</code>
+                                                                    </pre>
+                                                                </details>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="text-xs opacity-60 mt-2">
+                                                        {msg.timestamp}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {loading && (
+                                            <div className="flex justify-start">
+                                                <div className="bg-white/90 rounded-2xl p-4 max-w-[80%]">
+                                                    <div className="flex items-center space-x-2 text-gray-600">
+                                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+                                                        <span className="typing-animation">กำลังสร้างแอป...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div ref={messagesEndRef} />
+                                    </div>
+
+                                    {/* Input */}
+                                    <div className="flex space-x-3">
+                                        <input
+                                            type="text"
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            onKeyPress={handleKeyPress}
+                                            placeholder="บอกฉันว่าคุณต้องการแอปอะไร... (เช่น ร้านค้าออนไลน์ มีสินค้า ตะกร้า สั่งซื้อ)"
+                                            className="flex-1 bg-white/90 border-0 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            disabled={loading}
+                                        />
+                                        <button
+                                            onClick={sendMessage}
+                                            disabled={!message.trim() || loading}
+                                            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-xl transition-colors duration-200 font-medium"
+                                        >
+                                            {loading ? '⏳' : '🚀'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Sidebar - Generated Apps */}
+                            <div className="lg:col-span-1">
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">📱</span>
+                                        แอปที่สร้างแล้ว
+                                    </h2>
+                                    
+                                    {generatedApps.length === 0 ? (
+                                        <div className="text-white/60 text-center py-8">
+                                            <div className="text-4xl mb-2">📦</div>
+                                            <p>ยังไม่มีแอปที่สร้าง</p>
+                                            <p className="text-sm mt-1">สร้างแอปแรกของคุณกันเถอะ!</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                                            {generatedApps.map((app, index) => (
+                                                <div key={index} className="bg-white/10 rounded-lg p-4 border border-white/20">
+                                                    <div className="font-semibold text-white text-sm mb-2 truncate">
+                                                        {app.name}
+                                                    </div>
+                                                    <div className="text-white/60 text-xs mb-3">
+                                                        {new Date(app.created).toLocaleString('th-TH')}
+                                                    </div>
+                                                    <div className="flex space-x-2">
+                                                        <button
+                                                            onClick={() => window.open(`file:///${app.path}`, '_blank')}
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded transition-colors"
+                                                        >
+                                                            📁 เปิดโฟลเดอร์
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    
+                                    <button
+                                        onClick={loadApps}
+                                        className="w-full mt-4 bg-white/10 hover:bg-white/20 text-white text-sm py-2 px-4 rounded-lg border border-white/20 transition-colors"
+                                    >
+                                        🔄 รีเฟรช
+                                    </button>
+                                </div>
+
+                                {/* Status */}
+                                <div className="glass rounded-2xl p-4 mt-4">
+                                    <h3 className="text-white font-semibold mb-2">🔧 สถานะระบบ</h3>
+                                    <div className="text-white/80 text-sm space-y-1">
+                                        <div>✅ Backend: เชื่อมต่อแล้ว</div>
+                                        <div>✅ OpenAI: พร้อมใช้งาน</div>
+                                        <div>✅ Generator: Full-Stack Mode</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<RealFullStackGenerator />, document.getElementById('app'));
+    </script>
+</body>
+</html>

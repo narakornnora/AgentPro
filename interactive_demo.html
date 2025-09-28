@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Interactive Mobile Preview Demo</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            margin: 20px; 
+            background: #f5f7fa;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e1e8ed;
+        }
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+        }
+        .test-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 10px 5px;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+            transition: all 0.2s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+        .comparison-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 30px 0;
+        }
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .comparison-table th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .before { color: #f44336; }
+        .after { color: #4caf50; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎮 Interactive Mobile Preview</h1>
+            <p>แก้ไขปัญหา "กดอะไรไม่ได้" และ "ดูหน้าจอแบบ mockup" แล้ว!</p>
+            <div style="margin-top: 20px;">
+                <a href="http://localhost:8001" class="test-button" target="_blank">🚀 ทดสอบเลย</a>
+                <a href="http://localhost:8001/test_mobile_preview.html" class="test-button" target="_blank">📱 Preview Demo</a>
+            </div>
+        </div>
+
+        <div class="comparison-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ปัญหา</th>
+                        <th>ก่อนแก้ไข (Before)</th>
+                        <th>หลังแก้ไข (After)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>การโต้ตอบ</strong></td>
+                        <td class="before">❌ กดอะไรไม่ได้เลย - เป็นแค่ภาพนิ่ง</td>
+                        <td class="after">✅ กดได้ทุกปุ่ม - มีปฏิกิริยาโต้ตอบจริง</td>
+                    </tr>
+                    <tr>
+                        <td><strong>หน้าจอแอป</strong></td>
+                        <td class="before">❌ แค่ mockup - เป็นภาพจำลองเท่านั้น</td>
+                        <td class="after">✅ Interactive UI - ทำงานเหมือนแอปจริง</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ฟีเจอร์</strong></td>
+                        <td class="before">❌ แสดงแค่โครงสร้างไฟล์</td>
+                        <td class="after">✅ เต็มเหนือจอ + คลิกเพื่อใช้งาน</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ประสบการณ์</strong></td>
+                        <td class="before">❌ ไม่น่าเชื่อถือ ดูเหมือนปลอม</td>
+                        <td class="after">✅ เหมือนแอปจริง มีปฏิสัมพันธ์</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🎯 <span>Instagram Clone</span></h3>
+                <ul class="feature-list">
+                    <li><span class="status-indicator"></span> Stories ที่กดได้</li>
+                    <li><span class="status-indicator"></span> Like/Unlike posts</li>
+                    <li><span class="status-indicator"></span> Navigation ทำงานจริง</li>
+                    <li><span class="status-indicator"></span> Camera, Messages icons</li>
+                    <li><span class="status-indicator"></span> Profile interactions</li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <strong>ทดสอบ:</strong> <code>"สร้าง mobile app ให้เหมือน instagram"</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3>☕ <span>Coffee Shop App</span></h3>
+                <ul class="feature-list">
+                    <li><span class="status-indicator"></span> เมนูหมวดหมู่เลือกได้</li>
+                    <li><span class="status-indicator"></span> เพิ่มสินค้าใส่ตะกร้า</li>
+                    <li><span class="status-indicator"></span> Cart counter อัปเดตจริง</li>
+                    <li><span class="status-indicator"></span> ราคาและรายละเอียดสินค้า</li>
+                    <li><span class="status-indicator"></span> Animation feedback</li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <strong>ทดสอบ:</strong> <code>"สร้างแอปร้านกาแฟ"</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3>🛍️ <span>E-commerce App</span></h3>
+                <ul class="feature-list">
+                    <li><span class="status-indicator"></span> Product grid คลิกได้</li>
+                    <li><span class="status-indicator"></span> Category filtering</li>
+                    <li><span class="status-indicator"></span> Shopping cart ทำงานจริง</li>
+                    <li><span class="status-indicator"></span> Search และ wishlist</li>
+                    <li><span class="status-indicator"></span> Product details view</li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <strong>ทดสอบ:</strong> <code>"สร้าง online shopping app"</code>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <h3>📱 <span>Generic App</span></h3>
+                <ul class="feature-list">
+                    <li><span class="status-indicator"></span> Tab navigation ใช้งานได้</li>
+                    <li><span class="status-indicator"></span> Interactive buttons</li>
+                    <li><span class="status-indicator"></span> Content switching</li>
+                    <li><span class="status-indicator"></span> Modern UI elements</li>
+                    <li><span class="status-indicator"></span> Action confirmations</li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <strong>ทดสอบ:</strong> แอปประเภทอื่น ๆ
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-card" style="text-align: center; margin: 30px 0;">
+            <h2>🎬 วิธีใช้งาน Interactive Preview</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+                <div>
+                    <div style="font-size: 48px; margin-bottom: 10px;">1️⃣</div>
+                    <h4>สร้างแอป</h4>
+                    <p>พิมพ์คำสั่งสร้างแอปใน AI Chat</p>
+                </div>
+                <div>
+                    <div style="font-size: 48px; margin-bottom: 10px;">2️⃣</div>
+                    <h4>รอให้สร้างเสร็จ</h4>
+                    <p>ดูหน้าจอมือถือปรากฏขึ้น</p>
+                </div>
+                <div>
+                    <div style="font-size: 48px; margin-bottom: 10px;">3️⃣</div>
+                    <h4>คลิกเพื่อโต้ตอบ</h4>
+                    <p>กดที่หน้าจอมือถือเพื่อใช้งาน</p>
+                </div>
+                <div>
+                    <div style="font-size: 48px; margin-bottom: 10px;">4️⃣</div>
+                    <h4>เล่นกับ UI</h4>
+                    <p>ลองกดปุ่มต่าง ๆ ดู functionality</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 15px; margin: 30px 0; text-align: center;">
+            <h3 style="color: #2e7d32; margin-bottom: 15px;">✅ ปัญหาได้รับการแก้ไขแล้ว!</h3>
+            <p><strong>✅ "กดอะไรไม่ได้เลย"</strong> → ตอนนี้กดได้ทุกอย่าง มีปฏิกิริยาโต้ตอบ</p>
+            <p><strong>✅ "ดูหน้าจอแบบ mockup"</strong> → ตอนนี้เป็น Interactive UI ที่ใช้งานได้จริง</p>
+            <div style="margin-top: 20px;">
+                <a href="http://localhost:8001" class="test-button" target="_blank">🎮 ลองใช้เลย!</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

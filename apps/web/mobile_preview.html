@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile App Preview - iPhone 15</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .preview-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .device-frame {
+            position: relative;
+            width: 433px;
+            height: 932px;
+            background: #1a1a1a;
+            border-radius: 35px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .device-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .device-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .dynamic-island {
+            width: 120px;
+            height: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+        
+        .screen-content {
+            width: 100%;
+            height: calc(100% - 30px);
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        
+        .screen-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .device-controls {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+        }
+        
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .device-selector {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .screen-list {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .screen-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .screen-item {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+        
+        .screen-item:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+        }
+        
+        .screen-item.active {
+            background: rgba(255,255,255,0.2);
+            border-color: #4caf50;
+        }
+        
+        .screen-item.missing {
+            background: rgba(255,75,75,0.2);
+            border-color: rgba(255,75,75,0.5);
+        }
+        
+        .screen-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .screen-name {
+            font-size: 11px;
+            line-height: 1.3;
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        
+        .priority-essential { background: rgba(255,75,75,0.8); }
+        .priority-important { background: rgba(255,165,0,0.8); }
+        .priority-nice-to-have { background: rgba(75,75,255,0.8); }
+        
+        .app-analysis {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .completeness-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .completeness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-top: 15px;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .device-label {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Default screen content */
+        .default-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .default-screen-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .default-screen-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .default-screen-desc {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .demo-screens {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="device-frame">
+            <div class="device-screen">
+                <div class="device-header">
+                    <div class="dynamic-island"></div>
+                </div>
+                <div class="screen-content">
+                    <div class="default-screen" id="screenDisplay">
+                        <div class="default-screen-icon">📱</div>
+                        <div class="default-screen-title">Mobile App Preview</div>
+                        <div class="default-screen-desc">
+                            เลือกหน้าจอที่ต้องการดูจากรายการด้านขาง<br>
+                            หรือให้ AI สร้างหน้าจอที่ขาดหายไป
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="device-label">iPhone 15</div>
+        </div>
+        
+        <div class="device-controls">
+            <div class="controls-header">
+                <h2>📱 Mobile App Preview</h2>
+                <select class="device-selector" onchange="changeDevice(this.value)">
+                    <option value="iphone15">iPhone 15</option>
+                    <option value="iphone15_plus">iPhone 15 Plus</option>
+                    <option value="samsung_s24">Samsung Galaxy S24</option>
+                    <option value="pixel8">Google Pixel 8</option>
+                </select>
+            </div>
+            
+            <div class="app-analysis">
+                <div class="section-title">🤖 AI Analysis</div>
+                <div class="analysis-item">
+                    <span>App Type:</span>
+                    <span id="appType">E-commerce</span>
+                </div>
+                <div class="analysis-item">
+                    <span>Complexity:</span>
+                    <span id="complexity">Medium</span>
+                </div>
+                <div class="analysis-item">
+                    <span>Completeness:</span>
+                    <span id="completeness">16%</span>
+                </div>
+                <div class="completeness-bar">
+                    <div class="completeness-fill" style="width: 16%"></div>
+                </div>
+            </div>
+            
+            <div class="screen-list">
+                <div class="section-title">✅ Existing Screens (3)</div>
+                <div class="screen-grid" id="existingScreens">
+                    <div class="screen-item" onclick="loadScreen('home')">
+                        <div class="screen-icon">🏠</div>
+                        <div class="screen-name">หน้าหลัก</div>
+                    </div>
+                    <div class="screen-item" onclick="loadScreen('login')">
+                        <div class="screen-icon">🔐</div>
+                        <div class="screen-name">เข้าสู่ระบบ</div>
+                    </div>
+                    <div class="screen-item" onclick="loadScreen('product_list')">
+                        <div class="screen-icon">📦</div>
+                        <div class="screen-name">รายการสินค้า</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="screen-list">
+                <div class="section-title">⚠️ Missing Screens (16)</div>
+                <div class="screen-grid" id="missingScreens">
+                    <div class="screen-item missing" onclick="generateScreen('splash')">
+                        <div class="screen-icon">🎯</div>
+                        <div class="screen-name">Splash Screen</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                    <div class="screen-item missing" onclick="generateScreen('onboarding')">
+                        <div class="screen-icon">👋</div>
+                        <div class="screen-name">Welcome/Onboarding</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                    <div class="screen-item missing" onclick="generateScreen('product_detail')">
+                        <div class="screen-icon">🔍</div>
+                        <div class="screen-name">Product Details</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                    <div class="screen-item missing" onclick="generateScreen('cart')">
+                        <div class="screen-icon">🛒</div>
+                        <div class="screen-name">Shopping Cart</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                    <div class="screen-item missing" onclick="generateScreen('checkout')">
+                        <div class="screen-icon">💳</div>
+                        <div class="screen-name">Checkout</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                    <div class="screen-item missing" onclick="generateScreen('register')">
+                        <div class="screen-icon">📝</div>
+                        <div class="screen-name">Register</div>
+                        <div class="priority-badge priority-essential">essential</div>
+                    </div>
+                </div>
+                <button class="generate-btn" onclick="generateAllMissingScreens()">
+                    🤖 AI สร้างหน้าจอที่ขาดหายไป
+                </button>
+            </div>
+            
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>AI พร้อมสร้างแอพสมบูรณ์แบบ</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden demo screens -->
+    <div class="demo-screens">
+        <div id="splash-screen" style="display: none;">
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 40px 20px;">
+                <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 30px; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; font-size: 60px; animation: pulse 2s infinite;">📱</div>
+                <div style="font-size: 32px; font-weight: 700; margin-bottom: 10px;">MyApp</div>
+                <div style="font-size: 16px; opacity: 0.8;">Your Digital Companion</div>
+            </div>
+        </div>
+        
+        <div id="login-screen" style="display: none;">
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; overflow-y: auto;">
+                <div style="max-width: 350px; margin: 60px auto; background: white; border-radius: 20px; padding: 40px 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="width: 80px; height: 80px; background: #667eea; border-radius: 20px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white;">🔐</div>
+                        <h1 style="color: #333; font-size: 28px; font-weight: 700;">เข้าสู่ระบบ</h1>
+                        <p style="color: #666; margin-bottom: 30px;">ยินดีต้อนรับกลับมา!</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #333; font-weight: 500; margin-bottom: 8px;">อีเมล</label>
+                        <input type="email" placeholder="กรอกอีเมลของคุณ" style="width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; color: #333; font-weight: 500; margin-bottom: 8px;">รหัสผ่าน</label>
+                        <input type="password" placeholder="กรอกรหัสผ่าน" style="width: 100%; padding: 15px; border: 2px solid #e1e5e9; border-radius: 12px; font-size: 16px;">
+                    </div>
+                    <button style="width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">เข้าสู่ระบบ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="home-screen" style="display: none;">
+            <div style="width: 100%; height: 100%; background: #f8f9fa; overflow-y: auto;">
+                <div style="background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div style="font-size: 24px; font-weight: 700; color: #333;">ShopApp</div>
+                        <div style="position: relative; font-size: 24px; color: #667eea;">🛒
+                            <div style="position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; display: flex; align-items: center; justify-content: center;">3</div>
+                        </div>
+                    </div>
+                    <input type="text" placeholder="ค้นหาสินค้า..." style="width: 100%; padding: 12px 15px; border: 2px solid #e1e5e9; border-radius: 25px; font-size: 16px; background: #f8f9fa;">
+                </div>
+                <div style="margin: 20px; height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; text-align: center;">
+                    <div>
+                        <h2 style="font-size: 24px; margin-bottom: 10px;">ลดราคาพิเศษ</h2>
+                        <p style="opacity: 0.9;">ส่วนลดสูงสุด 50% วันนี้เท่านั้น!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentScreen = '';
+        
+        function loadScreen(screenName) {
+            // Update active state
+            document.querySelectorAll('.screen-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.screen-item').classList.add('active');
+            
+            // Show screen content
+            const screenDisplay = document.getElementById('screenDisplay');
+            const demoScreen = document.getElementById(screenName + '-screen');
+            
+            if (demoScreen) {
+                screenDisplay.innerHTML = demoScreen.innerHTML;
+            } else {
+                screenDisplay.innerHTML = `
+                    <div class="default-screen">
+                        <div class="default-screen-icon">${getScreenIcon(screenName)}</div>
+                        <div class="default-screen-title">${getScreenTitle(screenName)}</div>
+                        <div class="default-screen-desc">
+                            หน้าจอนี้แสดงฟีเจอร์และฟังก์ชันที่เกี่ยวข้องกับ ${getScreenTitle(screenName)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            currentScreen = screenName;
+            console.log('Loaded screen:', screenName);
+        }
+        
+        function generateScreen(screenName) {
+            alert(`🤖 AI กำลังสร้างหน้าจอ "${getScreenTitle(screenName)}" ให้คุณ...\n\nระบบจะสร้างหน้าจอที่มีฟีเจอร์ครบถ้วนและใช้งานได้จริง`);
+            
+            // Simulate AI generation
+            setTimeout(() => {
+                loadScreen(screenName);
+                
+                // Move from missing to existing
+                const missingItem = event.target.closest('.screen-item');
+                missingItem.classList.remove('missing');
+                missingItem.onclick = () => loadScreen(screenName);
+                
+                // Update completeness
+                updateCompleteness();
+            }, 1500);
+        }
+        
+        function generateAllMissingScreens() {
+            alert('🤖 AI กำลังสร้างหน้าจอทั้งหมดที่ขาดหายไปเพื่อให้แอพสมบูรณ์...\n\n- วิเคราะห์ user journey\n- สร้าง UI/UX ที่เหมาะสม\n- ใส่ฟีเจอร์ที่จำเป็น\n- ทดสอบการทำงาน');
+        }
+        
+        function changeDevice(deviceType) {
+            console.log('Changing device to:', deviceType);
+            // In real implementation, this would resize the frame
+        }
+        
+        function getScreenIcon(screenName) {
+            const icons = {
+                'splash': '🎯',
+                'onboarding': '👋',
+                'home': '🏠',
+                'login': '🔐',
+                'register': '📝',
+                'profile': '👤',
+                'settings': '⚙️',
+                'product_list': '📦',
+                'product_detail': '🔍',
+                'cart': '🛒',
+                'checkout': '💳'
+            };
+            return icons[screenName] || '📱';
+        }
+        
+        function getScreenTitle(screenName) {
+            const titles = {
+                'splash': 'Splash Screen',
+                'onboarding': 'การแนะนำแอพ',
+                'home': 'หน้าหลัก',
+                'login': 'เข้าสู่ระบบ',
+                'register': 'สมัครสมาชิก',
+                'profile': 'โปรไฟล์',
+                'settings': 'ตั้งค่า',
+                'product_list': 'รายการสินค้า',
+                'product_detail': 'รายละเอียดสินค้า',
+                'cart': 'ตะกร้าสินค้า',
+                'checkout': 'ชำระเงิน'
+            };
+            return titles[screenName] || screenName;
+        }
+        
+        function updateCompleteness() {
+            // Update completeness percentage
+            const current = parseInt(document.getElementById('completeness').textContent);
+            const newValue = Math.min(current + 6, 100);
+            
+            document.getElementById('completeness').textContent = newValue + '%';
+            document.querySelector('.completeness-fill').style.width = newValue + '%';
+        }
+        
+        // Load default screen
+        setTimeout(() => {
+            loadScreen('home');
+        }, 1000);
+    </script>
+</body>
+</html>

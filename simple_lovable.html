@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro - Build something 🚀 Professional</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%
+            );
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        
+        .messages { flex: 1; padding: 1rem; overflow-y: auto; }
+        .message { margin-bottom: 1rem; }
+        .user { text-align: right; }
+        .ai { text-align: left; }
+        .message-text { 
+            display: inline-block; 
+            padding: 0.5rem 1rem; 
+            border-radius: 1rem; 
+            max-width: 70%; 
+        }
+        .user .message-text { background: #007bff; }
+        .ai .message-text { background: #333; }
+        
+        .workflow-status { 
+            background: #2d4a6b; 
+            padding: 0.5rem; 
+            margin: 0.5rem 0; 
+            border-radius: 0.5rem; 
+            font-size: 0.9rem; 
+        }
+        .workflow-status.success { background: #2d5a2d; }
+        .workflow-status.error { background: #5a2d2d; }
+        
+        .input-area { padding: 1rem; display: flex; gap: 0.5rem; border-top: 1px solid #333; }
+        .input-area input { flex: 1; padding: 0.5rem; border-radius: 0.5rem; border: none; background: #333; color: white; }
+        .input-area input::placeholder { color: #888; }
+        .input-area button { padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; background: #007bff; color: white; cursor: pointer; }
+        .input-area button:hover { background: #0056b3; }
+        
+        .preview-header { padding: 0.5rem 1rem; background: #fff; border-bottom: 1px solid #ddd; font-size: 0.9rem; color: #666; }
+        .preview iframe { width: 100%; height: calc(100% - 40px); border: none; }
+        
+        .loading { text-align: center; color: #007bff; }
+        .typing { opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="chat-side">
+        <div class="header">
+            <h1>🤖 AgentPro</h1>
+            <div class="subtitle">Professional AI Builder - สร้างระบบจริงที่ใช้งานได้</div>
+        </div>
+        <div class="messages" id="messages">
+            <div class="message ai">
+                <div class="message-text">สวัสดีครับ! ผมจะช่วยสร้าง <strong>Professional Website</strong>, <strong>Mobile App</strong>, หรือ <strong>Business System</strong> ที่ใช้งานได้จริงให้คุณ<br><br>🏢 <strong>Professional Website</strong> - เว็บองค์กร, ร้านค้าออนไลน์<br>📱 <strong>Mobile App</strong> - แอพที่คลิกใช้งานได้<br>⚙️ <strong>Business System</strong> - CRM, ERP, ระบบจัดการ<br><br>อยากสร้างอะไรครับ?</div>
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="เช่น: สร้างเว็บร้านกาแฟ หรือ แอพจองโต๊ะร้านอาหาร..." />
+            <button onclick="sendMessage()">สร้าง</button>
+        </div>
+    </div>
+    
+    <div class="preview-side">
+        <div class="preview-header">
+            🌐 Preview - ตัวอย่างผลงาน
+        </div>
+        <iframe id="preview" src="about:blank"></iframe>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+
+        function addMessage(sender, text) {
+            const messages = document.getElementById('messages');
+            const message = document.createElement('div');
+            message.className = `message ${sender}`;
+            message.innerHTML = `<div class="message-text">${text}</div>`;
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            // Show user message
+            addMessage('user', text);
+            conversationHistory.push(text);
+            input.value = '';
+
+            // Show enhanced loading with status
+            const loadingId = addMessage('ai', '� กำลังวิเคราะห์ความต้องการ...');
+
+            try {
+                // Call Enhanced API
+                const response = await fetch('http://localhost:8001/enterprise-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: text,
+                        history: conversationHistory,
+                        request_type: "professional_project"
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove loading message
+                const messages = document.getElementById('messages');
+                messages.removeChild(messages.lastChild);
+
+                // Show AI response with enhanced formatting
+                if (data.response) {
+                    addMessage('ai', data.response);
+                }
+
+                // Show workflow status if available
+                if (data.workflow_id) {
+                    showWorkflowStatus(data.workflow_id);
+                }
+
+                // Show preview if project created
+                if (data.project_urls && data.project_urls.length > 0) {
+                    document.getElementById('preview').src = data.project_urls[0];
+                    addMessage('ai', `✅ <strong>โปรเจ็กต์สร้างเสร็จแล้ว!</strong><br>🌐 <strong>Access URLs:</strong><br>${data.project_urls.map(url => `• <a href="${url}" target="_blank">${url}</a>`).join('<br>')}`);
+                }
+
+                // Show deployment info
+                if (data.deployment_info) {
+                    const info = data.deployment_info;
+                    addMessage('ai', `📊 <strong>Project Info:</strong><br>
+                        📁 Type: ${info.project_type || 'Professional Website'}<br>
+                        📍 Path: ${info.project_path}<br>
+                        ⚡ Status: ${info.status}<br>
+                        🔗 Ready to use!`);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Remove loading message
+                const messages = document.getElementById('messages');
+                if (messages.lastChild && messages.lastChild.textContent.includes('กำลัง')) {
+                    messages.removeChild(messages.lastChild);
+                }
+                
+                addMessage('ai', '❌ เกิดข้อผิดพลาด ระบบกำลังแก้ไข กรุณาลองใหม่ในสักครู่');
+            }
+        }
+
+        function showWorkflowStatus(workflowId) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'workflow-status';
+            statusDiv.innerHTML = `⚙️ <strong>Workflow ${workflowId}</strong> กำลังทำงาน...`;
+            
+            const messages = document.getElementById('messages');
+            const lastMessage = messages.lastChild;
+            lastMessage.appendChild(statusDiv);
+            
+            // Poll for status updates
+            pollWorkflowStatus(workflowId, statusDiv);
+        }
+
+        async function pollWorkflowStatus(workflowId, statusDiv) {
+            const maxAttempts = 30; // 30 seconds
+            let attempts = 0;
+            
+            const poll = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8001/workflow-status/${workflowId}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        statusDiv.className = 'workflow-status success';
+                        statusDiv.innerHTML = `✅ <strong>Workflow Completed!</strong> Professional project ready`;
+                        return;
+                    } else if (data.status === 'failed') {
+                        statusDiv.className = 'workflow-status error';
+                        statusDiv.innerHTML = `❌ <strong>Workflow Failed:</strong> ${data.error || 'Unknown error'}`;
+                        return;
+                    }
+                    
+                    // Continue polling
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        setTimeout(poll, 1000);
+                    } else {
+                        statusDiv.innerHTML = `⏰ <strong>Workflow timeout</strong> - please check manually`;
+                    }
+                } catch (e) {
+                    console.error('Polling error:', e);
+                }
+            };
+            
+            setTimeout(poll, 1000);
+        }
+
+        // Enter to send
+        document.getElementById('messageInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

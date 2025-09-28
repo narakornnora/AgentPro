@@ -1,0 +1,93 @@
+{
+  "project_type": "restaurant",
+  "total_images": 10,
+  "content_data": [
+    {
+      "filename": "0003-dish-on-white-ceramic-plate.jpg",
+      "alt_text": "รูปภาพอาหาร - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "เมนูอาหาร",
+        "หน้าแรก",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "อาหารนานาชาติ คุณภาพพรีเมียม",
+        "วัตถุดิบสด นำเข้าคุณภาพ",
+        "การจัดจานที่สวยงาม"
+      ]
+    },
+    {
+      "filename": "0004-brown-themed-bar.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0004-brown-themed-bar",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0010-rectangular-beige-wooden-tables-and-chai.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0010-rectangular-beige-wooden-tables-and-chai",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0014-a-chef-artfully-plating-a-gourmet-dish-w.jpg",
+      "alt_text": "รูปภาพอาหาร เชฟ - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "เมนูอาหาร",
+        "หน้าแรก",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "อาหารนานาชาติ คุณภาพพรีเมียม",
+        "วัตถุดิบสด นำเข้าคุณภาพ",
+        "การจัดจานที่สวยงาม"
+      ]
+    },
+    {
+      "filename": "0017-experience-the-lively-atmosphere-of-a-bu.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0017-experience-the-lively-atmosphere-of-a-bu",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0018-sophisticated-luxury-restaurant-interior.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0018-sophisticated-luxury-restaurant-interior",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0021-champagne-restaurant-ice-gastronomy.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0021-champagne-restaurant-ice-gastronomy",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0022-restaurant-food-table-sea-plant-tra.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0022-restaurant-food-table-sea-plant-tra",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0025-hamburger-sandwich-chicken-healthy-b.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0025-hamburger-sandwich-chicken-healthy-b",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0029-jifeng-restaurant-restaurant-interior.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0029-jifeng-restaurant-restaurant-interior",
+      "suggested_usage": [],
+      "related_content": []
+    }
+  ],
+  "hero_suggestions": [
+    "ประสบการณ์รับประทานอาหารระดับโลก",
+    "อาหารเลิศรส จากเชฟชั้นนำ",
+    "Fine Dining Experience ที่ไม่เหมือนใคร"
+  ],
+  "feature_suggestions": {
+    "cuisine": "อาหารนานาชาติ ปรุงด้วยวัตถุดิบคุณภาพสูง",
+    "ambiance": "การตกแต่งหรูหรา บรรยากาศโรแมนติก",
+    "chef": "เชฟมืออาชีพ ประสบการณ์ระดับโลก",
+    "service": "บริการระดับพรีเมียม ใส่ใจทุกรายละเอียด"
+  }
+}

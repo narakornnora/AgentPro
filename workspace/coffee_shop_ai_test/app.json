@@ -1,0 +1,14 @@
+{
+  "name": "coffee_shop_ai_test",
+  "displayName": "ร้านกาแฟ AI Coffee",
+  "expo": {
+    "name": "ร้านกาแฟ AI Coffee",
+    "slug": "coffee_shop_ai_test",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
+  }
+}

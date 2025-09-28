@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lan        /* ===== LEFT PANEL (CHAT) ===== */
+        .left-panel {
+            width: 32%;
+            backg        /* ===== RIGHT PANEL (PREVIEW) ===== */
+        .right-panel {
+            width: 68%;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+        }linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #333;
+        }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Lovable Clone - Split Screen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            height: 100vh;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ===== LEFT PANEL (CHAT) ===== */
+        .left-panel {
+            width: 35%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid #333;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 1.4em;
+            margin-bottom: 3px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 0.8em;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .message {
+            margin-bottom: 12px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            max-width: 90%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 0.9em;
+        }
+
+        .message.user .message-content {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .input-container {
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+            min-height: 50px;
+            max-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        #messageInput::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        #sendBtn {
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            height: 50px;
+            min-width: 80px;
+        }
+
+        #sendBtn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ===== RIGHT PANEL (PREVIEW) ===== */
+        .right-panel {
+            width: 65%;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            padding: 15px 20px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-tabs {
+            display: flex;
+            gap: 5px;
+        }
+
+        .tab {
+            padding: 8px 15px;
+            background: #3c3c3c;
+            color: #cccccc;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid #555;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            background: #007acc;
+            color: #fff;
+        }
+
+        .tab:hover {
+            background: #484848;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.building {
+            background: #ffc107;
+            animation: pulse 1s infinite;
+        }
+
+        .preview-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-editor {
+            flex: 1;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border: none;
+            outline: none;
+            resize: none;
+        }
+
+        .web-preview {
+            flex: 1;
+            background: #fff;
+            border: none;
+            display: none;
+        }
+
+        .file-tree {
+            width: 150px;
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            padding: 8px;
+            overflow-y: auto;
+            font-size: 11px;
+        }
+
+        .file-item {
+            padding: 5px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 2px 0;
+            color: #cccccc;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #094771;
+            color: #fff;
+        }
+
+        .file-item.folder {
+            font-weight: bold;
+            color: #ffcc02;
+        }
+
+        .live-typing {
+            background: #1e1e1e;
+            border-left: 3px solid #007acc;
+            padding: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            color: #d4d4d4;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            animation: typing-cursor 1s infinite;
+        }
+
+        .live-typing::after {
+            content: '█';
+            animation: blink 1s infinite;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            font-size: 12px;
+            color: #cccccc;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #007acc;
+            animation: pulse 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        /* ===== EXCITING EFFECTS ===== */
+        .code-streaming {
+            position: relative;
+            border-left: 3px solid #00ff88;
+            background: linear-gradient(90deg, #1e1e1e 0%, #0a2a1a 100%);
+            animation: glow-border 2s ease-in-out infinite alternate;
+        }
+
+        .file-created-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out, fadeOutUp 0.5s ease-in 2.5s forwards;
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00ff88, #ffaa00, #ff4444);
+            animation: progress-fill 3s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .ai-working-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            margin: 10px 0;
+            animation: pulse-glow 1.5s ease-in-out infinite;
+        }
+
+        .working-spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .code-line-highlight {
+            background: linear-gradient(90deg, transparent 0%, #007acc44 50%, transparent 100%);
+            animation: scan-line 2s ease-in-out infinite;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            z-index: 2000;
+            animation: celebrate 1s ease-out forwards;
+        }
+
+        @keyframes glow-border {
+            0% { border-left-color: #00ff88; box-shadow: -5px 0 10px rgba(0, 255, 136, 0.3); }
+            100% { border-left-color: #ffaa00; box-shadow: -5px 0 20px rgba(255, 170, 0, 0.5); }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOutUp {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-50px); opacity: 0; }
+        }
+
+        @keyframes progress-fill {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.8); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes celebrate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        @keyframes typing-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Code Syntax Highlighting */
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .variable { color: #9cdcfe; }
+        .number { color: #b5cea8; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-panel {
+                width: 100%;
+                height: 30vh;
+            }
+            
+            .right-panel {
+                width: 100%;
+                height: 70vh;
+            }
+            
+            .file-tree {
+                width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LEFT PANEL: CHAT -->
+        <div class="left-panel">
+            <div class="chat-header">
+                <h1>🚀 Lovable Clone</h1>
+                <p>แชทเพื่อสร้างแอปจริง</p>
+            </div>
+
+            <div class="messages" id="messages">
+                <div class="message ai">
+                    <div class="message-content">
+                        <strong>👋 สวัสดีครับ!</strong><br>
+                        บอกมาเลยว่าต้องการแอปแบบไหน<br>
+                        <em>คุณจะเห็นการทำงานแบบ real-time ทางขวา</em>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    placeholder="อยากได้แอปแบบไหน? พิมพ์หลายบรรทัดได้..."
+                    autocomplete="off"
+                    rows="2"
+                ></textarea>
+                <button id="sendBtn">ส่ง</button>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: PREVIEW -->
+        <div class="right-panel">
+            <div class="preview-header">
+                <div class="preview-tabs">
+                    <div class="tab active" data-tab="code">📄 Code</div>
+                    <div class="tab" data-tab="preview">🌐 Preview</div>
+                    <div class="tab" data-tab="files">📁 Files</div>
+                </div>
+                <div class="preview-controls">
+                    <div class="status-indicator">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="statusText">พร้อม</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-content">
+                <div style="display: flex; height: 100%;">
+                    <div class="file-tree" id="fileTree">
+                        <div class="file-item folder">📁 ยังไม่มีโปรเจค</div>
+                    </div>
+                    
+                    <div style="flex: 1; position: relative; display: flex; flex-direction: column;">
+                        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                            <span>AI กำลังเขียนโค้ด...</span>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        
+                        <textarea 
+                            class="code-editor" 
+                            id="codeEditor" 
+                            readonly
+                            placeholder="// โค้ดจะแสดงที่นี่เมื่อ AI เริ่มเขียน..."
+                        ></textarea>
+                        
+                        <iframe 
+                            class="web-preview" 
+                            id="webPreview"
+                            src="about:blank"
+                        ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LovableSplitInterface {
+            constructor() {
+                this.sessionId = null;
+                this.websocket = null;
+                this.isBuilding = false;
+                this.currentTab = 'code';
+                this.currentFile = null;
+                this.projectFiles = {};
+                
+                this.initElements();
+                this.setupEventListeners();
+            }
+            
+            initElements() {
+                this.messagesContainer = document.getElementById('messages');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.codeEditor = document.getElementById('codeEditor');
+                this.webPreview = document.getElementById('webPreview');
+                this.fileTree = document.getElementById('fileTree');
+                this.statusDot = document.getElementById('statusDot');
+                this.statusText = document.getElementById('statusText');
+                this.typingIndicator = document.getElementById('typingIndicator');
+            }
+            
+            setupEventListeners() {
+                this.sendBtn.addEventListener('click', () => this.sendMessage());
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                
+                // Tab switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabType = tab.dataset.tab;
+                        this.switchTab(tabType);
+                    });
+                });
+            }
+            
+            switchTab(tabType) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelector(`[data-tab="${tabType}"]`).classList.add('active');
+                
+                this.currentTab = tabType;
+                
+                if (tabType === 'code') {
+                    this.codeEditor.style.display = 'block';
+                    this.webPreview.style.display = 'none';
+                } else if (tabType === 'preview') {
+                    this.codeEditor.style.display = 'none';
+                    this.webPreview.style.display = 'block';
+                }
+            }
+            
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message || this.isBuilding) return;
+                
+                this.addMessage(message, 'user');
+                this.messageInput.value = '';
+                
+                try {
+                    const response = await fetch('http://localhost:8006/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: message,
+                            session_id: this.sessionId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    this.sessionId = result.session_id;
+                    
+                    if (result.action === 'ask_question') {
+                        this.addMessage(result.response, 'ai');
+                    } else if (result.action === 'build_app') {
+                        this.addMessage(result.response, 'ai');
+                        this.startBuilding(result.requirements);
+                    } else if (result.error) {
+                        this.addMessage(`❌ ${result.error}`, 'ai');
+                    }
+                    
+                } catch (error) {
+                    this.addMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'ai');
+                }
+            }
+            
+            startBuilding(requirements) {
+                this.isBuilding = true;
+                this.lockInput();
+                
+                this.updateStatus('building', 'กำลังสร้างแอป');
+                this.showExcitingBuildingEffects();
+                
+                // Clear previous project
+                this.projectFiles = {};
+                this.updateFileTree();
+                this.codeEditor.value = '';
+                
+                this.setupWebSocket(requirements);
+            }
+            
+            setupWebSocket(requirements) {
+                // Simple demo - simulate app building
+                this.simulateAppBuilding(requirements);
+                
+                this.websocket.onopen = () => {
+                    console.log('WebSocket connected');
+                    this.websocket.send(JSON.stringify({
+                        action: 'build_app',
+                        requirements: requirements
+                    }));
+                };
+                
+                this.websocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'exciting_status') {
+                        this.showExcitingStatus(data.icon, data.status);
+                    } else if (data.type === 'file_typing_start') {
+                        this.startFileTyping(data.filename, data.total_chars);
+                    } else if (data.type === 'file_typing_chunk') {
+                        this.showTypingChunk(data.filename, data.chunk, data.progress);
+                    } else if (data.type === 'file_typing_complete') {
+                        this.completeFileTyping(data.filename, data.content);
+                    } else if (data.type === 'app_completed') {
+                        this.onAppCompleted(data.result);
+                    }
+                };
+                
+                this.websocket.onerror = () => {
+                    this.addMessage('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ', 'ai');
+                    this.resetBuilding();
+                };
+            }
+            
+            updateBuildingStatus(status) {
+                this.statusText.textContent = status;
+                // Show simple status in chat
+                this.addMessage(`⚡ ${status}`, 'ai');
+            }
+            
+            showFileCreation(data) {
+                const { filename, content, filePath } = data;
+                
+                // Add to project files
+                this.projectFiles[filename] = content;
+                
+                // Update file tree
+                this.updateFileTree();
+                
+                // Show code with typing effect
+                if (!this.currentFile || filename.endsWith('.py') || filename.endsWith('.html')) {
+                    this.currentFile = filename;
+                    this.typeCodeInEditor(filename, content);
+                }
+            }
+            
+            showCodePreview(data) {
+                const { filename, content } = data;
+                this.showCodeInEditor(filename, content);
+            }
+            
+            typeCodeInEditor(filename, content) {
+                this.currentFile = filename;
+                this.codeEditor.value = '';
+                this.codeEditor.classList.add('code-streaming');
+                
+                // Show file creation notification
+                this.showFileNotification(filename);
+                
+                // Update active file in tree with highlight effect
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const fileItem = document.querySelector(`[data-file="${filename}"]`);
+                if (fileItem) {
+                    fileItem.classList.add('active');
+                    fileItem.style.animation = 'pulse-glow 1s ease-out';
+                }
+                
+                // Exciting typing effect with variable speed
+                let index = 0;
+                const baseSpeed = 5; // Faster base speed
+                
+                const typeChar = () => {
+                    if (index < content.length) {
+                        // Variable speed - faster for whitespace, slower for keywords
+                        const char = content[index];
+                        let speed = baseSpeed;
+                        
+                        if (char === ' ' || char === '\t') speed = 2;  // Fast whitespace
+                        else if (/[a-zA-Z]/.test(char)) speed = 8;     // Normal letters
+                        else if (/[{}()[\];:,]/.test(char)) speed = 15; // Slow punctuation for drama
+                        
+                        this.codeEditor.value = content.substring(0, index + 1);
+                        this.codeEditor.scrollTop = this.codeEditor.scrollHeight;
+                        
+                        // Add scanning line effect
+                        if (index % 50 === 0) {
+                            this.addScanLineEffect();
+                        }
+                        
+                        index++;
+                        setTimeout(typeChar, speed);
+                    } else {
+                        // Finished typing this file
+                        this.codeEditor.classList.remove('code-streaming');
+                        this.playTypingCompleteSound();
+                    }
+                };
+                
+                this.showTypingIndicator();
+                typeChar();
+            }
+            
+            showCodeInEditor(filename, content) {
+                this.codeEditor.value = content;
+                this.currentFile = filename;
+                
+                // Update active file in tree
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const fileItem = document.querySelector(`[data-file="${filename}"]`);
+                if (fileItem) {
+                    fileItem.classList.add('active');
+                }
+            }
+            
+
+            
+            updateFileTree() {
+                const files = Object.keys(this.projectFiles);
+                if (files.length === 0) return;
+                
+                this.fileTree.innerHTML = '<div class="file-item folder">📁 Generated App</div>';
+                
+                files.forEach(filename => {
+                    const icon = this.getFileIcon(filename);
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.dataset.file = filename;
+                    fileItem.innerHTML = `${icon} ${filename}`;
+                    fileItem.addEventListener('click', () => {
+                        this.showCodeInEditor(filename, this.projectFiles[filename]);
+                    });
+                    this.fileTree.appendChild(fileItem);
+                });
+            }
+            
+            getFileIcon(filename) {
+                const ext = filename.split('.').pop().toLowerCase();
+                const icons = {
+                    'py': '🐍',
+                    'html': '🌐',
+                    'css': '🎨',
+                    'js': '⚡',
+                    'json': '📋',
+                    'txt': '📄',
+                    'md': '📝',
+                    'bat': '⚙️'
+                };
+                return icons[ext] || '📄';
+            }
+            
+            onAppCompleted(result) {
+                this.hideTypingIndicator();
+                this.updateStatus('ready', 'แอปสร้างเสร็จ');
+                
+                // Celebration effect
+                this.showCelebration();
+                this.addMessage('🎉 แอปสร้างเสร็จแล้ว!', 'ai');
+                this.unlockInput();
+                
+                // Auto switch to preview tab with delay
+                setTimeout(() => {
+                    this.switchTab('preview');
+                    this.loadWebPreview(result.app_path);
+                }, 2000);
+            }
+            
+            loadWebPreview(appPath) {
+                // Create mock preview from generated HTML
+                const htmlContent = this.projectFiles['index.html'];
+                if (htmlContent) {
+                    const blob = new Blob([htmlContent], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    this.webPreview.src = url;
+                } else {
+                    // Fallback preview
+                    this.webPreview.srcdoc = `
+                        <html>
+                        <body style="font-family: Arial; text-align: center; padding: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <h1>🎉 แอปสร้างเสร็จแล้ว!</h1>
+                            <p>สามารถรันแอปได้โดยไปที่โฟลเดอร์ที่สร้างและรัน start.bat</p>
+                            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                <code>cd ${appPath || 'generated_apps/app_xxx'}</code><br>
+                                <code>start.bat</code>
+                            </div>
+                        </body>
+                        </html>
+                    `;
+                }
+            }
+            
+            showTypingIndicator() {
+                this.typingIndicator.style.display = 'flex';
+            }
+            
+            hideTypingIndicator() {
+                this.typingIndicator.style.display = 'none';
+            }
+            
+            updateStatus(type, text) {
+                this.statusText.textContent = text;
+                this.statusDot.className = `status-dot ${type}`;
+            }
+            
+            resetBuilding() {
+                this.isBuilding = false;
+                this.messageInput.disabled = false;
+                this.sendBtn.disabled = false;
+                this.sendBtn.textContent = 'ส่ง';
+                this.messageInput.placeholder = 'อยากได้แอปแบบไหน? พิมพ์หลายบรรทัดได้...';
+            }
+            
+            showExcitingStatus(icon, status) {
+                this.statusText.textContent = status;
+                this.addExcitingMessage(`${icon} ${status}`);
+            }
+            
+            addExcitingMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message ai';
+                messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+                messageDiv.style.animation = 'bounceIn 0.6s ease-out';
+                
+                this.messagesContainer.appendChild(messageDiv);
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+            
+            startFileTyping(filename, totalChars) {
+                this.currentTypingFile = filename;
+                this.codeEditor.value = '';
+                this.codeEditor.placeholder = `กำลังเขียน ${filename}...`;
+                
+                // Update file tree with typing indicator
+                this.updateFileTree();
+                this.addExcitingMessage(`📝 เริ่มเขียน ${filename}...`);
+            }
+            
+            showTypingChunk(filename, chunk, progress) {
+                if (this.currentTypingFile === filename) {
+                    this.codeEditor.value += chunk;
+                    this.codeEditor.scrollTop = this.codeEditor.scrollHeight;
+                    
+                    // Update progress
+                    const percent = Math.round(progress * 100);
+                    this.statusText.textContent = `เขียน ${filename}... ${percent}%`;
+                }
+            }
+            
+            completeFileTyping(filename, content) {
+                this.projectFiles[filename] = content;
+                this.updateFileTree();
+                
+                if (this.currentTypingFile === filename) {
+                    this.codeEditor.value = content;
+                    this.addExcitingMessage(`✅ เสร็จแล้ว: ${filename}`);
+                }
+                
+                // Auto-highlight the new file in tree
+                setTimeout(() => {
+                    const fileItem = document.querySelector(`[data-file="${filename}"]`);
+                    if (fileItem) {
+                        fileItem.style.background = '#28a745';
+                        fileItem.style.color = 'white';
+                        setTimeout(() => {
+                            fileItem.style.background = '';
+                            fileItem.style.color = '';
+                        }, 2000);
+                    }
+                }, 100);
+            }
+            
+            simulateAppBuilding(requirements) {
+                const files = {
+                    'database.py': `import sqlite3
+
+def init_database():
+    """สร้างฐานข้อมูล"""
+    conn = sqlite3.connect('app.db')
+    cursor = conn.cursor()
+    
+    # สร้างตาราง users
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT UNIQUE
+        )
+    """)
+    
+    # เพิ่มข้อมูลตัวอย่าง
+    cursor.execute("SELECT COUNT(*) FROM users")
+    if cursor.fetchone()[0] == 0:
+        sample_users = [
+            ("สมชาย ใจดี", "somchai@email.com"),
+            ("สมหญิง สวยงาม", "somying@email.com")
+        ]
+        cursor.executemany("INSERT INTO users (name, email) VALUES (?, ?)", sample_users)
+    
+    conn.commit()
+    conn.close()
+    print("✅ Database ready!")
+
+if __name__ == "__main__":
+    init_database()`,
+
+                    'app.py': `from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+import sqlite3
+
+app = Flask(__name__)
+CORS(app)
+
+def get_db():
+    conn = sqlite3.connect('app.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/api/users')
+def get_users():
+    conn = get_db()
+    users = conn.execute('SELECT * FROM users').fetchall()
+    conn.close()
+    return jsonify([dict(user) for user in users])
+
+@app.route('/api/users', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    conn = get_db()
+    conn.execute('INSERT INTO users (name, email) VALUES (?, ?)',
+                (data['name'], data.get('email', '')))
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'เพิ่มผู้ใช้สำเร็จ'})
+
+if __name__ == '__main__':
+    print("🚀 Starting app...")
+    app.run(host='0.0.0.0', port=5000)`,
+
+                    'index.html': `<!DOCTYPE html>
+<html>
+<head>
+    <title>🚀 Amazing App</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(135deg, #667eea, #764ba2); }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .card { background: white; padding: 20px; margin: 20px 0; border-radius: 10px; }
+        .btn { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🚀 Amazing App</h1>
+            <p>แอปที่สร้างด้วย AI ใน 30 วินาที!</p>
+        </div>
+    </div>
+</body>
+</html>`
+                };
+                
+                // Simulate building process
+                let step = 0;
+                const steps = [
+                    { icon: '🎯', text: 'วิเคราะห์ความต้องการ...' },
+                    { icon: '🗄️', text: 'สร้างฐานข้อมูล...' },
+                    { icon: '🔧', text: 'เขียน Backend API...' },
+                    { icon: '🎨', text: 'ออกแบบ Frontend...' },
+                    { icon: '📦', text: 'เตรียมไฟล์เสริม...' },
+                ];
+                
+                const processStep = () => {
+                    if (step < steps.length) {
+                        this.showExcitingStatus(steps[step].icon, steps[step].text);
+                        step++;
+                        setTimeout(processStep, 1500);
+                    } else {
+                        // Start file creation
+                        this.createFilesWithTyping(files);
+                    }
+                };
+                
+                processStep();
+            }
+            
+            createFilesWithTyping(files) {
+                const fileNames = Object.keys(files);
+                let currentFileIndex = 0;
+                
+                const createNextFile = () => {
+                    if (currentFileIndex < fileNames.length) {
+                        const filename = fileNames[currentFileIndex];
+                        const content = files[filename];
+                        
+                        this.startFileTyping(filename, content.length);
+                        
+                        // Type content gradually
+                        let charIndex = 0;
+                        const typeChar = () => {
+                            if (charIndex < content.length) {
+                                const chunk = content.substring(charIndex, charIndex + 10);
+                                this.showTypingChunk(filename, chunk, charIndex / content.length);
+                                charIndex += 10;
+                                setTimeout(typeChar, 50);
+                            } else {
+                                this.completeFileTyping(filename, content);
+                                currentFileIndex++;
+                                setTimeout(createNextFile, 1000);
+                            }
+                        };
+                        
+                        typeChar();
+                    } else {
+                        // All files created
+                        setTimeout(() => {
+                            this.onAppCompleted({
+                                app_id: 'demo_app',
+                                app_path: 'C:/agent/generated_apps/demo_app',
+                                files_created: fileNames
+                            });
+                        }, 2000);
+                    }
+                };
+                
+                createNextFile();
+            }
+            
+            // ===== EXCITING FUNCTIONS =====
+            
+            lockInput() {
+                this.sendBtn.disabled = true;
+                this.sendBtn.innerHTML = '<div class="working-spinner"></div> กำลังสร้าง...';
+                this.messageInput.placeholder = 'AI กำลังสร้างแอป... รอสักครู่นะครับ';
+                
+                // Add working indicator
+                const workingDiv = document.createElement('div');
+                workingDiv.className = 'ai-working-indicator';
+                workingDiv.id = 'workingIndicator';
+                workingDiv.innerHTML = `
+                    <div class="working-spinner"></div>
+                    <span>🤖 AI กำลังคิดและเขียนโค้ด...</span>
+                `;
+                this.messagesContainer.appendChild(workingDiv);
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+            
+            unlockInput() {
+                this.sendBtn.disabled = false;
+                this.sendBtn.textContent = 'ส่ง';
+                this.messageInput.placeholder = 'อยากได้แอปแบบไหน? (กด Shift+Enter สำหรับบรรทัดใหม่)';
+                this.isBuilding = false;
+                
+                // Remove working indicator
+                const workingIndicator = document.getElementById('workingIndicator');
+                if (workingIndicator) {
+                    workingIndicator.remove();
+                }
+            }
+            
+            showExcitingBuildingEffects() {
+                // Add progress bar to code editor
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                progressBar.id = 'buildProgressBar';
+                this.codeEditor.parentElement.appendChild(progressBar);
+                
+                // Switch to code tab immediately
+                this.switchTab('code');
+            }
+            
+            showFileNotification(filename) {
+                const notification = document.createElement('div');
+                notification.className = 'file-created-notification';
+                notification.textContent = `📄 สร้าง ${filename}`;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 3000);
+            }
+            
+            addScanLineEffect() {
+                const scanLine = document.createElement('div');
+                scanLine.className = 'code-line-highlight';
+                scanLine.style.cssText = `
+                    position: absolute;
+                    top: ${this.codeEditor.scrollTop + 100}px;
+                    left: 0;
+                    right: 0;
+                    height: 20px;
+                    pointer-events: none;
+                `;
+                
+                this.codeEditor.parentElement.appendChild(scanLine);
+                
+                setTimeout(() => {
+                    if (scanLine.parentElement) {
+                        scanLine.remove();
+                    }
+                }, 2000);
+            }
+            
+            showCelebration() {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                celebration.textContent = '🎉';
+                document.body.appendChild(celebration);
+                
+                setTimeout(() => {
+                    if (celebration.parentElement) {
+                        celebration.remove();
+                    }
+                }, 1000);
+                
+                // Remove progress bar
+                const progressBar = document.getElementById('buildProgressBar');
+                if (progressBar) {
+                    progressBar.remove();
+                }
+            }
+            
+            playTypingCompleteSound() {
+                // Create audio context for sound effects
+                if (window.AudioContext || window.webkitAudioContext) {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                    
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                }
+            }
+
+            addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                messageDiv.innerHTML = `<div class="message-content">${content}</div>`;
+                
+                this.messagesContainer.appendChild(messageDiv);
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+        }
+        
+        // Start the app
+        const app = new LovableSplitInterface();
+        
+        // Focus input on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('messageInput').focus();
+        });
+    </script>
+</body>
+</html>

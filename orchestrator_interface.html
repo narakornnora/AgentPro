@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎼 AI Orchestrator System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .agent-card {
+            transition: all 0.3s ease;
+        }
+        .agent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .typing-dots {
+            display: inline-block;
+        }
+        .typing-dots span {
+            animation: blink 1.4s infinite both;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0.3; }
+            40% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const OrchestatorInterface = () => {
+            const [message, setMessage] = useState('');
+            const [messages, setMessages] = useState([]);
+            const [sessionId, setSessionId] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [projectStarted, setProjectStarted] = useState(false);
+            const [requirementsComplete, setRequirementsComplete] = useState(false);
+            const [agentsStatus, setAgentsStatus] = useState({});
+            const [progress, setProgress] = useState('');
+            const messagesEndRef = useRef(null);
+
+            const API_BASE = 'http://localhost:8003';
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+
+            useEffect(scrollToBottom, [messages]);
+
+            // Generate session ID on mount
+            useEffect(() => {
+                if (!sessionId) {
+                    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    setSessionId(newSessionId);
+                }
+            }, [sessionId]);
+
+            const sendMessage = async () => {
+                if (!message.trim() || loading) return;
+
+                const userMessage = message.trim();
+                setMessage('');
+                
+                // Add user message
+                setMessages(prev => [...prev, {
+                    type: 'user',
+                    content: userMessage,
+                    timestamp: new Date().toLocaleTimeString('th-TH')
+                }]);
+
+                setLoading(true);
+
+                try {
+                    const response = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: userMessage,
+                            session_id: sessionId
+                        }),
+                    });
+
+                    const result = await response.json();
+
+                    // Update states
+                    setRequirementsComplete(result.requirements_complete);
+                    setProjectStarted(result.project_started);
+                    setAgentsStatus(result.agents_status || {});
+                    setProgress(result.progress || '');
+
+                    // Add AI response
+                    setMessages(prev => [...prev, {
+                        type: 'ai',
+                        content: result.response,
+                        timestamp: new Date().toLocaleTimeString('th-TH'),
+                        requirementsComplete: result.requirements_complete,
+                        projectStarted: result.project_started,
+                        progress: result.progress
+                    }]);
+
+                } catch (error) {
+                    setMessages(prev => [...prev, {
+                        type: 'error',
+                        content: `❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}`,
+                        timestamp: new Date().toLocaleTimeString('th-TH')
+                    }]);
+                }
+
+                setLoading(false);
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            };
+
+            const agents = [
+                { name: "AI Chat", role: "Requirements Gatherer", icon: "💬", status: "active" },
+                { name: "Team Lead", role: "Project Manager", icon: "👨‍💼", status: agentsStatus.team_lead || "waiting" },
+                { name: "Backend Agent", role: "API & Database", icon: "🔧", status: agentsStatus.backend || "waiting" },
+                { name: "Frontend Agent", role: "UI Development", icon: "🎨", status: agentsStatus.frontend || "waiting" },
+                { name: "UI/UX Agent", role: "Design & Experience", icon: "✨", status: agentsStatus.ui_ux || "waiting" },
+                { name: "Testing Agent", role: "Quality Assurance", icon: "🔍", status: agentsStatus.testing || "waiting" }
+            ];
+
+            const getStatusColor = (status) => {
+                switch(status) {
+                    case 'active': return 'bg-green-100 text-green-800 border-green-200';
+                    case 'assigned': return 'bg-blue-100 text-blue-800 border-blue-200';
+                    case 'working': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                    case 'completed': return 'bg-purple-100 text-purple-800 border-purple-200';
+                    default: return 'bg-gray-100 text-gray-600 border-gray-200';
+                }
+            };
+
+            const exampleMessages = [
+                "ฉันอยากได้เว็บไซต์ร้านค้าออนไลน์",
+                "สร้างแอปจัดการโรงเรียนให้หน่อย",
+                "ต้องการระบบจองห้องประชุม",
+                "อยากได้แอป Todo List ที่ใช้งานง่าย"
+            ];
+
+            return (
+                <div className="min-h-screen p-4">
+                    <div className="max-w-7xl mx-auto">
+                        
+                        {/* Header */}
+                        <div className="text-center mb-6">
+                            <h1 className="text-4xl font-bold text-white mb-3">
+                                🎼 AI Orchestrator System
+                            </h1>
+                            <p className="text-white/80 text-lg">
+                                แชทธรรมดา แต่ AI Agents ทำงานประสานกันเบื้องหลัง
+                            </p>
+                            <div className="mt-2 glass rounded-lg px-4 py-2 inline-block">
+                                <span className="text-white/90 text-sm">Session: </span>
+                                <span className="text-white font-mono text-sm">{sessionId}</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            
+                            {/* Chat Interface */}
+                            <div className="lg:col-span-3">
+                                <div className="glass rounded-2xl p-6 h-[70vh] flex flex-col">
+                                    
+                                    {/* Progress Bar */}
+                                    {progress && (
+                                        <div className="mb-4 bg-white/20 rounded-lg p-3">
+                                            <div className="text-white/90 text-sm font-medium mb-2">📊 ความคืบหน้า</div>
+                                            <div className="text-white text-sm">{progress}</div>
+                                            {requirementsComplete && (
+                                                <div className="mt-2 text-green-300 text-sm">✅ Requirements ครบถ้วนแล้ว</div>
+                                            )}
+                                            {projectStarted && (
+                                                <div className="mt-1 text-blue-300 text-sm">🚀 โครงการเริ่มดำเนินการ</div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Messages */}
+                                    <div className="flex-1 overflow-y-auto space-y-4 mb-6">
+                                        {messages.length === 0 && (
+                                            <div className="text-center text-white/60 py-12">
+                                                <div className="text-6xl mb-4">🎼</div>
+                                                <h3 className="text-xl font-semibold mb-2">ยินดีต้อนรับสู่ AI Orchestrator!</h3>
+                                                <p className="mb-6">บอกฉันว่าคุณต้องการอะไร ฉันจะเก็บข้อมูลให้ครบถ้วนแล้วส่งให้ทีมทำให้</p>
+                                                
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {exampleMessages.map((example, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => setMessage(example)}
+                                                            className="bg-white/10 hover:bg-white/20 text-white text-sm p-3 rounded-lg border border-white/20 transition-all duration-200 text-left"
+                                                        >
+                                                            {example}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {messages.map((msg, index) => (
+                                            <div key={index} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`max-w-[80%] rounded-2xl p-4 ${
+                                                    msg.type === 'user'
+                                                        ? 'bg-blue-500 text-white'
+                                                        : msg.type === 'error'
+                                                        ? 'bg-red-100 text-red-800 border border-red-200'
+                                                        : 'bg-white/90 text-gray-800'
+                                                }`}>
+                                                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                                                    
+                                                    {msg.progress && (
+                                                        <div className="mt-2 text-xs opacity-70">
+                                                            📈 {msg.progress}
+                                                        </div>
+                                                    )}
+                                                    
+                                                    <div className="text-xs opacity-60 mt-2">
+                                                        {msg.timestamp}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {loading && (
+                                            <div className="flex justify-start">
+                                                <div className="bg-white/90 rounded-2xl p-4 max-w-[80%]">
+                                                    <div className="flex items-center space-x-2 text-gray-600">
+                                                        <div className="typing-dots">
+                                                            <span>●</span>
+                                                            <span>●</span>
+                                                            <span>●</span>
+                                                        </div>
+                                                        <span>AI กำลังประมวลผล...</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div ref={messagesEndRef} />
+                                    </div>
+
+                                    {/* Input */}
+                                    <div className="flex space-x-3">
+                                        <textarea
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            onKeyPress={handleKeyPress}
+                                            placeholder="พิมพ์ข้อความของคุณ... (AI จะถามเพิ่มเติมจนได้ข้อมูลครบถ้วน)"
+                                            className="flex-1 bg-white/90 border-0 rounded-xl px-4 py-3 h-16 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            disabled={loading}
+                                        />
+                                        <button
+                                            onClick={sendMessage}
+                                            disabled={!message.trim() || loading}
+                                            className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white px-6 py-3 rounded-xl transition-colors duration-200 font-medium"
+                                        >
+                                            {loading ? '⏳' : '📨'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* AI Agents Status */}
+                            <div className="lg:col-span-1">
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">👥</span>
+                                        AI Agents
+                                    </h2>
+                                    
+                                    <div className="space-y-3">
+                                        {agents.map((agent, index) => (
+                                            <div key={index} className="agent-card bg-white/10 rounded-lg p-3 border border-white/20">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="flex items-center">
+                                                        <span className="text-lg mr-2">{agent.icon}</span>
+                                                        <div>
+                                                            <div className="text-white font-medium text-sm">{agent.name}</div>
+                                                            <div className="text-white/60 text-xs">{agent.role}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className={`text-xs px-2 py-1 rounded border text-center ${getStatusColor(agent.status)}`}>
+                                                    {agent.status === 'active' && '🟢 Active'}
+                                                    {agent.status === 'assigned' && '🔵 Assigned'}
+                                                    {agent.status === 'working' && '🟡 Working'}
+                                                    {agent.status === 'completed' && '🟣 Completed'}
+                                                    {agent.status === 'waiting' && '⚪ Waiting'}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Workflow Status */}
+                                    <div className="mt-6 bg-white/5 rounded-lg p-3">
+                                        <h3 className="text-white font-semibold text-sm mb-2">🔄 Workflow</h3>
+                                        <div className="space-y-1 text-xs">
+                                            <div className={`${requirementsComplete ? 'text-green-300' : 'text-white/60'}`}>
+                                                {requirementsComplete ? '✅' : '⏳'} Requirements Gathering
+                                            </div>
+                                            <div className={`${projectStarted ? 'text-green-300' : 'text-white/60'}`}>
+                                                {projectStarted ? '✅' : '⏳'} Project Planning
+                                            </div>
+                                            <div className="text-white/60">
+                                                ⏳ Development
+                                            </div>
+                                            <div className="text-white/60">
+                                                ⏳ Testing & QA
+                                            </div>
+                                            <div className="text-white/60">
+                                                ⏳ Delivery
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<OrchestatorInterface />, document.getElementById('app'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookShop Online</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>BookShop Online</h1>
+        <input type="text" id="search" placeholder="ค้นหาหนังสือ...">
+        <button id="cart-button">ตะกร้าสินค้า (<span id="cart-count">0</span>)</button>
+    </header>
+    <main>
+        <section id="gallery">
+            <h2>แกลเลอรีหนังสือ</h2>
+            <div class="book" data-id="1">
+                <img src="book1.jpg" alt="Book 1">
+                <h3>ชื่อหนังสือ 1</h3>
+                <p>ราคา: 300 บาท</p>
+                <button class="add-to-cart">เพิ่มในตะกร้า</button>
+            </div>
+            <div class="book" data-id="2">
+                <img src="book2.jpg" alt="Book 2">
+                <h3>ชื่อหนังสือ 2</h3>
+                <p>ราคา: 250 บาท</p>
+                <button class="add-to-cart">เพิ่มในตะกร้า</button>
+            </div>
+            <!-- เพิ่มหนังสือเพิ่มเติมที่นี่ -->
+        </section>
+    </main>
+    <footer>
+        <p>© 2023 BookShop Online. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

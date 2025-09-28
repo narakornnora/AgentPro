@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro Chat - Build with AI</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            background: #0f0f0f;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Chat Panel */
+        .chat-panel {
+            width: 40%;
+            background: #1a1a1a;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #333;
+            background: #111;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-name {
+            font-weight: 600;
+        }
+
+        .project-status {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .avatar.user {
+            background: #ff6b6b;
+        }
+
+        .avatar.ai {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: #2563eb;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.ai .message-content {
+            background: #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: #333;
+            border-radius: 12px;
+            border-bottom-left-radius: 4px;
+            max-width: 80%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .chat-input-container {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #333;
+            background: #111;
+        }
+
+        .chat-input-wrapper {
+            background: #222;
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid #333;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input-wrapper:focus-within {
+            border-color: #667eea;
+        }
+
+        .chat-input {
+            width: 100%;
+            background: none;
+            border: none;
+            color: #fff;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 20px;
+            max-height: 120px;
+        }
+
+        .chat-input::placeholder {
+            color: #666;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .input-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.3s;
+        }
+
+        .input-btn:hover {
+            color: #fff;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            width: 60%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #333;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-title {
+            font-weight: 600;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            background: #333;
+            border: none;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #444;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .preview-content {
+            flex: 1;
+            position: relative;
+            background: #fff;
+        }
+
+        .preview-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #666;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-container {
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .progress-message {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-percent {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .code-preview {
+            display: none;
+            height: 100%;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow: auto;
+            padding: 1rem;
+        }
+
+        .code-preview pre {
+            margin: 0;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: #333;
+            border: none;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .chat-panel {
+                width: 100%;
+                height: 50%;
+            }
+
+            .preview-panel {
+                width: 100%;
+                height: 50%;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <div class="project-info">
+                    <div class="project-icon">🚀</div>
+                    <div>
+                        <div class="project-name">AgentPro Project</div>
+                        <div style="font-size: 0.75rem; color: #666;">Loading Live Preview...</div>
+                    </div>
+                </div>
+                <div class="project-status">● Live</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    <div class="avatar ai">🤖</div>
+                    <div>
+                        <div class="message-content">
+                            สวัสดีครับ! ผม AgentPro พร้อมช่วยสร้างแอปหรือเว็บไซต์ให้คุณแล้ว 🚀
+                            <br><br>
+                            บอกมาได้เลยว่าอยากสร้างอะไร จะเป็น landing page, mobile app, dashboard หรืออะไรก็ได้ครับ!
+                        </div>
+                        <div class="message-time">เมื่อสักครู่</div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="avatar ai">🤖</div>
+                    <div>
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea 
+                        class="chat-input" 
+                        id="messageInput"
+                        placeholder="บอก AgentPro ว่าอยากสร้างอะไร..."
+                        rows="1"
+                    ></textarea>
+                    <div class="input-actions">
+                        <div class="input-options">
+                            <button class="input-btn" title="แนบไฟล์">📎</button>
+                            <button class="input-btn" title="เพิ่ม Workspace">🗂️</button>
+                            <button class="input-btn" title="เชื่อม Database">🛢️</button>
+                        </div>
+                        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                            ➤
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="preview-header">
+                <div class="preview-title">Live Preview</div>
+                <div class="preview-actions">
+                    <button class="action-btn" onclick="toggleView('preview')">🖥️ Preview</button>
+                    <button class="action-btn" onclick="toggleView('code')">💻 Code</button>
+                    <button class="action-btn primary">🚀 Deploy</button>
+                </div>
+            </div>
+
+            <div class="preview-content">
+                <div class="preview-loading" id="previewLoading">
+                    <div class="loading-spinner"></div>
+                    <div>กำลังเตรียม preview environment...</div>
+                </div>
+
+                <iframe 
+                    class="preview-iframe" 
+                    id="previewFrame" 
+                    style="display: none;"
+                    src="about:blank"
+                ></iframe>
+
+                <div class="code-preview" id="codePreview">
+                    <pre><code id="generatedCode">// Generated code will appear here...</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+    <script>
+        let currentView = 'preview';
+        let messageHistory = [];
+        let isGenerating = false;
+
+        // Initialize
+        window.onload = function() {
+            // Get initial request from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialRequest = urlParams.get('request');
+            
+            if (initialRequest) {
+                document.getElementById('messageInput').value = initialRequest;
+                setTimeout(() => sendMessage(), 500);
+            }
+
+            // Hide loading after a moment
+            setTimeout(() => {
+                document.getElementById('previewLoading').style.display = 'none';
+                document.getElementById('previewFrame').style.display = 'block';
+                
+                // Load a simple demo page
+                loadDemoPreview();
+            }, 2000);
+
+            autoResizeInput();
+        };
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || isGenerating) return;
+
+            // Add user message
+            addMessage('user', message);
+            input.value = '';
+            autoResizeInput();
+
+            // Show typing indicator
+            showTyping();
+            isGenerating = true;
+            document.getElementById('sendBtn').disabled = true;
+
+            // Simulate AI response
+            setTimeout(() => {
+                generateResponse(message);
+            }, 1000 + Math.random() * 2000);
+        }
+
+        function addMessage(type, content, timestamp = null) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const time = timestamp || new Date().toLocaleTimeString('th-TH', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            messageDiv.innerHTML = `
+                <div class="avatar ${type}">${type === 'user' ? 'N' : '🤖'}</div>
+                <div>
+                    <div class="message-content">${content}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            messageHistory.push({ type, content, time });
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function showProgressStatus(message, progress, status) {
+            hideTyping(); // Hide normal typing first
+            
+            // Create or update progress indicator
+            let progressEl = document.getElementById('progressIndicator');
+            if (!progressEl) {
+                progressEl = document.createElement('div');
+                progressEl.id = 'progressIndicator';
+                progressEl.className = 'message ai-message';
+                progressEl.innerHTML = `
+                    <div class="avatar ai">🤖</div>
+                    <div class="message-content">
+                        <div class="progress-container">
+                            <div class="progress-message" id="progressMessage"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-percent" id="progressPercent">0%</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('chatMessages').appendChild(progressEl);
+            }
+            
+            // Update progress
+            document.getElementById('progressMessage').textContent = message;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = progress + '%';
+            
+            // Scroll to bottom
+            const messagesContainer = document.getElementById('chatMessages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideProgressStatus() {
+            const progressEl = document.getElementById('progressIndicator');
+            if (progressEl) {
+                progressEl.remove();
+            }
+        }
+
+        let websocket = null;
+
+        function connectWebSocket() {
+            websocket = new WebSocket('ws://localhost:8001/ws/chat');
+            
+            websocket.onopen = function(event) {
+                console.log('WebSocket connected');
+            };
+            
+            websocket.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'typing') {
+                    // Show typing with custom message
+                    showTyping(data.message);
+                } else if (data.type === 'status') {
+                    // Show dynamic status with progress
+                    showProgressStatus(data.message, data.progress || 0, data.status);
+                } else if (data.type === 'message') {
+                    hideTyping();
+                    hideProgressStatus();
+                    
+                    // Add AI response
+                    addMessage('ai', data.message);
+                    
+                    // Update preview if provided
+                    if (data.preview_url) {
+                        updatePreviewFromUrl(`http://localhost:8001${data.preview_url}`);
+                        showPreview();
+                    }
+                    
+                    // Reset processing state to allow new messages
+                    isProcessing = false;
+                    isGenerating = false;
+                    document.getElementById('sendBtn').disabled = false;
+                    
+                } else if (data.type === 'error') {
+                    hideTyping();
+                    hideProgressStatus();
+                    addMessage('ai', `❌ ${data.message}`);
+                    
+                    // Reset processing state on error
+                    isProcessing = false;
+                    isGenerating = false;
+                    document.getElementById('sendBtn').disabled = false;
+                }
+            };
+            
+            websocket.onclose = function(event) {
+                console.log('WebSocket disconnected');
+                setTimeout(connectWebSocket, 3000); // Reconnect after 3s
+            };
+            
+            websocket.onerror = function(error) {
+                console.error('WebSocket error:', error);
+                hideTyping();
+                addMessage('ai', '❌ เกิดข้อผิดพลาดในการเชื่อมต่อ กำลังลองใหม่...');
+            };
+        }
+
+        let isProcessing = false;
+
+        async function generateResponse(userMessage) {
+            if (isProcessing) {
+                console.log('Already processing, ignoring request');
+                return;
+            }
+            
+            isProcessing = true;
+            
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                // Fallback to HTTP if WebSocket not available
+                try {
+                    const response = await fetch('http://localhost:8001/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+                    
+                    const data = await response.json();
+                    addMessage('ai', data.response || 'ขอโทษครับ เกิดข้อผิดพลาดในการตอบกลับ');
+                    
+                    if (data.preview_url) {
+                        updatePreviewFromUrl(`http://localhost:8001${data.preview_url}`);
+                        showPreview();
+                    }
+                } catch (error) {
+                    console.error('HTTP fallback error:', error);
+                    addMessage('ai', '❌ ไม่สามารถติดต่อ server ได้');
+                }
+                
+                // Reset all processing states
+                isProcessing = false;
+                isGenerating = false;
+                document.getElementById('sendBtn').disabled = false;
+                return;
+            }
+            
+            // Send via WebSocket
+            websocket.send(JSON.stringify({
+                message: userMessage
+            }));
+        }
+
+        function getCurrentConversationId() {
+            // Get or create conversation ID
+            let convId = sessionStorage.getItem('conversationId');
+            if (!convId) {
+                convId = `conv_${Date.now()}`;
+                sessionStorage.setItem('conversationId', convId);
+            }
+            return convId;
+        }
+
+        function getFallbackResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('landing') || lowerMessage.includes('หน้าแรก')) {
+                return {
+                    response: `เยี่ยม! ผมจะสร้าง Landing Page ให้คุณเลยครับ 🚀
+
+กำลังสร้าง:
+• 🎨 Hero section พร้อม gradient สวย ๆ  
+• 📝 Call-to-action ที่ชัดเจน
+• 📱 Responsive design สำหรับทุกอุปกรณ์
+• ⚡ Performance optimization
+
+ช่วยกรอกรายละเอียดเพิ่มเติมได้ไหมครับ:
+- ชื่อบริษัท/โปรเจค?
+- สีหลักที่ชอบ? 
+- ข้อความหลักที่อยากสื่อ?`,
+                    generateCode: generateLandingPage
+                };
+                
+            } else if (lowerMessage.includes('app') || lowerMessage.includes('แอป')) {
+                return {
+                    response: `สุดยอด! ผมจะสร้างแอปให้คุณครับ 📱
+
+กำลังวิเคราะห์และสร้าง:
+• 🏗️ App architecture 
+• 🎯 User experience flow
+• 💾 Database structure  
+• 🔐 Authentication system
+• 📊 Analytics integration
+
+อยากให้เป็นแอปประเภทไหนครับ? (เช่น Social, E-commerce, Productivity)`,
+                    generateCode: generateMobileApp
+                };
+                
+            } else if (lowerMessage.includes('dashboard') || lowerMessage.includes('แดชบอร์ด')) {
+                return {
+                    response: `ได้เลยครับ! Dashboard จะสร้างให้ทันที 📊
+
+Features ที่จะมี:
+• 📈 Real-time charts & graphs
+• 📋 Data tables with filtering  
+• 🔔 Notification system
+• 👥 User management
+• 🎨 Dark/Light theme toggle
+
+ข้อมูลอะไรที่อยากแสดงใน dashboard ครับ?`,
+                    generateCode: generateDashboard
+                };
+                
+            } else {
+                return {
+                    response: `เข้าใจแล้วครับ! ผมจะช่วยสร้าง "${userMessage}" ให้คุณ ✨
+
+🤖 AgentPro กำลังวิเคราะห์:
+• Requirements analysis
+• Architecture design  
+• UI/UX planning
+• Code generation
+• Testing & optimization
+
+กำลังสร้างให้อยู่ครับ รอสักครู่นะ...`,
+                    generateCode: () => generateGenericApp(userMessage)
+                };
+            }
+        }
+
+        function generateLandingPage() {
+            setTimeout(() => {
+                const landingPageHTML = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Awesome Landing Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .header { padding: 2rem 0; text-align: center; }
+        .hero { padding: 4rem 0; text-align: center; }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.5rem; margin-bottom: 2rem; opacity: 0.9; }
+        .cta-button {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .cta-button:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .features { padding: 4rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .feature { background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 15px; text-align: center; }
+        .feature h3 { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h2>🚀 MyBrand</h2>
+        </header>
+        
+        <section class="hero">
+            <h1>Build Something Amazing</h1>
+            <p>Create beautiful applications with the power of AI</p>
+            <a href="#" class="cta-button">Get Started Today</a>
+        </section>
+        
+        <section class="features">
+            <div class="feature">
+                <h3>⚡ Lightning Fast</h3>
+                <p>Built for speed and performance</p>
+            </div>
+            <div class="feature">
+                <h3>🎨 Beautiful Design</h3>
+                <p>Stunning user interfaces</p>
+            </div>
+            <div class="feature">
+                <h3>🔒 Secure</h3>
+                <p>Enterprise-grade security</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>`;
+
+                updatePreview(landingPageHTML);
+                updateCodeView(landingPageHTML);
+                
+                addMessage('ai', '🎉 Landing Page สร้างเสร็จแล้วครับ! ลองดูใน Preview ด้านขวา แล้วบอกมาได้เลยถ้าอยากปรับแต่งอะไร');
+                
+                // Reset states to allow new messages
+                isProcessing = false;
+                isGenerating = false;
+                document.getElementById('sendBtn').disabled = false;
+            }, 2000);
+        }
+
+        function generateMobileApp() {
+            setTimeout(() => {
+                const appHTML = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile App Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0; max-width: 375px; margin: 0 auto; min-height: 100vh;
+        }
+        .app-header { background: #667eea; color: white; padding: 1rem; text-align: center; }
+        .nav-bar { display: flex; background: white; border-bottom: 1px solid #eee; }
+        .nav-item { flex: 1; padding: 1rem; text-align: center; cursor: pointer; }
+        .nav-item.active { background: #667eea; color: white; }
+        .content { padding: 1rem; }
+        .card { background: white; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .button { background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 25px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="app-header">
+        <h2>📱 My Mobile App</h2>
+    </div>
+    
+    <div class="nav-bar">
+        <div class="nav-item active">🏠 Home</div>
+        <div class="nav-item">🔍 Search</div>
+        <div class="nav-item">❤️ Favorites</div>
+        <div class="nav-item">👤 Profile</div>
+    </div>
+    
+    <div class="content">
+        <div class="card">
+            <h3>Welcome to Your App!</h3>
+            <p>This is a demo of your mobile application.</p>
+            <button class="button">Get Started</button>
+        </div>
+        
+        <div class="card">
+            <h3>📊 Analytics</h3>
+            <p>Track your progress and achievements.</p>
+        </div>
+        
+        <div class="card">
+            <h3>🔔 Notifications</h3>
+            <p>Stay updated with the latest news.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+                updatePreview(appHTML);
+                updateCodeView(appHTML);
+                
+                addMessage('ai', '📱 Mobile App Demo สร้างเสร็จแล้วครับ! มี navigation bar และ card layout แบบ modern mobile design');
+                
+                // Reset states to allow new messages
+                isProcessing = false;
+                isGenerating = false;
+                document.getElementById('sendBtn').disabled = false;
+            }, 3000);
+        }
+
+        function generateDashboard() {
+            setTimeout(() => {
+                const dashboardHTML = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 250px; height: 100vh; background: #2c3e50; color: white; padding: 2rem 1rem; }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .nav-item { padding: 0.75rem; margin: 0.5rem 0; border-radius: 5px; cursor: pointer; }
+        .nav-item:hover { background: #34495e; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .stat-number { font-size: 2rem; font-weight: bold; color: #667eea; }
+        .chart-container { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .fake-chart { height: 200px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 5px; display: flex; align-items: center; justify-content: center; color: white; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>📊 Dashboard</h2>
+        <div class="nav-item">🏠 Overview</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item">👥 Users</div>
+        <div class="nav-item">💰 Revenue</div>
+        <div class="nav-item">⚙️ Settings</div>
+    </div>
+    
+    <div class="main-content">
+        <h1>Analytics Overview</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="stat-number">12,547</div>
+                <p style="color: #22c55e;">↗️ +12.5% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Revenue</h3>
+                <div class="stat-number">฿85,420</div>
+                <p style="color: #22c55e;">↗️ +8.2% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Orders</h3>
+                <div class="stat-number">2,847</div>
+                <p style="color: #ef4444;">↘️ -2.4% from last month</p>
+            </div>
+            <div class="stat-card">
+                <h3>Conversion</h3>
+                <div class="stat-number">3.24%</div>
+                <p style="color: #22c55e;">↗️ +1.8% from last month</p>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Monthly Revenue Trend</h3>
+            <div class="fake-chart">
+                📈 Interactive Chart Would Go Here
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+
+                updatePreview(dashboardHTML);
+                updateCodeView(dashboardHTML);
+                
+                addMessage('ai', '📊 Dashboard สร้างเสร็จแล้วครับ! มี sidebar navigation, stat cards และพื้นที่สำหรับ charts');
+                
+                // Reset states to allow new messages
+                isProcessing = false;
+                isGenerating = false;
+                document.getElementById('sendBtn').disabled = false;
+            }, 2500);
+        }
+
+        function generateGenericApp(request) {
+            setTimeout(() => {
+                const genericHTML = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom App - ${request}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #8360c3, #2ebf91);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .icon { font-size: 4rem; margin-bottom: 1rem; }
+        h1 { color: #333; margin-bottom: 1rem; }
+        p { color: #666; line-height: 1.6; margin-bottom: 2rem; }
+        .feature-list { text-align: left; margin: 2rem 0; }
+        .feature { padding: 0.5rem 0; color: #555; }
+        .cta-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✨</div>
+        <h1>Your Custom App</h1>
+        <p>AgentPro ได้สร้างแอปตามที่คุณร้องขอ: <strong>"${request}"</strong></p>
+        
+        <div class="feature-list">
+            <div class="feature">🎨 Custom UI Design</div>
+            <div class="feature">📱 Responsive Layout</div>
+            <div class="feature">⚡ Fast Performance</div>
+            <div class="feature">🔒 Secure Architecture</div>
+            <div class="feature">🚀 Ready to Deploy</div>
+        </div>
+        
+        <button class="cta-button" onclick="alert('🎉 Coming Soon!')">
+            Launch Application
+        </button>
+        
+        <p style="margin-top: 2rem; font-size: 0.875rem; color: #888;">
+            Built with AgentPro Multi-Agent System 🤖
+        </p>
+    </div>
+</body>
+</html>`;
+
+                updatePreview(genericHTML);
+                updateCodeView(genericHTML);
+                
+                addMessage('ai', '✨ แอปสำหรับ "' + request + '" สร้างเสร็จแล้วครับ! อยากปรับแต่งหรือเพิ่มฟีเจอร์อะไรไหม?');
+                
+                // Reset states to allow new messages
+                isProcessing = false;
+                isGenerating = false;
+                document.getElementById('sendBtn').disabled = false;
+            }, 2000);
+        }
+
+        function updatePreview(html) {
+            const iframe = document.getElementById('previewFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+        }
+
+        function updatePreviewFromUrl(url) {
+            const iframe = document.getElementById('previewFrame');
+            iframe.src = url;
+        }
+
+        function showPreview() {
+            // Switch to preview tab
+            toggleView('preview');
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector('.tab-btn[onclick="toggleView(\'preview\')"]').classList.add('active');
+        }
+
+        function updateCodeView(code) {
+            document.getElementById('generatedCode').textContent = code;
+        }
+
+        function toggleView(view) {
+            currentView = view;
+            const previewFrame = document.getElementById('previewFrame');
+            const codePreview = document.getElementById('codePreview');
+
+            if (view === 'preview') {
+                previewFrame.style.display = 'block';
+                codePreview.style.display = 'none';
+            } else {
+                previewFrame.style.display = 'none';
+                codePreview.style.display = 'block';
+            }
+        }
+
+        function loadDemoPreview() {
+            const welcomeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container { max-width: 400px; padding: 2rem; }
+        .icon { font-size: 4rem; margin-bottom: 1rem; }
+        h1 { margin-bottom: 1rem; }
+        p { opacity: 0.9; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚀</div>
+        <h1>AgentPro Ready!</h1>
+        <p>บอกมาได้เลยว่าอยากสร้างอะไร<br>ผมจะสร้างและแสดง preview ให้ดูทันที!</p>
+    </div>
+</body>
+</html>`;
+            
+            updatePreview(welcomeHTML);
+        }
+
+        function autoResizeInput() {
+            const input = document.getElementById('messageInput');
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+        }
+
+        // Event listeners
+        document.getElementById('messageInput').addEventListener('input', autoResizeInput);
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function toggleSidebar() {
+            const chatPanel = document.getElementById('chatPanel');
+            chatPanel.style.display = chatPanel.style.display === 'none' ? 'flex' : 'none';
+        }
+
+        // Initialize WebSocket connection on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            connectWebSocket();
+        });
+    </script>
+</body>
+</html>

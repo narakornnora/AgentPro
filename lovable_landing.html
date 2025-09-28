@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro - Build something 🚀 Lovable</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%
+            );
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2rem;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-content {
+            padding-top: 100px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+            max-width: 600px;
+        }
+
+        .chat-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 15px;
+            background: #f8f9fa;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            min-height: 60px;
+        }
+
+        .chat-input:focus {
+            box-shadow: 0 0 0 3px rgba(116, 75, 162, 0.3);
+        }
+
+        .chat-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0 1rem;
+        }
+
+        .attachment-options {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .quick-examples {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .example-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .example-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            max-width: 200px;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .chat-container {
+                margin: 0 1rem;
+            }
+
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .thinking-indicator {
+            display: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape">🚀</div>
+        <div class="shape">💡</div>
+        <div class="shape">⚡</div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="#" class="logo">
+                🚀 AgentPro
+            </a>
+            <ul class="nav-links">
+                <li><a href="#community">Community</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#enterprise">Enterprise</a></li>
+                <li><a href="#learn">Learn</a></li>
+                <li><a href="#launched">Launched</a></li>
+            </ul>
+            <div class="user-menu">
+                <div class="user-avatar">N</div>
+                <span style="color: white;">Narakorn's AgentPro</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <h1 class="hero-title">Build something 🚀 Lovable</h1>
+        <p class="hero-subtitle">Create apps and websites by chatting with AI</p>
+        
+        <div class="chat-container">
+            <textarea 
+                class="chat-input" 
+                placeholder="Ask AgentPro to create a landing page for my..."
+                id="chatInput"
+            ></textarea>
+            
+            <div class="chat-options">
+                <div class="attachment-options">
+                    <button class="option-btn">
+                        <span>📎</span>
+                        <span>Attach</span>
+                    </button>
+                    <button class="option-btn">
+                        <span>🗂️</span>
+                        <span>Workspace</span>
+                    </button>
+                    <button class="option-btn">
+                        <span>🛢️</span>
+                        <span>Supabase</span>
+                    </button>
+                </div>
+                
+                <button class="send-btn" onclick="startBuilding()">
+                    <span>🎙️</span>
+                </button>
+            </div>
+
+            <div class="thinking-indicator" id="thinkingIndicator">
+                AgentPro กำลังคิด... 🤔
+            </div>
+        </div>
+
+        <div class="quick-examples">
+            <button class="example-btn" onclick="setExample('Bill splitter')">📊 Bill splitter</button>
+            <button class="example-btn" onclick="setExample('Social media feed')">📱 Social media feed</button>
+            <button class="example-btn" onclick="setExample('Note taking app')">📝 Note taking app</button>
+            <button class="example-btn" onclick="setExample('Expense tracker')">💰 Expense tracker</button>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">Smart AI</div>
+                <div class="feature-desc">Multi-agent system ที่ฉลาดที่สุด</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Real-time</div>
+                <div class="feature-desc">สร้างและดู preview ทันที</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-title">Collaboration</div>
+                <div class="feature-desc">ทำงานร่วมกันแบบ live</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">☁️</div>
+                <div class="feature-title">Deploy</div>
+                <div class="feature-desc">Deploy ไปทุก platform</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function setExample(example) {
+            document.getElementById('chatInput').value = `Ask AgentPro to create a ${example}...`;
+            document.getElementById('chatInput').focus();
+        }
+
+        function startBuilding() {
+            const input = document.getElementById('chatInput').value;
+            if (input.trim()) {
+                document.getElementById('thinkingIndicator').style.display = 'block';
+                
+                // Simulate thinking time
+                setTimeout(() => {
+                    // Navigate to chat interface
+                    window.location.href = 'lovable_chat.html?request=' + encodeURIComponent(input);
+                }, 1500);
+            }
+        }
+
+        // Enter key to send
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                startBuilding();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+        });
+
+        // Add some interactive effects
+        document.addEventListener('mousemove', function(e) {
+            const shapes = document.querySelectorAll('.shape');
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.0001;
+                const x = e.clientX * speed;
+                const y = e.clientY * speed;
+                shape.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

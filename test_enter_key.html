@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enter Key</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        #testInput {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        #testInput:focus {
+            border-color: #4facfe;
+            outline: none;
+        }
+        #sendBtn {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .messages {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            min-height: 200px;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Enter Key Functionality</h1>
+        <p>พิมพ์ข้อความแล้วกด <strong>Enter</strong> เพื่อส่ง</p>
+        
+        <textarea 
+            id="testInput" 
+            placeholder="พิมพ์ข้อความแล้วกด Enter..."
+            rows="3"
+        ></textarea>
+        
+        <button id="sendBtn">📤 Send Message</button>
+        
+        <div id="messages" class="messages">
+            <div class="message">💬 พร้อมทดสอบ! พิมพ์ข้อความแล้วกด Enter</div>
+        </div>
+    </div>
+
+    <script>
+        class EnterKeyTester {
+            constructor() {
+                this.input = document.getElementById('testInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.messages = document.getElementById('messages');
+                
+                console.log('🔧 EnterKeyTester initialized');
+                console.log('📝 Input element:', this.input);
+                console.log('🚀 Send button:', this.sendBtn);
+                
+                this.initializeEvents();
+            }
+            
+            initializeEvents() {
+                console.log('🔧 Adding event listeners...');
+                
+                // Method 1: keypress event
+                this.input.addEventListener('keypress', (e) => {
+                    console.log('🔔 Keypress detected:', e.key, 'ShiftKey:', e.shiftKey);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter key detected - sending message');
+                        e.preventDefault();
+                        this.sendMessage('via keypress');
+                    }
+                });
+                
+                // Method 2: keydown event (fallback)
+                this.input.addEventListener('keydown', (e) => {
+                    console.log('🔔 Keydown detected:', e.key, 'ShiftKey:', e.shiftKey);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter key detected - sending message (keydown)');
+                        e.preventDefault();
+                        this.sendMessage('via keydown');
+                    }
+                });
+                
+                // Method 3: Button click
+                this.sendBtn.addEventListener('click', () => {
+                    console.log('🔔 Button clicked');
+                    this.sendMessage('via button click');
+                });
+                
+                // Input change detection
+                this.input.addEventListener('input', () => {
+                    const hasText = this.input.value.trim().length > 0;
+                    this.sendBtn.disabled = !hasText;
+                    this.sendBtn.style.opacity = hasText ? '1' : '0.5';
+                });
+                
+                console.log('✅ All event listeners added successfully');
+            }
+            
+            sendMessage(method) {
+                const message = this.input.value.trim();
+                console.log('📤 Sending message:', message, 'Method:', method);
+                
+                if (!message) {
+                    console.log('❌ No message to send');
+                    return;
+                }
+                
+                // Add message to chat
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `
+                    <strong>📩 Message sent ${method}:</strong><br>
+                    "${message}"<br>
+                    <small>⏰ ${new Date().toLocaleTimeString()}</small>
+                `;
+                
+                this.messages.appendChild(messageDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+                
+                // Clear input
+                this.input.value = '';
+                this.sendBtn.disabled = true;
+                this.sendBtn.style.opacity = '0.5';
+                
+                console.log('✅ Message sent successfully');
+            }
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 DOM loaded - initializing EnterKeyTester');
+            window.tester = new EnterKeyTester();
+        });
+    </script>
+</body>
+</html>

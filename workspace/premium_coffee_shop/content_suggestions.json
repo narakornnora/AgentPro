@@ -1,0 +1,109 @@
+{
+  "project_type": "coffee",
+  "total_images": 10,
+  "content_data": [
+    {
+      "filename": "0002-happy-birthday-to-you-text.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0002-happy-birthday-to-you-text",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0005-a-sign-on-a-building.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0005-a-sign-on-a-building",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0006-white-and-black-wall-mounted-signage.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0006-white-and-black-wall-mounted-signage",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0007-graffiti-on-wall.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0007-graffiti-on-wall",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0009-black-and-white-round-wall-decor.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0009-black-and-white-round-wall-decor",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0010-brown-and-white-textile-on-gray-concrete.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0010-brown-and-white-textile-on-gray-concrete",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0015-coffee-cappuccino-latte-espresso-ame.jpg",
+      "alt_text": "รูปภาพกาแฟ ลาเต้ เอสเปรสโซ่ - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "หน้าแรก Hero",
+        "เกี่ยวกับเรา",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "กาแฟสด อบใหม่ทุกวัน",
+        "บาริสต้ามืออาชีพ",
+        "บรรยากาศอบอุ่น"
+      ]
+    },
+    {
+      "filename": "0017-cafe-coffee-latte-art-cappuccino-wat.png",
+      "alt_text": "รูปภาพกาแฟ ลาเต้ - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "หน้าแรก Hero",
+        "เกี่ยวกับเรา",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "กาแฟสด อบใหม่ทุกวัน",
+        "บาริสต้ามืออาชีพ",
+        "บรรยากาศอบอุ่น"
+      ]
+    },
+    {
+      "filename": "0019-coffee-coffee-beans-aroma-roasted-be.jpg",
+      "alt_text": "รูปภาพกาแฟ - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "หน้าแรก Hero",
+        "เกี่ยวกับเรา",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "กาแฟสด อบใหม่ทุกวัน",
+        "บาริสต้ามืออาชีพ",
+        "บรรยากาศอบอุ่น"
+      ]
+    },
+    {
+      "filename": "0020-coffee-book-cafe-coffee-table-caffei.jpg",
+      "alt_text": "รูปภาพกาแฟ - บรรยากาศมืออาชีพ",
+      "suggested_usage": [
+        "หน้าแรก Hero",
+        "เกี่ยวกับเรา",
+        "แกลเลอรี่"
+      ],
+      "related_content": [
+        "กาแฟสด อบใหม่ทุกวัน",
+        "บาริสต้ามืออาชีพ",
+        "บรรยากาศอบอุ่น"
+      ]
+    }
+  ],
+  "hero_suggestions": [
+    "ต้อนรับสู่โลกแห่งกาแฟพรีเมียม",
+    "กาแฟคุณภาพสูง บรรยากาศดี บริการจากใจ",
+    "เริ่มต้นวันใหม่ด้วยกาแฟสุดพิเศษ"
+  ],
+  "feature_suggestions": {
+    "quality": "เมล็ดกาแฟคัดสรรจากแหล่งปลูกชั้นนำ อบใหม่ทุกวัน",
+    "atmosphere": "บรรยากาศอบอุ่น เหมาะสำหรับทำงาน พบปะเพื่อน",
+    "service": "บาริสต้ามืออาชีญ พร้อมให้คำแนะนำเครื่องดื่ม",
+    "location": "ทำเลสะดวก จอดรถง่าย เข้าถึงได้ทุกขนส่ง"
+  }
+}

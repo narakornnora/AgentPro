@@ -1,0 +1,10 @@
+{
+  "app_name": "coffee_shop_website",
+  "app_type": "website",
+  "passed_quality_gate": true,
+  "quality_score": 86.0,
+  "processing_time": 0.122208,
+  "iterations": 1,
+  "timestamp": "2025-09-26T00:47:14.437580",
+  "applied_fixes": []
+}

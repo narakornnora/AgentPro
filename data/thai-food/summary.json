@@ -1,0 +1,30 @@
+{
+  "category": "thai-food",
+  "keywords": [
+    "อาหารไทย",
+    "สตรีทฟู้ด",
+    "ผัดไทย",
+    "ส้มตำ",
+    "ต้มยำกุ้ง",
+    "ครัว",
+    "เชฟ",
+    "จัดจาน",
+    "food plating",
+    "thai food",
+    "street food",
+    "noodles",
+    "chef",
+    "kitchen",
+    "pad thai",
+    "tom yum",
+    "thai curry"
+  ],
+  "providers": [
+    "unsplash",
+    "pexels",
+    "pixabay"
+  ],
+  "stored": 20,
+  "groupBy": "category",
+  "at": "2025-09-19T10:51:10.045Z"
+}

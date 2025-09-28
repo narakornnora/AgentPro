@@ -1,0 +1,15 @@
+2025-09-26 00:37:48,515 - INFO - New master key generated and saved
+2025-09-26 00:37:48,674 - INFO - Encryption system initialized with AES-256 and RSA-4096
+2025-09-26 00:37:48,696 - INFO - Database initialized successfully
+2025-09-26 00:37:48,696 - INFO - Secure Vault initialized successfully
+2025-09-26 00:37:48,941 - INFO - User admin created successfully with role admin
+2025-09-26 00:37:49,185 - INFO - User admin authenticated successfully
+2025-09-26 00:37:49,192 - INFO - API key openai_key for service OpenAI stored successfully
+2025-09-26 00:37:49,197 - INFO - API key stripe_key for service Stripe stored successfully
+2025-09-26 00:37:49,201 - INFO - API key aws_key for service AWS stored successfully
+2025-09-26 00:37:49,206 - INFO - Credential database_prod of type database stored successfully
+2025-09-26 00:37:49,210 - INFO - Credential email_service of type smtp stored successfully
+2025-09-26 00:37:49,215 - INFO - API key openai_key retrieved successfully
+2025-09-26 00:37:49,220 - INFO - Credential database_prod retrieved successfully
+2025-09-26 00:37:49,246 - INFO - Vault backup created successfully at ./vault_backup
+2025-09-26 00:38:40,356 - ERROR - Failed to initialize encryption: 

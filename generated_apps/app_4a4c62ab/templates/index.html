@@ -1,0 +1,273 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Restaurant Booking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Thai Restaurant</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="reservations.html">จองโต๊ะ</a></li>
+                <li><a href="promotions.html">โปรโมชั่น</a></li>
+                <li><a href="contact.html">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="welcome">
+            <h2>ยินดีต้อนรับสู่ Thai Restaurant</h2>
+            <p>สัมผัสประสบการณ์อาหารไทยแท้ที่ดีที่สุด</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Thai Restaurant. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+```html
+<!-- reservations.html -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองโต๊ะ - Thai Restaurant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Thai Restaurant</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="reservations.html">จองโต๊ะ</a></li>
+                <li><a href="promotions.html">โปรโมชั่น</a></li>
+                <li><a href="contact.html">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="reservation_form">
+            <h2>ฟอร์มจองโต๊ะ</h2>
+            <form id="bookingForm">
+                <label for="name">ชื่อ:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="date">วันที่:</label>
+                <input type="date" id="date" name="date" required>
+                <label for="time">เวลา:</label>
+                <input type="time" id="time" name="time" required>
+                <label for="people">จำนวนคน:</label>
+                <input type="number" id="people" name="people" required>
+                <button type="submit">จองโต๊ะ</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Thai Restaurant. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+```html
+<!-- promotions.html -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรโมชั่น - Thai Restaurant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Thai Restaurant</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="reservations.html">จองโต๊ะ</a></li>
+                <li><a href="promotions.html">โปรโมชั่น</a></li>
+                <li><a href="contact.html">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="promotions_list">
+            <h2>โปรโมชั่นปัจจุบัน</h2>
+            <ul id="promotions"></ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Thai Restaurant. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+```html
+<!-- contact.html -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ติดต่อเรา - Thai Restaurant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Thai Restaurant</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">หน้าแรก</a></li>
+                <li><a href="reservations.html">จองโต๊ะ</a></li>
+                <li><a href="promotions.html">โปรโมชั่น</a></li>
+                <li><a href="contact.html">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="contact_info">
+            <h2>ข้อมูลติดต่อ</h2>
+            <p>โทร: 012-345-6789</p>
+            <p>อีเมล: info@thairrestaurant.com</p>
+            <h3>เวลาเปิด-ปิด</h3>
+            <p>ทุกวัน: 10:00 - 22:00</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Thai Restaurant. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+```
+
+```css
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+footer {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin: 10px 0 5px;
+}
+
+form input {
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+form button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+@media (max-width: 600px) {
+    nav ul li {
+        display: block;
+        margin: 5px 0;
+    }
+}
+```
+
+```javascript
+// script.js
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("promotions")) {
+        fetch('https://api.example.com/promotions')
+            .then(response => response.json())
+            .then(data => {
+                const promotionsList = document.getElementById("promotions");
+                data.forEach(promotion => {
+                    const li = document.createElement("li");
+                    li.textContent = promotion.title;
+                    promotionsList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching promotions:', error));
+    }
+
+    const bookingForm = document.getElementById("bookingForm");
+    if (bookingForm) {
+        bookingForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            const formData = new FormData(bookingForm);
+            fetch('https://api.example.com/reservations', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('จองโต๊ะสำเร็จ: ' + data.message);
+                bookingForm.reset();
+            })
+            .catch(error => console.error('Error booking table:', error));
+        });
+    }
+});
+```
+
+**หมายเหตุ:** โปรดเปลี่ยน URL ใน `fetch` ให้เป็น API ที่ใช้งานได้จริงตามที่คุณต้องก

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>FoodDelivery - Mobile App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#FF6B35">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="FoodDelivery">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json,{%22name%22:%22FoodDelivery%20App%22,%22short_name%22:%22FoodApp%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%23FF6B35%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍕%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .mobile-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .status-bar {
+            background: #000;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(255,107,53,0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.9);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-bar::placeholder {
+            color: #666;
+        }
+
+        .categories {
+            padding: 1rem;
+            background: #fff;
+        }
+
+        .categories h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .category-item {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            border-radius: 15px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .category-item:active {
+            transform: scale(0.95);
+            background: #e9ecef;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .featured-section {
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .restaurant-card {
+            background: #fff;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .restaurant-card:active {
+            transform: scale(0.98);
+        }
+
+        .restaurant-image {
+            height: 150px;
+            background: linear-gradient(45deg, #FF6B35, #F7931E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .delivery-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #FF6B35;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .restaurant-info {
+            padding: 1rem;
+        }
+
+        .restaurant-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+            color: #333;
+        }
+
+        .restaurant-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 414px;
+            background: #fff;
+            padding: 0.8rem 1rem;
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #999;
+        }
+
+        .nav-item.active {
+            color: #FF6B35;
+            background: rgba(255,107,53,0.1);
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 99;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        .content-area {
+            padding-bottom: 100px;
+        }
+
+        .agentpro-badge {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            z-index: 1000;
+        }
+
+        /* Touch Gestures */
+        .swipeable {
+            transition: transform 0.3s ease-out;
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Offline Indicator */
+        .offline-banner {
+            background: #dc3545;
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .offline .offline-banner {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>📶 AgentPro Network</span>
+            <span>🔋 100%</span>
+        </div>
+
+        <!-- Offline Banner -->
+        <div class="offline-banner">
+            📡 คุณอยู่ในโหมดออฟไลน์ - ข้อมูลบางส่วนอาจไม่เป็นปัจจุบัน
+        </div>
+
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <div class="location">
+                    <span>📍</span>
+                    <span>กรุงเทพมหานคร</span>
+                </div>
+                <div>
+                    <span>🔔</span>
+                </div>
+            </div>
+            <input type="text" class="search-bar" placeholder="🔍 ค้นหาร้านอาหารและเมนูอร่อย..." />
+        </div>
+
+        <div class="content-area">
+            <!-- Categories -->
+            <div class="categories">
+                <h3>หมวดหมู่อาหาร</h3>
+                <div class="category-grid">
+                    <div class="category-item" onclick="selectCategory('pizza')">
+                        <div class="category-icon">🍕</div>
+                        <div class="category-name">พิซซ่า</div>
+                    </div>
+                    <div class="category-item" onclick="selectCategory('burger')">
+                        <div class="category-icon">🍔</div>
+                        <div class="category-name">เบอร์เกอร์</div>
+                    </div>
+                    <div class="category-item" onclick="selectCategory('thai')">
+                        <div class="category-icon">🍜</div>
+                        <div class="category-name">อาหารไทย</div>
+                    </div>
+                    <div class="category-item" onclick="selectCategory('dessert')">
+                        <div class="category-icon">🍰</div>
+                        <div class="category-name">ขนมหวาน</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Restaurants -->
+            <div class="featured-section">
+                <div class="section-title">ร้านยอดนิยม</div>
+                
+                <div class="restaurant-card swipeable" onclick="openRestaurant('pizza-palace')">
+                    <div class="restaurant-image">
+                        🍕
+                        <div class="delivery-badge">15 นาที</div>
+                    </div>
+                    <div class="restaurant-info">
+                        <div class="restaurant-name">Pizza Palace</div>
+                        <div class="restaurant-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.8</span>
+                                <span>(500+ รีวิว)</span>
+                            </div>
+                            <div>฿฿฿</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="restaurant-card swipeable" onclick="openRestaurant('thai-delight')">
+                    <div class="restaurant-image">
+                        🍜
+                        <div class="delivery-badge">20 นาที</div>
+                    </div>
+                    <div class="restaurant-info">
+                        <div class="restaurant-name">Thai Delight</div>
+                        <div class="restaurant-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.6</span>
+                                <span>(300+ รีวิว)</span>
+                            </div>
+                            <div>฿฿</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="restaurant-card swipeable" onclick="openRestaurant('burger-house')">
+                    <div class="restaurant-image">
+                        🍔
+                        <div class="delivery-badge">25 นาที</div>
+                    </div>
+                    <div class="restaurant-info">
+                        <div class="restaurant-name">Burger House</div>
+                        <div class="restaurant-meta">
+                            <div class="rating">
+                                <span>⭐</span>
+                                <span>4.7</span>
+                                <span>(800+ รีวิว)</span>
+                            </div>
+                            <div>฿฿</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <div class="fab" onclick="showCart()">
+            🛒
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('home')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">หน้าแรก</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('search')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-label">ค้นหา</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('orders')">
+                <div class="nav-icon">📋</div>
+                <div class="nav-label">คำสั่งซื้อ</div>
+            </div>
+            <div class="nav-item" onclick="switchTab('profile')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-label">โปรไฟล์</div>
+            </div>
+        </div>
+
+        <!-- AgentPro Badge -->
+        <div class="agentpro-badge">
+            🤖 AgentPro AI
+        </div>
+    </div>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,console.log("PWA Service Worker Active")');
+        }
+
+        // Touch and Gesture Handlers
+        let startX, startY, currentX, currentY;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!startX || !startY) return;
+            
+            currentX = e.touches[0].clientX;
+            currentY = e.touches[0].clientY;
+            
+            // Prevent default scroll on horizontal swipes
+            const diffX = Math.abs(currentX - startX);
+            const diffY = Math.abs(currentY - startY);
+            
+            if (diffX > diffY) {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!startX || !startY || !currentX || !currentY) return;
+            
+            const diffX = currentX - startX;
+            const diffY = currentY - startY;
+            
+            // Horizontal swipe
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    console.log('Swipe right');
+                    // Handle swipe right
+                } else {
+                    console.log('Swipe left');
+                    // Handle swipe left
+                }
+            }
+            
+            // Reset values
+            startX = startY = currentX = currentY = null;
+        });
+
+        // App Functions
+        function selectCategory(category) {
+            console.log('Selected category:', category);
+            
+            // Add haptic feedback simulation
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            // Show loading state
+            showToast(`กำลังโหลด${getCategoryName(category)}...`);
+            
+            // Simulate loading
+            setTimeout(() => {
+                showToast(`พบร้าน${getCategoryName(category)} 12 แห่งในบริเวณใกล้เคียง`);
+            }, 1500);
+        }
+
+        function openRestaurant(restaurantId) {
+            console.log('Opening restaurant:', restaurantId);
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            showToast('กำลังเปิดหน้าร้านอาหาร...');
+            
+            // Simulate navigation
+            setTimeout(() => {
+                alert('🎉 หน้าร้านอาหารจะเปิดขึ้นจริงในแอพเต็มรูปแบบ!\n\n✨ นี่คือ Demo ที่สร้างโดย AgentPro AI\n📱 Mobile App พร้อมใช้งาน');
+            }, 1000);
+        }
+
+        function switchTab(tab) {
+            console.log('Switching to tab:', tab);
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+            
+            showToast(`เปลี่ยนไปหน้า${getTabName(tab)}`);
+        }
+
+        function showCart() {
+            if (navigator.vibrate) {
+                navigator.vibrate([50, 50, 50]);
+            }
+            
+            showToast('🛒 ตะกร้าสินค้า (ว่าง)\n\nเลือกอาหารจากร้านต่างๆ เพื่อเพิ่มใส่ตะกร้า');
+        }
+
+        // Utility Functions
+        function getCategoryName(category) {
+            const names = {
+                'pizza': 'พิซซ่า',
+                'burger': 'เบอร์เกอร์', 
+                'thai': 'อาหารไทย',
+                'dessert': 'ขนมหวาน'
+            };
+            return names[category] || 'อาหาร';
+        }
+
+        function getTabName(tab) {
+            const names = {
+                'home': 'หน้าแรก',
+                'search': 'ค้นหา',
+                'orders': 'คำสั่งซื้อ',
+                'profile': 'โปรไฟล์'
+            };
+            return names[tab] || 'หน้าต่างๆ';
+        }
+
+        function showToast(message) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                font-size: 0.9rem;
+                z-index: 10000;
+                max-width: 300px;
+                text-align: center;
+                white-space: pre-line;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // Network Status Detection
+        function updateNetworkStatus() {
+            if (navigator.onLine) {
+                document.body.classList.remove('offline');
+            } else {
+                document.body.classList.add('offline');
+                showToast('📡 เชื่อมต่ออินเทอร์เน็ตไม่ได้\nแอพยังคงใช้งานได้ในโหมดออฟไลน์');
+            }
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNetworkStatus();
+            
+            setTimeout(() => {
+                console.log('📱 Mobile App Initialized by AgentPro AI');
+                console.log('✨ Features: Touch Events, PWA Support, Offline Capability');
+                
+                showToast('🎉 ยินดีต้อนรับสู่ Food Delivery App!\n\n📱 สร้างโดย AgentPro AI\n✨ Mobile-First Experience');
+            }, 1000);
+        });
+
+        // Search functionality
+        document.querySelector('.search-bar').addEventListener('input', (e) => {
+            const query = e.target.value;
+            if (query.length > 2) {
+                console.log('Searching for:', query);
+                // Simulate search results
+            }
+        });
+
+        // Pull to refresh simulation
+        let pullStartY = 0;
+        let pullDistance = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                pullStartY = e.touches[0].clientY;
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (pullStartY > 0) {
+                pullDistance = e.touches[0].clientY - pullStartY;
+                if (pullDistance > 100) {
+                    // Trigger refresh
+                    console.log('Pull to refresh triggered');
+                    showToast('🔄 กำลังรีเฟรชข้อมูล...');
+                }
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            pullStartY = 0;
+            pullDistance = 0;
+        });
+    </script>
+</body>
+</html>

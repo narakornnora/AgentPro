@@ -1,0 +1,293 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>UI/UX Quality Report</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    background-color: #f5f5f5;
+                }
+                
+                .container {
+                    max-width: 1200px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                }
+                
+                .report-header {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 2rem;
+                    text-align: center;
+                }
+                
+                .score-display {
+                    font-size: 3rem;
+                    font-weight: bold;
+                    color: #F44336;
+                    margin: 1rem 0;
+                }
+                
+                .status-badge {
+                    display: inline-block;
+                    padding: 0.5rem 1rem;
+                    background-color: #F44336;
+                    color: white;
+                    border-radius: 6px;
+                    font-weight: bold;
+                    font-size: 1.1rem;
+                }
+                
+                .section {
+                    background: white;
+                    padding: 2rem;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 2rem;
+                }
+                
+                .section h2 {
+                    color: #2c3e50;
+                    border-bottom: 2px solid #3498db;
+                    padding-bottom: 0.5rem;
+                    margin-bottom: 1.5rem;
+                }
+                
+                .category-section {
+                    margin-bottom: 2rem;
+                }
+                
+                .category-section h3 {
+                    color: #34495e;
+                    margin-bottom: 1rem;
+                }
+                
+                .issue-item {
+                    border-left: 4px solid #e0e0e0;
+                    padding: 1rem;
+                    margin-bottom: 1rem;
+                    background-color: #fafafa;
+                    border-radius: 0 8px 8px 0;
+                }
+                
+                .issue-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .severity {
+                    padding: 0.2rem 0.6rem;
+                    border-radius: 4px;
+                    color: white;
+                    font-size: 0.8rem;
+                    font-weight: bold;
+                }
+                
+                .location {
+                    color: #666;
+                    font-size: 0.9rem;
+                }
+                
+                .issue-description {
+                    margin-bottom: 0.5rem;
+                    color: #2c3e50;
+                }
+                
+                .suggested-fix {
+                    color: #27ae60;
+                    font-size: 0.9rem;
+                    font-style: italic;
+                }
+                
+                .strengths-list, .recommendations-list {
+                    list-style: none;
+                }
+                
+                .strengths-list li, .recommendations-list li {
+                    padding: 0.5rem 0;
+                    border-bottom: 1px solid #eee;
+                }
+                
+                .strengths-list li:before {
+                    content: "✅ ";
+                    margin-right: 0.5rem;
+                }
+                
+                .recommendations-list li:before {
+                    content: "💡 ";
+                    margin-right: 0.5rem;
+                }
+                
+                .timestamp {
+                    color: #666;
+                    font-size: 0.9rem;
+                    text-align: center;
+                    margin-top: 2rem;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="report-header">
+                    <h1>UI/UX Quality Analysis Report</h1>
+                    <div class="score-display">33.0/100</div>
+                    <div class="status-badge">NEEDS IMPROVEMENT</div>
+                </div>
+                
+                
+                <div class="section">
+                    <h2>Issues Found (10)</h2>
+                    
+            <div class="category-section">
+                <h3>Accessibility Issues (3)</h3>
+                <div class="issues-list">
+            
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity major" style="background-color: #FF9800">MAJOR</span>
+                        <span class="location">Font size declarations</span>
+                    </div>
+                    <div class="issue-description">Font sizes too small (minimum: 8.0px). Recommended minimum: 14px</div>
+                    <div class="suggested-fix">💡 Increase font sizes for better readability</div>
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity major" style="background-color: #FF9800">MAJOR</span>
+                        <span class="location">Form 1</span>
+                    </div>
+                    <div class="issue-description">Form 1 has inputs without proper labels</div>
+                    <div class="suggested-fix">💡 Add descriptive labels for all form inputs</div>
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity major" style="background-color: #FF9800">MAJOR</span>
+                        <span class="location">Button element 1</span>
+                    </div>
+                    <div class="issue-description">Button 1 has no descriptive text or label</div>
+                    <div class="suggested-fix">💡 Add descriptive text or aria-label to buttons</div>
+                </div>
+                </div></div>
+            <div class="category-section">
+                <h3>Ux Issues (4)</h3>
+                <div class="issues-list">
+            
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity major" style="background-color: #FF9800">MAJOR</span>
+                        <span class="location">HTML structure</span>
+                    </div>
+                    <div class="issue-description">No headings found. Content lacks proper structure</div>
+                    <div class="suggested-fix">💡 Add appropriate headings to structure content</div>
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity major" style="background-color: #FF9800">MAJOR</span>
+                        <span class="location">Form 1</span>
+                    </div>
+                    <div class="issue-description">Form 1 has too many fields (9). Recommended maximum: 7</div>
+                    <div class="suggested-fix">💡 Break long forms into multiple steps or sections</div>
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity critical" style="background-color: #F44336">CRITICAL</span>
+                        <span class="location">Form 1</span>
+                    </div>
+                    <div class="issue-description">Form 1 has no submit mechanism</div>
+                    <div class="suggested-fix">💡 Add a clear submit button</div>
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity minor" style="background-color: #FFC107">MINOR</span>
+                        <span class="location">Interactive elements</span>
+                    </div>
+                    <div class="issue-description">No loading state indicators found</div>
+                    <div class="suggested-fix">💡 Add loading indicators for better user feedback</div>
+                </div>
+                </div></div>
+            <div class="category-section">
+                <h3>Visual Issues (1)</h3>
+                <div class="issues-list">
+            
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity minor" style="background-color: #FFC107">MINOR</span>
+                        <span class="location">Content structure</span>
+                    </div>
+                    <div class="issue-description">3 empty content elements found</div>
+                    <div class="suggested-fix">💡 Remove empty elements or add meaningful content</div>
+                </div>
+                </div></div>
+            <div class="category-section">
+                <h3>Responsive Issues (1)</h3>
+                <div class="issues-list">
+            
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity minor" style="background-color: #FFC107">MINOR</span>
+                        <span class="location">CSS width properties</span>
+                    </div>
+                    <div class="issue-description">Excessive use of fixed pixel widths</div>
+                    <div class="suggested-fix">💡 Use relative units (%, em, rem, vw) for better responsiveness</div>
+                </div>
+                </div></div>
+            <div class="category-section">
+                <h3>Performance Issues (1)</h3>
+                <div class="issues-list">
+            
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="severity minor" style="background-color: #FFC107">MINOR</span>
+                        <span class="location">Image: logo.png</span>
+                    </div>
+                    <div class="issue-description">Image 1 not using optimized format</div>
+                    <div class="suggested-fix">💡 Use WebP or AVIF format for better compression</div>
+                </div>
+                </div></div>
+                </div>
+                
+                
+                
+                <div class="section">
+                    <h2>Strengths Identified</h2>
+                    <ul class="strengths-list">
+                        <li>Responsive design implementation</li><li>Consistent design patterns</li>
+                    </ul>
+                </div>
+                
+                
+                
+                <div class="section">
+                    <h2>Recommendations</h2>
+                    <ul class="recommendations-list">
+                        <li>Improve visual consistency with unified color palette and typography system</li><li>Enhance accessibility with proper labels, alt text, and WCAG compliance</li><li>Optimize user experience with better navigation and interaction patterns</li><li>Implement comprehensive responsive design for all device sizes</li><li>Optimize performance with image compression and CSS optimization</li>
+                    </ul>
+                </div>
+                
+                
+                <div class="timestamp">
+                    Generated on 2025-09-26T00:44:38.044769
+                </div>
+            </div>
+        </body>
+        </html>
+        

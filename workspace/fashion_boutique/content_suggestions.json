@@ -1,0 +1,77 @@
+{
+  "project_type": "fashion",
+  "total_images": 10,
+  "content_data": [
+    {
+      "filename": "0009-pair-of-white-and-black-low-top-sneakers.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0009-pair-of-white-and-black-low-top-sneakers",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0012-chic-woman-with-afro-hair-in-a-floral-sw.jpg",
+      "alt_text": "รูปภาพแฟชั่น - บรรยากาศมืออาชีพ",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0014-stylish-woman-gazing-sideways-with-open.jpg",
+      "alt_text": "รูปภาพแฟชั่น - บรรยากาศมืออาชีพ",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0015-chic-boutique-with-a-variety-of-handbags.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0015-chic-boutique-with-a-variety-of-handbags",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0018-showcasing-sleek-red-stilettos-and-a-chi.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0018-showcasing-sleek-red-stilettos-and-a-chi",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0021-close-up-portrait-black-male-model-fie.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0021-close-up-portrait-black-male-model-fie",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0023-woman-casual-clothing-fashion-female.jpg",
+      "alt_text": "รูปภาพแฟชั่น - บรรยากาศมืออาชีพ",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0027-woman-phone-wallpaper-model-portrait.jpg",
+      "alt_text": "รูปภาพแฟชั่น - บรรยากาศมืออาชีพ",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0029-girl-portrait-cartoon-traditional-cl.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0029-girl-portrait-cartoon-traditional-cl",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0030-male-fashion-portrait-editorial-ligh.jpg",
+      "alt_text": "รูปภาพแฟชั่น - บรรยากาศมืออาชีพ",
+      "suggested_usage": [],
+      "related_content": []
+    }
+  ],
+  "hero_suggestions": [
+    "แฟชั่นที่สะท้อนบุคลิกภาพคุณ",
+    "สไตล์ที่ไม่เคยตกยุค",
+    "ความมั่นใจเริ่มต้นจากการแต่งตัว"
+  ],
+  "feature_suggestions": {
+    "style": "แฟชั่นทันสมัย ไม่เคยตกยุค",
+    "quality": "วัสดุคุณภาพสูง ความทนทาน",
+    "variety": "หลากหลายสไตล์ เหมาะทุกโอกาส",
+    "confidence": "เสริมความมั่นใจ สะท้อนบุคลิกภาพ"
+  }
+}

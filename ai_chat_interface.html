@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI App Generator - สร้างแอปด้วย AI จริง ๆ!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        .chat-panel {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .preview-panel {
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Messages Area */
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafbfc;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .user .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .ai .message-avatar {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 8px;
+        }
+
+        .ai .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e1e8ed;
+            border-bottom-left-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .message-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e1e8ed;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .app-type-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .app-type-btn {
+            padding: 8px 16px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .app-type-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .app-type-btn:hover {
+            border-color: #4facfe;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            resize: none;
+            min-height: 50px;
+            max-height: 120px;
+            font-family: inherit;
+        }
+
+        #messageInput:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        #sendButton {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: transform 0.2s;
+            align-self: flex-end;
+        }
+
+        #sendButton:hover {
+            transform: scale(1.05);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Preview Panel */
+        .preview-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .preview-iframe {
+            flex: 1;
+            border: none;
+            background: white;
+        }
+
+        .preview-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .preview-placeholder .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4facfe;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e1e8ed;
+            border-top: 2px solid #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .app-info {
+            background: #f8f9fa;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .app-info h4 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .app-info p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .file-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .file-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .success-indicator {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .error-indicator {
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .preview-panel {
+                order: -1;
+                max-height: 40vh;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.05); opacity: 0.8; }
+            100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
+        
+        .mobile-screen-clickable:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(74, 172, 254, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h1>🤖 AI App Generator</h1>
+                <p>สร้างแอปด้วย AI จริง ๆ ไม่ใช่ mockup!</p>
+            </div>
+            
+            <div class="messages" id="messages">
+                <div class="message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div>สวัสดี! ผมเป็น AI ที่สามารถสร้างแอป Mobile และ Web App ได้จริง ๆ</div>
+                        <div style="margin-top: 10px; font-size: 14px; opacity: 0.8;">
+                            <strong>ลองพูดว่า:</strong><br>
+                            📱 "สร้าง app ร้านกาแฟ มี เมนู ตะกร้า ชำระเงิน"<br>
+                            🌐 "สร้างเว็บไซต์ ขายเสื้อผ้า มี gallery shopping cart"
+                        </div>
+                        <div class="message-time">ระบบพร้อมใช้งาน</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-area">
+                <div class="input-group">
+                    <div class="app-type-selector">
+                        <button class="app-type-btn active" data-type="mobile" data-framework="react_native">
+                            📱 Mobile App
+                        </button>
+                        <button class="app-type-btn" data-type="web" data-framework="react">
+                            🌐 Web App
+                        </button>
+                    </div>
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="บอก AI ว่าต้องการสร้างแอปอะไร เช่น 'สร้าง app ร้านอาหาร มี เมนู สั่งอาหาร ชำระเงิน'..."
+                            rows="1"
+                        ></textarea>
+                        <button id="sendButton" disabled>🚀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h3>📱 App Preview</h3>
+                <div id="previewStatus">รอการสร้างแอป</div>
+            </div>
+            <div class="preview-content" id="previewContent">
+                <div class="preview-placeholder">
+                    <div class="icon">📱</div>
+                    <h3>พร้อมสร้างแอปด้วย AI!</h3>
+                    <p>ใส่ข้อความด้านซ้าย แล้วกด 🚀 เพื่อให้ AI สร้างแอปให้คุณ</p>
+                    <p style="margin-top: 15px; font-size: 14px; opacity: 0.7;">
+                        ✨ AI จะสร้างโค้ดจริง ไม่ใช่ mockup<br>
+                        📁 ไฟล์จะถูกสร้างใน generated_apps folder<br>
+                        🔄 แอปจะแสดงผลที่นี่เมื่อสร้างเสร็จ
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AIAppGenerator {
+            constructor() {
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.messages = document.getElementById('messages');
+                this.previewContent = document.getElementById('previewContent');
+                this.previewStatus = document.getElementById('previewStatus');
+                
+                this.selectedType = 'mobile';
+                this.selectedFramework = 'react_native';
+                
+                this.initializeEventListeners();
+            }
+            
+            initializeEventListeners() {
+                console.log('🔧 Initializing event listeners...');
+                console.log('📝 Message input:', this.messageInput);
+                console.log('🚀 Send button:', this.sendButton);
+                
+                // App type selection
+                document.querySelectorAll('.app-type-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.app-type-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.selectedType = btn.dataset.type;
+                        this.selectedFramework = btn.dataset.framework;
+                    });
+                });
+                
+                // Message input
+                this.messageInput.addEventListener('input', () => {
+                    this.sendButton.disabled = this.messageInput.value.trim().length === 0;
+                });
+                
+                // Enhanced Enter key handling with better debugging
+                this.messageInput.addEventListener('keypress', (e) => {
+                    console.log('🔔 Keypress:', e.key, 'Shift:', e.shiftKey, 'Input value:', this.messageInput.value);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter detected - preventing default and sending');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false; // Extra prevention
+                    }
+                });
+                
+                // Keydown as backup method
+                this.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        console.log('✅ Enter via keydown - sending message');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    }
+                });
+                
+                // Additional safety - form submit prevention
+                if (this.messageInput.form) {
+                    this.messageInput.form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    });
+                }
+                
+                // Send button with enhanced feedback
+                this.sendButton.addEventListener('click', (e) => {
+                    console.log('🔔 Send button clicked');
+                    e.preventDefault();
+                    this.sendMessage();
+                });
+                
+                // Focus input when page loads
+                setTimeout(() => {
+                    this.messageInput.focus();
+                    console.log('📝 Input focused');
+                }, 100);
+            }
+            
+            async sendMessage() {
+                console.log('🚀 sendMessage called');
+                const message = this.messageInput.value.trim();
+                console.log('📝 Message:', message);
+                if (!message) {
+                    console.log('❌ No message to send');
+                    return;
+                }
+                
+                console.log('✅ Adding user message to chat');
+                // Add user message
+                this.addMessage('user', message);
+                
+                // Clear input
+                this.messageInput.value = '';
+                this.sendButton.disabled = true;
+                
+                // Show AI thinking with realistic progress
+                const thinkingId = this.addMessage('ai', 
+                    `<div class="loading">
+                        <div class="spinner"></div>
+                        <span id="thinking-text">AI กำลังวิเคราะห์ความต้องการ...</span>
+                    </div>`
+                );
+                
+                this.previewStatus.textContent = 'AI กำลังสร้าง...';
+                
+                // Show realistic progress
+                await this.showRealisticProgress(thinkingId);
+                
+                try {
+                    // Call AI generation API
+                    const result = await this.generateWithAI(message);
+                    
+                    // Remove thinking message
+                    document.getElementById(thinkingId).remove();
+                    
+                    if (result.success) {
+                        // Add success message
+                        this.addMessage('ai', this.formatSuccessMessage(result));
+                        
+                        // Update preview
+                        this.updatePreview(result);
+                        
+                        this.previewStatus.innerHTML = `<span class="success-indicator">✅ สร้างสำเร็จ!</span>`;
+                    } else {
+                        // Add error message
+                        this.addMessage('ai', this.formatErrorMessage(result));
+                        this.previewStatus.innerHTML = `<span class="error-indicator">❌ เกิดข้อผิดพลาด</span>`;
+                    }
+                } catch (error) {
+                    // Remove thinking message
+                    document.getElementById(thinkingId).remove();
+                    
+                    this.addMessage('ai', `❌ เกิดข้อผิดพลาด: ${error.message}`);
+                    this.previewStatus.innerHTML = `<span class="error-indicator">❌ เกิดข้อผิดพลาด</span>`;
+                }
+            }
+            
+            async generateWithAI(prompt) {
+                // Call real AI backend
+                try {
+                    const response = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: prompt,
+                            app_type: "auto", // Let AI detect project type
+                            framework: "auto" // Let AI choose framework
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    return result;
+                    
+                } catch (error) {
+                    console.error('AI Generation Error:', error);
+                    return {
+                        success: false,
+                        message: `❌ ไม่สามารถเชื่อมต่อ AI ได้: ${error.message}`,
+                        error: error.message
+                    };
+                }
+            }
+            
+            addMessage(sender, content) {
+                const messageId = 'msg-' + Date.now();
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                messageDiv.id = messageId;
+                
+                const avatar = sender === 'user' ? '👤' : '🤖';
+                const time = new Date().toLocaleTimeString('th-TH', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">
+                        <div>${content}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+                
+                this.messages.appendChild(messageDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+                
+                return messageId;
+            }
+            
+            formatSuccessMessage(result) {
+                const aiAnalysis = result.ai_analysis;
+                let message = '<div class="success-indicator">🎉 สร้าง';
+                message += (this.selectedType === 'mobile' ? 'แอป' : 'เว็บไซต์');
+                message += 'สำเร็จ!</div>';
+                
+                if (aiAnalysis) {
+                    message += '<div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin: 10px 0; border-left: 4px solid #2196f3;">';
+                    message += '<h4 style="margin: 0 0 10px 0; color: #1976d2;">🧠 AI Analysis Results</h4>';
+                    message += '<div style="font-size: 14px; line-height: 1.6;">';
+                    message += '<p><strong>🎯 Detected Project Type:</strong> ' + aiAnalysis.detected_type + ' (' + Math.round(aiAnalysis.confidence * 100) + '% confidence)</p>';
+                    message += '<p><strong>📊 Category:</strong> ' + aiAnalysis.app_category + '</p>';
+                    message += '<p><strong>⚡ Complexity:</strong> ' + aiAnalysis.complexity + '</p>';
+                    message += '<p><strong>📱 Estimated Screens:</strong> ' + aiAnalysis.estimated_screens + '</p>';
+                    message += '<p><strong>🤖 Reasoning:</strong> ' + aiAnalysis.reasoning + '</p>';
+                    
+                    if (aiAnalysis.key_features && aiAnalysis.key_features.length > 0) {
+                        message += '<p><strong>✨ Key Features Detected:</strong></p>';
+                        message += '<div style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;">';
+                        aiAnalysis.key_features.forEach(feature => {
+                            message += '<span style="background: #bbdefb; color: #1976d2; padding: 4px 8px; border-radius: 12px; font-size: 12px;">' + feature + '</span>';
+                        });
+                        message += '</div>';
+                    }
+                    message += '</div></div>';
+                }
+                
+                message += '<div class="app-info">';
+                message += '<h4>' + (result.app_name || 'แอปที่สร้างใหม่') + '</h4>';
+                message += '<p><strong>ประเภท:</strong> ' + (this.selectedType === 'mobile' ? '📱 Mobile App' : '🌐 Web App') + '</p>';
+                message += '<p><strong>ไฟล์ที่สร้าง:</strong> ' + result.files_created + ' ไฟล์</p>';
+                message += '<p><strong>ที่อยู่:</strong> ' + result.app_path + '</p>';
+                
+                if (result.code_preview) {
+                    message += '<details style="margin-top: 10px;">';
+                    message += '<summary style="cursor: pointer; color: #4facfe;">📝 ดูตัวอย่างโค้ด</summary>';
+                    message += '<pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 5px; font-size: 12px; overflow-x: auto;">' + result.code_preview + '</pre>';
+                    message += '</details>';
+                }
+                message += '</div>';
+                
+                return message;
+            }
+            
+            formatErrorMessage(result) {
+                let message = '<div class="error-indicator">❌ ไม่สามารถสร้างได้</div>';
+                message += '<p style="margin-top: 10px; color: #666;">';
+                message += 'เหตุผล: ' + (result.error || 'ไม่ทราบสาเหตุ') + '<br>';
+                message += 'กรุณาลองใหม่หรือปรับแต่งคำขอ';
+                message += '</p>';
+                return message;
+            }
+            
+            async showRealisticProgress(thinkingId) {
+                const steps = [
+                    'AI กำลังวิเคราะห์ความต้องการ...',
+                    'กำลังออกแบบโครงสร้างแอป...',
+                    'AI กำลังเขียน React Native components...',
+                    'กำลังสร้าง navigation และ state management...',
+                    'กำลังจัดการ UI/UX และ styling...',
+                    'กำลังเขียนไฟล์สุดท้าย...'
+                ];
+                
+                const thinkingElement = document.getElementById('thinking-text');
+                if (thinkingElement) {
+                    for (let i = 0; i < steps.length; i++) {
+                        thinkingElement.textContent = steps[i];
+                        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 1000));
+                    }
+                }
+            }
+            
+            updatePreview(result) {
+                if (result.app_url) {
+                    // For web apps, show iframe
+                    if (this.selectedType === 'web') {
+                        this.previewContent.innerHTML = `
+                            <iframe src="${result.app_url}" class="preview-iframe"></iframe>
+                        `;
+                    } else {
+                        // For mobile apps, show realistic mobile preview
+                        this.previewContent.innerHTML = `
+                            <div style="padding: 20px; overflow-y: auto; display: flex; gap: 20px;">
+                                <!-- Mobile Preview -->
+                                <div style="flex: 1; max-width: 300px;">
+                                    <h3 style="color: #2c3e50; margin-bottom: 15px;">📱 ${result.app_name}</h3>
+                                    
+                                    <!-- Phone Frame -->
+                                    <div style="
+                                        width: 280px; 
+                                        height: 500px; 
+                                        background: #1a1a1a; 
+                                        border-radius: 25px; 
+                                        padding: 15px; 
+                                        position: relative;
+                                        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                                    ">
+                                        <!-- Status Bar -->
+                                        <div style="
+                                            height: 20px; 
+                                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                            border-radius: 8px 8px 0 0;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: space-between;
+                                            padding: 0 10px;
+                                            font-size: 10px;
+                                            color: white;
+                                        ">
+                                            <span>9:41</span>
+                                            <span>●●● ▮▮▮</span>
+                                        </div>
+                                        
+                        <!-- App Screen -->
+                        <div class="mobile-screen-clickable" style="
+                            height: 450px;
+                            background: white;
+                            border-radius: 0 0 15px 15px;
+                            overflow: hidden;
+                            position: relative;
+                            cursor: pointer;
+                            transition: transform 0.1s ease;
+                            border: 2px solid #4facfe;
+                        " data-app-name="${result.app_name}" onclick="window.openInteractiveDemo('${result.app_name}')">
+                            ${this.generateMobileScreenPreview(result)}
+                            
+                            <!-- Click indicator -->
+                            <div style="
+                                position: absolute;
+                                bottom: 10px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                background: rgba(74, 172, 254, 0.9);
+                                color: white;
+                                padding: 8px 16px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                font-weight: bold;
+                                animation: pulse 2s infinite;
+                            ">
+                                🖱️ Click Me!
+                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- App Details -->
+                                <div style="flex: 1;">
+                                    <p style="color: #666; margin-bottom: 20px;">${result.description}</p>
+                                    
+                                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                                        <h4 style="color: #4facfe; margin-bottom: 10px;">📁 โครงสร้างไฟล์</h4>
+                                        <div style="font-family: monospace; font-size: 14px; line-height: 1.6;">
+                                            📦 ${result.app_name || 'MobileApp'}<br>
+                                            ├── 📄 App.tsx<br>
+                                            ├── 📄 package.json<br>
+                                            ├── 📁 screens/<br>
+                                            │   ├── 🏠 HomeScreen.tsx<br>
+                                            │   └── ⚙️ SettingsScreen.tsx<br>
+                                            └── 📁 components/<br>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="background: #e3f2fd; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                                        <h4 style="color: #1976d2; margin-bottom: 10px;">🚀 วิธีรันแอป</h4>
+                                        <div style="font-family: monospace; font-size: 14px; background: white; padding: 10px; border-radius: 5px;">
+                                            npm install<br>
+                                            npx react-native run-android<br>
+                                            npx react-native run-ios
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
+                                        <small>💡 <strong>หมายเหตุ:</strong> ไฟล์ถูกสร้างใน folder: <br><code>${result.app_path}</code></small>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add click event listener to mobile screen
+                        setTimeout(() => {
+                            const mobileScreens = document.querySelectorAll('.mobile-screen-clickable');
+                            mobileScreens.forEach(screen => {
+                                if (!screen.hasAttribute('data-click-added')) {
+                                    screen.setAttribute('data-click-added', 'true');
+                                    screen.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        const appName = screen.getAttribute('data-app-name');
+                                        console.log('Mobile screen clicked:', appName);
+                                        this.handleMobileScreenClick(appName);
+                                    });
+                                    
+                                    // Also add hover effect
+                                    screen.addEventListener('mouseenter', () => {
+                                        screen.style.transform = 'scale(1.02)';
+                                    });
+                                    screen.addEventListener('mouseleave', () => {
+                                        screen.style.transform = 'scale(1)';
+                                    });
+                                }
+                            });
+                        }, 100);
+                    }
+                } else {
+                    this.previewContent.innerHTML = `
+                        <div class="preview-placeholder">
+                            <div class="icon">❌</div>
+                            <h3>ไม่สามารถแสดงตัวอย่างได้</h3>
+                            <p>เกิดข้อผิดพลาดในการสร้างแอป</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            generateClickableMobilePreview(result) {
+                const appName = result.app_name || 'My App';
+                const isInstagram = appName.toLowerCase().includes('insta') || appName.toLowerCase().includes('social');
+                const isCoffee = appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ');
+                const isEcommerce = appName.toLowerCase().includes('shop') || appName.toLowerCase().includes('store');
+                
+                // Create clickable overlay
+                const overlay = `
+                    <div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(74, 172, 254, 0.05);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                        z-index: 100;
+                    " class="click-overlay">
+                        <div style="
+                            background: rgba(74, 172, 254, 0.95);
+                            color: white;
+                            padding: 15px 25px;
+                            border-radius: 30px;
+                            font-weight: bold;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                            animation: pulse 2s infinite;
+                        ">
+                            🖱️ Click to Interact!
+                        </div>
+                    </div>
+                    
+                    <style>
+                        .mobile-screen-clickable:hover .click-overlay {
+                            opacity: 1 !important;
+                        }
+                        
+                        @keyframes pulse {
+                            0% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                            100% { transform: scale(1); }
+                        }
+                    </style>
+                `;
+                
+                return this.generateMobileScreenPreview(result) + overlay;
+            }
+            
+            generateMobileScreenPreview(result) {
+                const appName = result.app_name || 'My App';
+                const isInstagram = appName.toLowerCase().includes('insta') || appName.toLowerCase().includes('social');
+                const isCoffee = appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ');
+                const isEcommerce = appName.toLowerCase().includes('shop') || appName.toLowerCase().includes('store');
+                
+                if (isInstagram) {
+                    return '<!-- Instagram-like UI -->' +
+                        '<div style="padding: 15px;">' +
+                            '<!-- Header -->' +
+                            '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">' +
+                                '<h2 style="margin: 0; font-size: 24px; font-weight: bold;">' + appName + '</h2>' +
+                                '<div style="font-size: 20px;">📷 ❤️ ✈️</div>' +
+                            '</div>' +
+                            
+                            '<!-- Story Section -->' +
+                            '<div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">' +
+                                '<div style="text-align: center; min-width: 60px;">' +
+                                    '<div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); margin: 0 auto 5px;"></div>' +
+                                    '<small>Your Story</small>' +
+                                '</div>' +
+                                '<div style="text-align: center; min-width: 60px;">' +
+                                    '<div style="width: 50px; height: 50px; border-radius: 50%; background: #ddd; margin: 0 auto 5px;"></div>' +
+                                    '<small>Friend 1</small>' +
+                                '</div>' +
+                            '</div>' +
+                            
+                            '<!-- Post -->' +
+                            '<div style="border: 1px solid #eee; border-radius: 8px;">' +
+                                '<div style="padding: 10px; display: flex; align-items: center; gap: 10px;">' +
+                                    '<div style="width: 32px; height: 32px; border-radius: 50%; background: #4facfe;"></div>' +
+                                    '<div><strong>user123</strong><br><small style="color: #666;">2 hours ago</small></div>' +
+                                '</div>' +
+                                '<div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 10px;"></div>' +
+                                '<div style="padding: 0 10px 10px;">' +
+                                    '<div style="margin-bottom: 8px;">❤️ 👍 💬</div>' +
+                                    '<strong>1,234 likes</strong><br>' +
+                                    '<span><strong>user123</strong> Beautiful sunset today! #nature</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                } else if (isCoffee) {
+                    return '<!-- Coffee Shop UI -->' +
+                        '<div style="padding: 15px;">' +
+                            '<!-- Header -->' +
+                            '<div style="text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 10px; color: white;">' +
+                                '<h2 style="margin: 0; font-size: 24px;">☕ ' + appName + '</h2>' +
+                                '<p style="margin: 5px 0 0 0;">Fresh Coffee Daily</p>' +
+                            '</div>' +
+                            
+                            '<!-- Menu Categories -->' +
+                            '<div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">' +
+                                '<div style="min-width: 80px; text-align: center; padding: 10px; background: #4facfe; color: white; border-radius: 20px;">' +
+                                    '<div style="font-size: 20px; margin-bottom: 5px;">☕</div>' +
+                                    '<small>Coffee</small>' +
+                                '</div>' +
+                                '<div style="min-width: 80px; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 20px;">' +
+                                    '<div style="font-size: 20px; margin-bottom: 5px;">🥐</div>' +
+                                    '<small>Pastry</small>' +
+                                '</div>' +
+                            '</div>' +
+                            
+                            '<!-- Menu Items -->' +
+                            '<div>' +
+                                '<div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 10px;" onclick="addToCart(\'Cappuccino\', 85)">' +
+                                    '<div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 10px;"></div>' +
+                                    '<div style="flex: 1;">' +
+                                        '<h4 style="margin: 0 0 5px 0;">Cappuccino</h4>' +
+                                        '<p style="margin: 0; color: #666; font-size: 14px;">Rich espresso with steamed milk</p>' +
+                                        '<strong style="color: #4facfe;">฿85</strong>' +
+                                    '</div>' +
+                                    '<button style="background: #4facfe; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;">Add</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                } else if (isEcommerce) {
+                    return '<!-- E-commerce UI -->' +
+                        '<div style="padding: 15px;">' +
+                            '<!-- Header -->' +
+                            '<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">' +
+                                '<h2 style="margin: 0; font-size: 24px;">🛍️ ' + appName + '</h2>' +
+                                '<div style="display: flex; gap: 15px;">' +
+                                    '<span style="font-size: 20px;">🔍</span>' +
+                                    '<span style="position: relative; font-size: 20px;">🛒</span>' +
+                                '</div>' +
+                            '</div>' +
+                            
+                            '<!-- Categories -->' +
+                            '<div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">' +
+                                '<div style="min-width: 70px; text-align: center; padding: 10px; background: #4facfe; color: white; border-radius: 15px;" onclick="selectCategory(\'shirts\')">👕 Shirts</div>' +
+                                '<div style="min-width: 70px; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 15px;" onclick="selectCategory(\'pants\')">� Pants</div>' +
+                            '</div>' +
+                            
+                            '<!-- Products Grid -->' +
+                            '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">' +
+                                '<div style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">' +
+                                    '<div style="height: 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>' +
+                                    '<div style="padding: 10px;">' +
+                                        '<h5 style="margin: 0 0 5px 0; font-size: 14px;">Summer T-Shirt</h5>' +
+                                        '<strong style="color: #4facfe;">$29.99</strong>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                } else {
+                    return '<!-- Generic App UI -->' +
+                        '<div style="padding: 15px;">' +
+                            '<!-- Header -->' +
+                            '<div style="text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; color: white;">' +
+                                '<h2 style="margin: 0; font-size: 24px;">📱 ' + appName + '</h2>' +
+                                '<p style="margin: 5px 0 0 0;">AI Generated App</p>' +
+                            '</div>' +
+                            
+                            '<!-- Navigation Tabs -->' +
+                            '<div style="display: flex; gap: 5px; margin-bottom: 20px; background: #f0f0f0; border-radius: 25px; padding: 5px;">' +
+                                '<div style="flex: 1; text-align: center; padding: 10px; background: white; border-radius: 20px;" onclick="selectTab(\'home\')">🏠 Home</div>' +
+                                '<div style="flex: 1; text-align: center; padding: 10px;" onclick="selectTab(\'data\')">📊 Data</div>' +
+                                '<div style="flex: 1; text-align: center; padding: 10px;" onclick="selectTab(\'settings\')">⚙️ Settings</div>' +
+                            '</div>' +
+                            
+                            '<!-- Content Cards -->' +
+                            '<div>' +
+                                '<div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px;">' +
+                                    '<h4 style="margin: 0 0 10px 0; color: #2c3e50;">Welcome to ' + appName + '</h4>' +
+                                    '<p style="margin: 0; color: #666; line-height: 1.5;">This app was generated by AI and includes modern React Native components.</p>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+                }
+            }
+            
+            // Interactive Mobile Preview System  
+            handleMobileScreenClick(appName) {
+                console.log('handleMobileScreenClick called with:', appName);
+                
+                // Add click feedback to all mobile screens
+                const screens = document.querySelectorAll('.mobile-screen-clickable');
+                screens.forEach(screen => {
+                    screen.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        screen.style.transform = 'scale(1)';
+                    }, 150);
+                });
+                
+                // Show interactive demo
+                this.showInteractiveDemo(appName || 'My App');
+            }
+        
+        showInteractiveDemo(appName) {
+            console.log('showInteractiveDemo called with:', appName);
+            
+            // Remove existing overlay if any
+            const existingOverlay = document.getElementById('interactive-demo');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            
+            const isInstagram = appName.toLowerCase().includes('insta');
+            const isCoffee = appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ');
+            
+            // Create interactive overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'interactive-demo';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                backdrop-filter: blur(5px);
+            `;
+            
+            overlay.innerHTML = 
+                '<div style="' +
+                    'width: 350px;' +
+                    'height: 600px;' +
+                    'background: #1a1a1a;' +
+                    'border-radius: 25px;' +
+                    'padding: 15px;' +
+                    'position: relative;' +
+                    'box-shadow: 0 20px 60px rgba(0,0,0,0.5);' +
+                '">' +
+                    '<!-- Close Button -->' +
+                    '<button onclick="document.getElementById(\'interactive-demo\').remove()" style="' +
+                        'position: absolute;' +
+                        'top: -40px;' +
+                        'right: 0;' +
+                        'background: white;' +
+                        'border: none;' +
+                        'border-radius: 50%;' +
+                        'width: 30px;' +
+                        'height: 30px;' +
+                        'font-size: 16px;' +
+                        'cursor: pointer;' +
+                        'z-index: 10001;' +
+                    '">✕</button>' +
+                    
+                    '<!-- Status Bar -->' +
+                    '<div style="' +
+                        'height: 20px;' +
+                        'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
+                        'border-radius: 8px 8px 0 0;' +
+                        'display: flex;' +
+                        'align-items: center;' +
+                        'justify-content: space-between;' +
+                        'padding: 0 10px;' +
+                        'font-size: 10px;' +
+                        'color: white;' +
+                    '">' +
+                        '<span>9:41</span>' +
+                        '<span>●●● ▮▮▮</span>' +
+                    '</div>' +
+                    
+                    '<!-- Interactive App Screen -->' +
+                    '<div id="interactive-screen" style="' +
+                        'height: 550px;' +
+                        'background: white;' +
+                        'border-radius: 0 0 15px 15px;' +
+                        'overflow: hidden;' +
+                        'position: relative;' +
+                    '">' +
+                    '</div>' +
+                '</div>';
+            
+            document.body.appendChild(overlay);
+            
+            // Add interactive content after appending
+            const screenElement = document.getElementById('interactive-screen');
+            if (screenElement) {
+                screenElement.innerHTML = this.generateInteractiveContent(appName);
+            }
+        }
+        
+        generateInteractiveContent(appName) {
+            const isInstagram = appName.toLowerCase().includes('insta');
+            const isCoffee = appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ');
+            const isEcommerce = appName.toLowerCase().includes('shop') || appName.toLowerCase().includes('store');
+            
+            if (isInstagram) {
+                return `
+                    <div style="padding: 15px; height: 100%; overflow-y: auto;">
+                        <!-- Interactive Header -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                            <h2 style="margin: 0; font-size: 24px; font-weight: bold;">${appName}</h2>
+                            <div style="display: flex; gap: 15px;">
+                                <span style="font-size: 20px; cursor: pointer;" onclick="alert('📷 Camera clicked! (Interactive Demo)')">📷</span>
+                                <span style="font-size: 20px; cursor: pointer;" onclick="alert('❤️ Likes clicked! (Interactive Demo)')">❤️</span>
+                                <span style="font-size: 20px; cursor: pointer;" onclick="alert('✈️ Messages clicked! (Interactive Demo)')">✈️</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Interactive Stories -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">
+                            <div style="text-align: center; min-width: 60px; cursor: pointer;" onclick="alert('📱 Your Story clicked! (Interactive Demo)')">
+                                <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); margin: 0 auto 5px; border: 3px solid transparent; background-clip: padding-box;"></div>
+                                <small>Your Story</small>
+                            </div>
+                            <div style="text-align: center; min-width: 60px; cursor: pointer;" onclick="alert('👤 Friend 1 story viewed! (Interactive Demo)')">
+                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #ddd; margin: 0 auto 5px;"></div>
+                                <small>Friend 1</small>
+                            </div>
+                            <div style="text-align: center; min-width: 60px; cursor: pointer;" onclick="alert('👤 Friend 2 story viewed! (Interactive Demo)')">
+                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #ddd; margin: 0 auto 5px;"></div>
+                                <small>Friend 2</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Interactive Posts -->
+                        <div id="instagram-posts">
+                            ${this.generateInstagramPosts()}
+                        </div>
+                        
+                        <!-- Bottom Navigation -->
+                        <div style="position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: white; border-radius: 25px; padding: 10px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); display: flex; gap: 20px;">
+                            <span style="font-size: 20px; cursor: pointer;" onclick="alert('🏠 Home clicked!')">🏠</span>
+                            <span style="font-size: 20px; cursor: pointer;" onclick="alert('🔍 Search clicked!')">🔍</span>
+                            <span style="font-size: 20px; cursor: pointer;" onclick="alert('➕ Add post clicked!')">➕</span>
+                            <span style="font-size: 20px; cursor: pointer;" onclick="alert('❤️ Activity clicked!')">❤️</span>
+                            <span style="font-size: 20px; cursor: pointer;" onclick="alert('👤 Profile clicked!')">👤</span>
+                        </div>
+                    </div>
+                `;
+            } else if (isCoffee) {
+                return `
+                    <div style="padding: 15px; height: 100%; overflow-y: auto;">
+                        <!-- Interactive Header -->
+                        <div style="text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 10px; color: white;">
+                            <h2 style="margin: 0; font-size: 24px;">☕ ${appName}</h2>
+                            <p style="margin: 5px 0 0 0;">Fresh Coffee Daily</p>
+                        </div>
+                        
+                        <!-- Interactive Menu Categories -->
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;">
+                            <div id="coffee-cat" style="min-width: 80px; text-align: center; padding: 10px; background: #4facfe; color: white; border-radius: 20px; cursor: pointer; transition: all 0.2s;" onclick="this.selectCategory('coffee')">
+                                <div style="font-size: 20px; margin-bottom: 5px;">☕</div>
+                                <small>Coffee</small>
+                            </div>
+                            <div id="pastry-cat" style="min-width: 80px; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 20px; cursor: pointer; transition: all 0.2s;" onclick="this.selectCategory('pastry')">
+                                <div style="font-size: 20px; margin-bottom: 5px;">🥐</div>
+                                <small>Pastry</small>
+                            </div>
+                            <div id="drinks-cat" style="min-width: 80px; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 20px; cursor: pointer; transition: all 0.2s;" onclick="this.selectCategory('drinks')">
+                                <div style="font-size: 20px; margin-bottom: 5px;">🥤</div>
+                                <small>Drinks</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Interactive Menu Items -->
+                        <div id="coffee-menu">
+                            ${this.generateCoffeeMenuItems()}
+                        </div>
+                        
+                        <!-- Cart Summary -->
+                        <div id="cart-summary" style="position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #4facfe; color: white; border-radius: 25px; padding: 12px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); cursor: pointer; display: none;" onclick="alert('🛒 View Cart: 0 items')">
+                            <span>🛒 Cart: <span id="cart-count">0</span> items</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div style="padding: 15px; height: 100%; overflow-y: auto;">
+                        <!-- Interactive Header -->
+                        <div style="text-align: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; color: white;">
+                            <h2 style="margin: 0; font-size: 24px;">📱 ${appName}</h2>
+                            <p style="margin: 5px 0 0 0;">Interactive Demo</p>
+                        </div>
+                        
+                        <!-- Interactive Navigation Tabs -->
+                        <div style="display: flex; gap: 5px; margin-bottom: 20px; background: #f0f0f0; border-radius: 25px; padding: 5px;">
+                            <div id="home-tab" style="flex: 1; text-align: center; padding: 10px; background: white; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer;" onclick="this.switchTab('home')">🏠 Home</div>
+                            <div id="data-tab" style="flex: 1; text-align: center; padding: 10px; cursor: pointer;" onclick="this.switchTab('data')">📊 Data</div>
+                            <div id="settings-tab" style="flex: 1; text-align: center; padding: 10px; cursor: pointer;" onclick="this.switchTab('settings')">⚙️ Settings</div>
+                        </div>
+                        
+                        <!-- Interactive Content -->
+                        <div id="tab-content">
+                            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 15px;">
+                                <h4 style="margin: 0 0 10px 0; color: #2c3e50;">Welcome to ${appName}</h4>
+                                <p style="margin: 0; color: #666; line-height: 1.5;">This is an interactive demo showing real app functionality!</p>
+                                <button style="background: #4facfe; color: white; border: none; padding: 10px 20px; border-radius: 20px; margin-top: 10px; cursor: pointer;" onclick="alert('🎉 Button clicked! This shows real interactivity.')">Try Me!</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div style="position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background: #4facfe; color: white; border-radius: 25px; padding: 12px 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); cursor: pointer;" onclick="alert('🚀 Action completed! This demonstrates real app interactions.')">
+                            <span>🚀 Take Action</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        generateInstagramPosts() {
+            return `
+                <div style="border: 1px solid #eee; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="padding: 10px; display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; background: #4facfe;"></div>
+                        <div>
+                            <strong>user123</strong><br>
+                            <small style="color: #666;">2 hours ago</small>
+                        </div>
+                        <div style="margin-left: auto; cursor: pointer;" onclick="alert('⚙️ Post options clicked!')">⚙️</div>
+                    </div>
+                    <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 10px; cursor: pointer;" onclick="alert('🖼️ Photo viewed!')"></div>
+                    <div style="padding: 0 10px 10px;">
+                        <div style="margin-bottom: 8px; display: flex; gap: 15px;">
+                            <span style="cursor: pointer; font-size: 18px;" onclick="this.toggleLike(this)">❤️</span>
+                            <span style="cursor: pointer; font-size: 18px;" onclick="alert('💬 Comment clicked!')">💬</span>
+                            <span style="cursor: pointer; font-size: 18px;" onclick="alert('✈️ Share clicked!')">✈️</span>
+                        </div>
+                        <div><strong id="likes-count">1,234 likes</strong></div>
+                        <span><strong>user123</strong> Beautiful sunset today! #nature <span style="color: #4facfe; cursor: pointer;" onclick="alert('#nature hashtag clicked!')">#nature</span></span>
+                        <div style="margin-top: 5px; color: #666; cursor: pointer;" onclick="alert('💬 View all comments')">View all 42 comments</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        generateCoffeeMenuItems() {
+            return `
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 10px;"></div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px 0;">Cappuccino</h4>
+                            <p style="margin: 0; color: #666; font-size: 14px;">Rich espresso with steamed milk</p>
+                            <strong style="color: #4facfe;">฿85</strong>
+                        </div>
+                        <button style="background: #4facfe; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;" onclick="this.addToCart('Cappuccino', 85)">Add</button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #228B22 0%, #32CD32 100%); border-radius: 10px;"></div>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px 0;">Green Tea Latte</h4>
+                            <p style="margin: 0; color: #666; font-size: 14px;">Smooth green tea with milk foam</p>
+                            <strong style="color: #4facfe;">฿75</strong>
+                        </div>
+                        <button style="background: #4facfe; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer;" onclick="this.addToCart('Green Tea Latte', 75)">Add</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Interactive Functions
+        toggleLike(element) {
+            const isLiked = element.innerHTML === '❤️';
+            element.innerHTML = isLiked ? '🤍' : '❤️';
+            const likesElement = document.getElementById('likes-count');
+            if (likesElement) {
+                const currentLikes = parseInt(likesElement.textContent.split(' ')[0].replace(',', ''));
+                const newLikes = isLiked ? currentLikes - 1 : currentLikes + 1;
+                likesElement.innerHTML = `${newLikes.toLocaleString()} likes`;
+            }
+        }
+        
+        addToCart(itemName, price) {
+            const cartCount = document.getElementById('cart-count');
+            const cartSummary = document.getElementById('cart-summary');
+            
+            if (cartCount && cartSummary) {
+                const currentCount = parseInt(cartCount.textContent) || 0;
+                cartCount.textContent = currentCount + 1;
+                cartSummary.style.display = 'block';
+                
+                // Animation feedback
+                cartSummary.style.transform = 'translateX(-50%) scale(1.1)';
+                setTimeout(() => {
+                    cartSummary.style.transform = 'translateX(-50%) scale(1)';
+                }, 150);
+            }
+            
+            alert(`✅ Added ${itemName} (฿${price}) to cart!`);
+        }
+        
+        selectCategory(category) {
+            // Reset all categories
+            document.querySelectorAll('[id$="-cat"]').forEach(cat => {
+                cat.style.background = '#f0f0f0';
+                cat.style.color = '#333';
+            });
+            
+            // Highlight selected
+            const selected = document.getElementById(category + '-cat');
+            if (selected) {
+                selected.style.background = '#4facfe';
+                selected.style.color = 'white';
+            }
+            
+            alert(`📂 ${category.charAt(0).toUpperCase() + category.slice(1)} category selected!`);
+        }
+        
+        switchTab(tab) {
+            // Reset all tabs
+            document.querySelectorAll('[id$="-tab"]').forEach(tabEl => {
+                tabEl.style.background = 'transparent';
+                tabEl.style.boxShadow = 'none';
+            });
+            
+            // Highlight selected
+            const selected = document.getElementById(tab + '-tab');
+            if (selected) {
+                selected.style.background = 'white';
+                selected.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            }
+            
+            alert(`📄 ${tab.charAt(0).toUpperCase() + tab.slice(1)} tab selected!`);
+        }
+    }
+
+    // Global function for mobile screen click
+    window.openInteractiveDemo = function(appName) {
+        console.log('🎮 Opening interactive demo for:', appName);
+        
+        // Create full-screen interactive overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'interactive-demo-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(10px);
+        `;
+        
+        overlay.innerHTML = 
+            '<div style="' +
+                'width: 360px;' +
+                'height: 640px;' +
+                'background: #1a1a1a;' +
+                'border-radius: 30px;' +
+                'padding: 20px;' +
+                'position: relative;' +
+                'box-shadow: 0 25px 80px rgba(0,0,0,0.8);' +
+            '">' +
+                '<!-- Close Button -->' +
+                '<button onclick="document.getElementById(\'interactive-demo-overlay\').remove()" style="' +
+                    'position: absolute;' +
+                    'top: -50px;' +
+                    'right: 10px;' +
+                    'background: #ff4757;' +
+                    'color: white;' +
+                    'border: none;' +
+                    'border-radius: 50%;' +
+                    'width: 40px;' +
+                    'height: 40px;' +
+                    'font-size: 20px;' +
+                    'cursor: pointer;' +
+                    'font-weight: bold;' +
+                '">×</button>' +
+                
+                '<!-- Phone Status Bar -->' +
+                '<div style="' +
+                    'height: 25px;' +
+                    'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
+                    'border-radius: 15px 15px 0 0;' +
+                    'display: flex;' +
+                    'align-items: center;' +
+                    'justify-content: space-between;' +
+                    'padding: 0 15px;' +
+                    'font-size: 12px;' +
+                    'color: white;' +
+                    'font-weight: bold;' +
+                '">' +
+                    '<span>9:41</span>' +
+                    '<span>100% 📶</span>' +
+                '</div>' +
+                
+                '<!-- Interactive App Content -->' +
+                '<div id="fullscreen-content" style="' +
+                    'height: 575px;' +
+                    'background: white;' +
+                    'border-radius: 0 0 20px 20px;' +
+                    'overflow: hidden;' +
+                    'position: relative;' +
+                '">' +
+                '</div>' +
+            '</div>';
+        
+        document.body.appendChild(overlay);
+        
+        // Add interactive content after appending
+        const contentElement = document.getElementById('fullscreen-content');
+        if (contentElement) {
+            contentElement.innerHTML = getInteractiveContent(appName);
+        }
+        
+        // Add click sound effect
+        try {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LNeSMFl');
+        } catch(e) {}
+    };
+    
+    // Generate interactive content based on app type
+    window.getInteractiveContent = function(appName) {
+        const isInstagram = appName && appName.toLowerCase().includes('insta');
+        const isCoffee = appName && (appName.toLowerCase().includes('coffee') || appName.toLowerCase().includes('กาแฟ'));
+        
+        if (isInstagram) {
+            return `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <!-- Instagram Header -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                        <h2 style="margin: 0; font-size: 28px; font-weight: bold; color: #333;">📸 ${appName}</h2>
+                        <div style="display: flex; gap: 20px;">
+                            <button onclick="alert('📷 Camera opened!')" style="background: none; border: none; font-size: 24px; cursor: pointer;">📷</button>
+                            <button onclick="alert('💬 Messages opened!')" style="background: none; border: none; font-size: 24px; cursor: pointer;">💬</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stories -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px;">
+                        <div onclick="alert('📱 Your Story clicked!')" style="text-align: center; min-width: 70px; cursor: pointer;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); margin: 0 auto 8px; border: 3px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);"></div>
+                            <small>Your Story</small>
+                        </div>
+                        <div onclick="alert('👤 Friend 1 story!')" style="text-align: center; min-width: 70px; cursor: pointer;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #ddd; margin: 0 auto 8px;"></div>
+                            <small>Friend 1</small>
+                        </div>
+                        <div onclick="alert('👤 Friend 2 story!')" style="text-align: center; min-width: 70px; cursor: pointer;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #bbb; margin: 0 auto 8px;"></div>
+                            <small>Friend 2</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Post -->
+                    <div style="border: 1px solid #eee; border-radius: 15px; margin-bottom: 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <div style="padding: 15px; display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #4facfe;"></div>
+                            <div>
+                                <strong>user123</strong><br>
+                                <small style="color: #666;">2 hours ago</small>
+                            </div>
+                        </div>
+                        <div onclick="alert('🖼️ Photo viewed!')" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;">Click to view photo</div>
+                        <div style="padding: 0 15px 15px;">
+                            <div style="margin-bottom: 10px; display: flex; gap: 20px;">
+                                <button onclick="this.innerHTML = this.innerHTML.includes('❤️') ? '🤍 Like' : '❤️ Liked'; alert('💖 Post liked!');" style="background: none; border: none; cursor: pointer; font-size: 18px;">🤍 Like</button>
+                                <button onclick="alert('💬 Comment section opened!')" style="background: none; border: none; cursor: pointer; font-size: 18px;">💬 Comment</button>
+                                <button onclick="alert('📤 Share options opened!')" style="background: none; border: none; cursor: pointer; font-size: 18px;">📤 Share</button>
+                            </div>
+                            <div style="margin-bottom: 8px;"><strong>1,234 likes</strong></div>
+                            <div><strong>user123</strong> Beautiful sunset today! <span style="color: #4facfe;">#nature</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Navigation -->
+                    <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: white; border-radius: 30px; padding: 15px 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; gap: 25px;">
+                        <button onclick="alert('🏠 Home tab!')" style="background: none; border: none; font-size: 20px; cursor: pointer;">🏠</button>
+                        <button onclick="alert('🔍 Search tab!')" style="background: none; border: none; font-size: 20px; cursor: pointer;">🔍</button>
+                        <button onclick="alert('➕ Add post!')" style="background: none; border: none; font-size: 20px; cursor: pointer;">➕</button>
+                        <button onclick="alert('❤️ Activity tab!')" style="background: none; border: none; font-size: 20px; cursor: pointer;">❤️</button>
+                        <button onclick="alert('👤 Profile tab!')" style="background: none; border: none; font-size: 20px; cursor: pointer;">👤</button>
+                    </div>
+                </div>
+            `;
+        } else if (isCoffee) {
+            return `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <!-- Coffee Shop Header -->
+                    <div style="text-align: center; margin-bottom: 25px; padding: 25px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 15px; color: white;">
+                        <h2 style="margin: 0; font-size: 28px;">☕ ${appName}</h2>
+                        <p style="margin: 8px 0 0 0; opacity: 0.9;">Fresh Coffee Daily</p>
+                    </div>
+                    
+                    <!-- Menu Categories -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 25px;">
+                        <button onclick="selectCategory(this, 'coffee')" style="flex: 1; padding: 15px; background: #4facfe; color: white; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">☕ Coffee</button>
+                        <button onclick="selectCategory(this, 'pastry')" style="flex: 1; padding: 15px; background: #f0f0f0; color: #333; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">🥐 Pastry</button>
+                        <button onclick="selectCategory(this, 'drinks')" style="flex: 1; padding: 15px; background: #f0f0f0; color: #333; border: none; border-radius: 25px; font-size: 16px; cursor: pointer;">🥤 Drinks</button>
+                    </div>
+                    
+                    <!-- Menu Items -->
+                    <div style="margin-bottom: 80px;">
+                        <div onclick="addToCart('Cappuccino', 85)" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); border-radius: 15px;"></div>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0 0 5px 0; font-size: 18px;">Cappuccino</h4>
+                                <p style="margin: 0; color: #666; font-size: 14px;">Rich espresso with steamed milk</p>
+                                <strong style="color: #4facfe; font-size: 18px;">฿85</strong>
+                            </div>
+                            <div style="background: #4facfe; color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold;">Add</div>
+                        </div>
+                        
+                        <div onclick="addToCart('Green Tea Latte', 75)" style="display: flex; align-items: center; gap: 15px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); margin-bottom: 15px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #228B22 0%, #32CD32 100%); border-radius: 15px;"></div>
+                            <div style="flex: 1;">
+                                <h4 style="margin: 0 0 5px 0; font-size: 18px;">Green Tea Latte</h4>
+                                <p style="margin: 0; color: #666; font-size: 14px;">Smooth green tea with milk foam</p>
+                                <strong style="color: #4facfe; font-size: 18px;">฿75</strong>
+                            </div>
+                            <div style="background: #4facfe; color: white; padding: 10px 20px; border-radius: 25px; font-weight: bold;">Add</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cart Summary -->
+                    <div id="cart-summary" style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #4facfe; color: white; border-radius: 30px; padding: 15px 25px; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4); cursor: pointer; display: none;" onclick="alert('🛒 View Cart!')">
+                        <span id="cart-text">🛒 Cart: 0 items - ฿0</span>
+                    </div>
+                </div>
+                
+                <script>
+                    let cartCount = 0;
+                    let cartTotal = 0;
+                    
+                    function selectCategory(button, category) {
+                        // Reset all buttons
+                        button.parentNode.querySelectorAll('button').forEach(btn => {
+                            btn.style.background = '#f0f0f0';
+                            btn.style.color = '#333';
+                        });
+                        // Highlight selected
+                        button.style.background = '#4facfe';
+                        button.style.color = 'white';
+                        alert('📂 ' + category + ' category selected!');
+                    }
+                    
+                    function addToCart(itemName, price) {
+                        cartCount++;
+                        cartTotal += price;
+                        const cartSummary = document.getElementById('cart-summary');
+                        const cartText = document.getElementById('cart-text');
+                        if (cartSummary && cartText) {
+                            cartSummary.style.display = 'block';
+                            cartText.textContent = '🛒 Cart: ' + cartCount + ' items - ฿' + cartTotal;
+                            
+                            // Animation
+                            cartSummary.style.transform = 'translateX(-50%) scale(1.1)';
+                            setTimeout(() => {
+                                cartSummary.style.transform = 'translateX(-50%) scale(1)';
+                            }, 200);
+                        }
+                        alert('✅ Added ' + itemName + ' (฿' + price + ') to cart!');
+                    }
+                </script>
+            `;
+        } else {
+            return `
+                <div style="padding: 20px; height: 100%; overflow-y: auto;">
+                    <!-- Generic App Header -->
+                    <div style="text-align: center; margin-bottom: 25px; padding: 25px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 15px; color: white;">
+                        <h2 style="margin: 0; font-size: 28px;">📱 ${appName}</h2>
+                        <p style="margin: 8px 0 0 0; opacity: 0.9;">Interactive Demo App</p>
+                    </div>
+                    
+                    <!-- Navigation Tabs -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 25px; background: #f0f0f0; border-radius: 30px; padding: 8px;">
+                        <button onclick="switchTab(this, 'home')" style="flex: 1; padding: 12px; background: white; border: none; border-radius: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer;">🏠 Home</button>
+                        <button onclick="switchTab(this, 'data')" style="flex: 1; padding: 12px; background: transparent; border: none; border-radius: 22px; cursor: pointer;">📊 Data</button>
+                        <button onclick="switchTab(this, 'settings')" style="flex: 1; padding: 12px; background: transparent; border: none; border-radius: 22px; cursor: pointer;">⚙️ Settings</button>
+                    </div>
+                    
+                    <!-- Interactive Content -->
+                    <div style="margin-bottom: 80px;">
+                        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 3px 15px rgba(0,0,0,0.1); margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 20px;">Welcome to ${appName}</h4>
+                            <p style="margin: 0 0 20px 0; color: #666; line-height: 1.6;">This is a fully interactive demo! Try clicking the buttons below:</p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button onclick="alert('🎉 Button 1 clicked!')" style="background: #4facfe; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">Action 1</button>
+                                <button onclick="alert('🚀 Button 2 clicked!')" style="background: #00f2fe; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">Action 2</button>
+                                <button onclick="alert('✨ Button 3 clicked!')" style="background: #764ba2; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-weight: bold;">Action 3</button>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 3px 15px rgba(0,0,0,0.1);">
+                            <h4 style="margin: 0 0 15px 0; color: #2c3e50; font-size: 20px;">Interactive Features</h4>
+                            <div onclick="this.style.background = this.style.background ? '' : '#f0f8ff'; alert('🎯 Feature toggled!');" style="padding: 15px; border: 2px dashed #4facfe; border-radius: 10px; cursor: pointer; margin-bottom: 15px; transition: all 0.3s;">
+                                <strong>Click me to toggle!</strong><br>
+                                <small>This demonstrates interactive UI elements</small>
+                            </div>
+                            <button onclick="let count = parseInt(this.textContent.match(/\\d+/) || 0) + 1; this.textContent = '🔢 Clicked ' + count + ' times'; alert('Counter updated!');" style="width: 100%; background: #667eea; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold;">🔢 Clicked 0 times</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Bottom Action -->
+                    <div style="position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #4facfe; color: white; border-radius: 30px; padding: 15px 25px; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4); cursor: pointer;" onclick="alert('🎊 Main action completed!')">
+                        <span style="font-weight: bold;">🚀 Take Action</span>
+                    </div>
+                </div>
+                
+                <script>
+                    function switchTab(button, tab) {
+                        // Reset all tabs
+                        button.parentNode.querySelectorAll('button').forEach(btn => {
+                            btn.style.background = 'transparent';
+                            btn.style.boxShadow = 'none';
+                        });
+                        // Highlight selected
+                        button.style.background = 'white';
+                        button.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                        alert('📄 ' + tab.charAt(0).toUpperCase() + tab.slice(1) + ' tab selected!');
+                    }
+                </script>
+            `;
+        }
+    };
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+        window.appGenerator = new AIAppGenerator();
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ร้านค้าออนไลน์ที่ให้บริการสินค้าและจัดการสต็อก">
+    <title>ShopEasy - ร้านค้าออนไลน์</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>ShopEasy</h1>
+        <nav>
+            <ul>
+                <li><a href="#">หน้าแรก</a></li>
+                <li><a href="#">สินค้า</a></li>
+                <li><a href="#" id="cart-button">ตะกร้า (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="product-list">
+            <h2>สินค้า</h2>
+            <div class="product" data-id="1" data-name="สินค้า A" data-price="100">
+                <h3>สินค้า A</h3>
+                <p>ราคา: 100 บาท</p>
+                <button class="add-to-cart">เพิ่มไปยังตะกร้า</button>
+            </div>
+            <div class="product" data-id="2" data-name="สินค้า B" data-price="200">
+                <h3>สินค้า B</h3>
+                <p>ราคา: 200 บาท</p>
+                <button class="add-to-cart">เพิ่มไปยังตะกร้า</button>
+            </div>
+        </section>
+        <section id="cart" style="display:none;">
+            <h2>ตะกร้าสินค้า</h2>
+            <ul id="cart-items"></ul>
+            <p id="total-price">รวม: 0 บาท</p>
+            <button id="checkout">สั่งซื้อ</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 ShopEasy</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

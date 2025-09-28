@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Full-Privilege AI Agent System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .agent-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const FullPrivilegeAISystem = () => {
+            const [userId, setUserId] = useState(localStorage.getItem('userId') || '');
+            const [message, setMessage] = useState('');
+            const [projects, setProjects] = useState([]);
+            const [agentActivities, setAgentActivities] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [githubRepo, setGithubRepo] = useState('');
+
+            const API_BASE = 'http://localhost:8002';
+
+            // Auto-generate user ID if not exists
+            useEffect(() => {
+                if (!userId) {
+                    const newUserId = `user_${Date.now()}`;
+                    setUserId(newUserId);
+                    localStorage.setItem('userId', newUserId);
+                }
+            }, [userId]);
+
+            const loadUserProjects = async () => {
+                if (!userId) return;
+                
+                try {
+                    const response = await fetch(`${API_BASE}/users/${userId}/projects`);
+                    const data = await response.json();
+                    setProjects(data.projects || []);
+                } catch (error) {
+                    console.error('Error loading projects:', error);
+                }
+            };
+
+            const loadAgentActivities = async () => {
+                if (!userId) return;
+                
+                try {
+                    const response = await fetch(`${API_BASE}/users/${userId}/agent-activities`);
+                    const data = await response.json();
+                    setAgentActivities(data.activities || []);
+                } catch (error) {
+                    console.error('Error loading activities:', error);
+                }
+            };
+
+            useEffect(() => {
+                if (userId) {
+                    loadUserProjects();
+                    loadAgentActivities();
+                }
+            }, [userId]);
+
+            const createProject = async () => {
+                if (!message.trim() || loading) return;
+
+                setLoading(true);
+                
+                try {
+                    const response = await fetch(`${API_BASE}/create-project`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            message: message.trim(),
+                            project_type: 'auto',
+                            tech_stack: [],
+                            github_repo: githubRepo || null
+                        }),
+                    });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        setMessage('');
+                        setGithubRepo('');
+                        loadUserProjects();
+                        loadAgentActivities();
+                        
+                        alert(`✅ สร้างโครงการสำเร็จ!\n📁 ไฟล์: ${result.files_created} ไฟล์\n🤖 Agents: ${result.agents_involved?.join(', ')}\n📍 Path: ${result.project_path}`);
+                    } else {
+                        alert(`❌ เกิดข้อผิดพลาด: ${result.message}`);
+                    }
+
+                } catch (error) {
+                    alert(`❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}`);
+                }
+
+                setLoading(false);
+            };
+
+            const openProjectFolder = (projectPath) => {
+                window.open(`file:///${projectPath}`, '_blank');
+            };
+
+            const agents = [
+                { name: "BackendAgent", role: "API & Database", icon: "🔧", color: "from-blue-500 to-purple-600" },
+                { name: "FrontendAgent", role: "UI/UX & Frontend", icon: "🎨", color: "from-pink-500 to-rose-500" },
+                { name: "DevOpsAgent", role: "Deploy & Infrastructure", icon: "🚀", color: "from-green-500 to-teal-600" },
+                { name: "FullStackAgent", role: "Full-Stack Development", icon: "⚡", color: "from-yellow-500 to-orange-500" }
+            ];
+
+            const exampleProjects = [
+                "สร้างร้านค้าออนไลน์ มีสินค้า ตะกร้า สั่งซื้อ และจัดการสต็อก",
+                "สร้างระบบจัดการโรงเรียน มีนักเรียน ครู คะแนน และตารางเรียน",
+                "สร้างเว็บไซต์ร้านกาแฟ มีเมนู การสั่งออนไลน์ และระบบจัดการ",
+                "สร้างแอป Todo List มีหมวดหมู่ แจ้งเตือน และ sync ข้อมูล",
+                "สร้างระบบจองห้องประชุม มี calendar booking และ notification"
+            ];
+
+            return (
+                <div className="min-h-screen p-4">
+                    <div className="max-w-7xl mx-auto">
+                        
+                        {/* Header */}
+                        <div className="text-center mb-8">
+                            <h1 className="text-4xl font-bold text-white mb-3">
+                                🤖 Full-Privilege AI Agent System
+                            </h1>
+                            <p className="text-white/80 text-lg">
+                                AI ที่มีสิทธิ์เต็มที่ในการทำงาน - สร้างแอปจริงในสภาพแวดล้อมจริง
+                            </p>
+                            <div className="mt-4 glass rounded-lg px-4 py-2 inline-block">
+                                <span className="text-white/90">👤 User ID: </span>
+                                <span className="text-white font-mono">{userId}</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            
+                            {/* Main Creation Panel */}
+                            <div className="lg:col-span-2 space-y-6">
+                                
+                                {/* AI Agents */}
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                                        <span className="mr-2">🤖</span>
+                                        AI Agents ที่มีสิทธิ์เต็มที่
+                                    </h2>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {agents.map((agent, index) => (
+                                            <div key={index} className={`agent-card bg-gradient-to-r ${agent.color} rounded-xl p-4 text-white`}>
+                                                <div className="text-2xl mb-2">{agent.icon}</div>
+                                                <div className="font-semibold text-sm">{agent.name}</div>
+                                                <div className="text-xs opacity-90">{agent.role}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="mt-4 text-white/70 text-sm">
+                                        💡 AI Agents เหล่านี้สามารถ: สร้าง/แก้ไข/ลบไฟล์ • ติดตั้ง dependencies • รัน tests • เชื่อมต่อ GitHub
+                                    </div>
+                                </div>
+
+                                {/* Project Creation */}
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4">
+                                        ✨ สร้างโครงการใหม่
+                                    </h2>
+                                    
+                                    {/* Example Projects */}
+                                    <div className="mb-4">
+                                        <div className="text-white/80 mb-2 text-sm">💡 ตัวอย่างโครงการ:</div>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {exampleProjects.map((example, index) => (
+                                                <button
+                                                    key={index}
+                                                    onClick={() => setMessage(example)}
+                                                    className="bg-white/10 hover:bg-white/20 text-white text-sm p-3 rounded-lg border border-white/20 transition-all duration-200 text-left"
+                                                >
+                                                    {example}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Input */}
+                                    <div className="space-y-4">
+                                        <textarea
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            placeholder="บอก AI ว่าคุณต้องการโครงการอะไร... (AI จะวิเคราะห์และสร้างให้อัตโนมัติ)"
+                                            className="w-full bg-white/90 border-0 rounded-xl px-4 py-3 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            disabled={loading}
+                                        />
+                                        
+                                        <input
+                                            type="text"
+                                            value={githubRepo}
+                                            onChange={(e) => setGithubRepo(e.target.value)}
+                                            placeholder="GitHub Repository URL (ถ้าต้องการเชื่อมต่อ GitHub)"
+                                            className="w-full bg-white/90 border-0 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            disabled={loading}
+                                        />
+                                        
+                                        <button
+                                            onClick={createProject}
+                                            disabled={!message.trim() || loading}
+                                            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-4 px-6 rounded-xl transition-all duration-200 font-semibold flex items-center justify-center"
+                                        >
+                                            {loading ? (
+                                                <>
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
+                                                    AI กำลังสร้างโครงการ...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    🚀 สร้างโครงการด้วย AI
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Sidebar */}
+                            <div className="lg:col-span-1 space-y-6">
+                                
+                                {/* User Projects */}
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4 flex items-center justify-between">
+                                        <span>📁 โครงการของคุณ</span>
+                                        <button 
+                                            onClick={loadUserProjects}
+                                            className="text-white/60 hover:text-white"
+                                        >
+                                            🔄
+                                        </button>
+                                    </h2>
+                                    
+                                    {projects.length === 0 ? (
+                                        <div className="text-white/60 text-center py-8">
+                                            <div className="text-4xl mb-2">📦</div>
+                                            <p>ยังไม่มีโครงการ</p>
+                                            <p className="text-sm mt-1">สร้างโครงการแรกกันเถอะ!</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3 max-h-96 overflow-y-auto">
+                                            {projects.map((project, index) => (
+                                                <div key={index} className="bg-white/10 rounded-lg p-4 border border-white/20">
+                                                    <div className="font-semibold text-white text-sm mb-2">
+                                                        {project[1]} {/* name */}
+                                                    </div>
+                                                    <div className="text-white/60 text-xs mb-2">
+                                                        📂 {project[2]} {/* type */}
+                                                    </div>
+                                                    <div className="text-white/60 text-xs mb-3">
+                                                        {project[6]} {/* created_at */}
+                                                    </div>
+                                                    <button
+                                                        onClick={() => openProjectFolder(project[3])}
+                                                        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded transition-colors w-full"
+                                                    >
+                                                        📁 เปิดโฟลเดอร์
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Agent Activities */}
+                                <div className="glass rounded-2xl p-6">
+                                    <h2 className="text-xl font-bold text-white mb-4 flex items-center justify-between">
+                                        <span>🤖 กิจกรรม AI</span>
+                                        <button 
+                                            onClick={loadAgentActivities}
+                                            className="text-white/60 hover:text-white"
+                                        >
+                                            🔄
+                                        </button>
+                                    </h2>
+                                    
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {agentActivities.length === 0 ? (
+                                            <div className="text-white/60 text-center py-4">
+                                                <div className="text-2xl mb-1">💤</div>
+                                                <p className="text-sm">AI ยังไม่ได้ทำงาน</p>
+                                            </div>
+                                        ) : (
+                                            agentActivities.slice(0, 10).map((activity, index) => (
+                                                <div key={index} className="bg-white/5 rounded p-2">
+                                                    <div className="text-white/90 text-xs font-medium">
+                                                        {activity.action}
+                                                    </div>
+                                                    {activity.file && (
+                                                        <div className="text-white/60 text-xs">
+                                                            📄 {activity.file.split('/').pop()}
+                                                        </div>
+                                                    )}
+                                                    {activity.command && (
+                                                        <div className="text-white/60 text-xs font-mono">
+                                                            {"> "} {activity.command}
+                                                        </div>
+                                                    )}
+                                                    <div className="text-white/40 text-xs">
+                                                        {activity.timestamp?.split('T')[1]?.split('.')[0]}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* System Status */}
+                                <div className="glass rounded-2xl p-4">
+                                    <h3 className="text-white font-semibold mb-2 text-sm">🔧 สถานะระบบ</h3>
+                                    <div className="text-white/80 text-xs space-y-1">
+                                        <div>✅ Full-Privilege Mode</div>
+                                        <div>✅ Multi-User Workspace</div>
+                                        <div>✅ GitHub Integration</div>
+                                        <div>✅ Real Environment</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FullPrivilegeAISystem />, document.getElementById('app'));
+    </script>
+</body>
+</html>

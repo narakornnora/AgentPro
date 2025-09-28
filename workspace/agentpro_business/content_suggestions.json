@@ -1,0 +1,77 @@
+{
+  "project_type": "business",
+  "total_images": 10,
+  "content_data": [
+    {
+      "filename": "0001-stack-of-jigsaw-puzzle-pieces.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0001-stack-of-jigsaw-puzzle-pieces",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0005-sea-waves-on-brown-sand-during-daytime.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0005-sea-waves-on-brown-sand-during-daytime",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0006-a-view-of-a-mountain-range-with-trees-in.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0006-a-view-of-a-mountain-range-with-trees-in",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0010-in-distant-mountain.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0010-in-distant-mountain",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0016-port-cranes-harbor-cranes-heaven-clou.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0016-port-cranes-harbor-cranes-heaven-clou",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0018-yi-sun-sin-general-chungmu-park-gwang.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0018-yi-sun-sin-general-chungmu-park-gwang",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0021-mountain-nature-travel-exploration-o.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0021-mountain-nature-travel-exploration-o",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0022-lake-nature-travel-exploration-outdo.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0022-lake-nature-travel-exploration-outdo",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0023-sea-nature-travel-exploration-outdoo.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0023-sea-nature-travel-exploration-outdoo",
+      "suggested_usage": [],
+      "related_content": []
+    },
+    {
+      "filename": "0025-beach-nature-sea-footprints-sand-sa.jpg",
+      "alt_text": "รูปภาพคุณภาพสูง - 0025-beach-nature-sea-footprints-sand-sa",
+      "suggested_usage": [],
+      "related_content": []
+    }
+  ],
+  "hero_suggestions": [
+    "พาธุรกิจของคุณไปสู่อนาคต",
+    "โซลูชันธุรกิจที่ครบครัน",
+    "ความสำเร็จที่เริ่มต้นจากการวางแผนที่ดี"
+  ],
+  "feature_suggestions": {
+    "innovation": "เทคโนโลยีล้ำสมัย นวัตกรรมที่ตอบโจทย์",
+    "efficiency": "เพิ่มประสิทธิภาพ ลดต้นทุน เพิ่มผลกำไร",
+    "support": "ทีมงานมืออาชีพ สนับสนุน 24/7",
+    "growth": "การเติบโตที่ยั่งยืน วิสัยทัศน์ระยะยาว"
+  }
+}

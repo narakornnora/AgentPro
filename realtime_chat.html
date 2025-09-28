@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro - AI Code Generator (Real-time)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            overflow: hidden;
+        }
+
+        .chat-panel {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .preview-panel {
+            background: white;
+            border-left: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            text-align: right;
+        }
+
+        .user-message .bubble {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 18px 18px 4px 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .bot-message .bubble {
+            display: inline-block;
+            background: white;
+            color: #333;
+            padding: 12px 16px;
+            border-radius: 18px 18px 18px 4px;
+            border: 1px solid #e9ecef;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .status-message {
+            background: linear-gradient(90deg, #17a2b8, #20c997);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            transition: width 0.8s ease-out;
+            width: 0%;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 18px;
+            max-width: 70%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #6c757d;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { opacity: 0.3; }
+            40% { opacity: 1; }
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+        }
+
+        .message-input:focus {
+            border-color: #007bff;
+        }
+
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .send-button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #f8f9fa;
+        }
+
+        .preview-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .preview-url {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #495057;
+        }
+
+        .open-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .open-button:hover {
+            background: #218838;
+        }
+
+        .empty-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .empty-preview .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .connection-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .connected {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .preview-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Chat Panel -->
+        <div class="chat-panel">
+            <div class="header">
+                <h1>🤖 AgentPro AI</h1>
+                <p>สร้างเว็บไซต์และแอปพลิเคชันด้วย AI แบบ Real-time</p>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="bubble">
+                        👋 สวัสดีครับ! ผมสามารถสร้างเว็บไซต์และแอปพลิเคชันให้คุณได้<br><br>
+                        💡 <strong>ตัวอย่างคำสั่ง:</strong><br>
+                        • "สร้างเว็บร้านกาแฟสไตล์โมเดิร์น"<br>
+                        • "ทำแอป todo list มีหมวดหมู่"<br>
+                        • "สร้างเว็บ portfolio สำหรับนักออกแบบ"
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input" 
+                    placeholder="บอกผมว่าอยากให้สร้างอะไร..."
+                    rows="1"
+                ></textarea>
+                <button id="sendButton" class="send-button">
+                    ▶️
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="connection-status connecting" id="connectionStatus">
+                🔄 กำลังเชื่อมต่อ...
+            </div>
+            
+            <div class="preview-header" id="previewHeader" style="display: none;">
+                <span>🌐 Preview:</span>
+                <div class="preview-url" id="previewUrl">ยังไม่ได้สร้างโปรเจค</div>
+                <button class="open-button" id="openButton">เปิดในแท็บใหม่</button>
+            </div>
+
+            <div class="empty-preview" id="emptyPreview">
+                <div class="icon">🎨</div>
+                <h3>พร้อมแสดงผลงาน</h3>
+                <p>เมื่อคุณสร้างโปรเจคเสร็จแล้ว<br>ตัวอย่างจะแสดงที่นี่</p>
+            </div>
+
+            <iframe id="previewFrame" class="preview-frame" style="display: none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        class AICodeChat {
+            constructor() {
+                this.ws = null;
+                this.currentPreviewUrl = null;
+                this.isGenerating = false;
+                
+                this.initElements();
+                this.connect();
+                this.bindEvents();
+            }
+
+            initElements() {
+                this.chatMessages = document.getElementById('chatMessages');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.connectionStatus = document.getElementById('connectionStatus');
+                this.previewHeader = document.getElementById('previewHeader');
+                this.previewUrl = document.getElementById('previewUrl');
+                this.openButton = document.getElementById('openButton');
+                this.emptyPreview = document.getElementById('emptyPreview');
+                this.previewFrame = document.getElementById('previewFrame');
+            }
+
+            connect() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.hostname}:8001/ws/chat`;
+                
+                this.updateConnectionStatus('connecting', '🔄 กำลังเชื่อมต่อ...');
+                
+                this.ws = new WebSocket(wsUrl);
+                
+                this.ws.onopen = () => {
+                    this.updateConnectionStatus('connected', '🟢 เชื่อมต่อแล้ว');
+                };
+                
+                this.ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        this.handleMessage(data);
+                    } catch (e) {
+                        console.error('Error parsing message:', e);
+                    }
+                };
+                
+                this.ws.onclose = () => {
+                    this.updateConnectionStatus('disconnected', '🔴 ขาดการเชื่อมต่อ');
+                    // Auto-reconnect
+                    setTimeout(() => this.connect(), 3000);
+                };
+                
+                this.ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    this.updateConnectionStatus('disconnected', '❌ เกิดข้อผิดพลาด');
+                };
+            }
+
+            updateConnectionStatus(status, text) {
+                this.connectionStatus.className = `connection-status ${status}`;
+                this.connectionStatus.textContent = text;
+            }
+
+            bindEvents() {
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                this.messageInput.addEventListener('input', () => {
+                    this.autoResize();
+                });
+
+                this.openButton.addEventListener('click', () => {
+                    if (this.currentPreviewUrl) {
+                        window.open(`http://localhost:8001${this.currentPreviewUrl}`, '_blank');
+                    }
+                });
+            }
+
+            autoResize() {
+                this.messageInput.style.height = 'auto';
+                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+            }
+
+            sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message || this.isGenerating || this.ws?.readyState !== WebSocket.OPEN) return;
+
+                this.addUserMessage(message);
+                this.messageInput.value = '';
+                this.autoResize();
+                
+                this.isGenerating = true;
+                this.sendButton.disabled = true;
+
+                this.ws.send(JSON.stringify({
+                    message: message,
+                    timestamp: Date.now()
+                }));
+            }
+
+            handleMessage(data) {
+                switch (data.type) {
+                    case 'typing':
+                        this.showTypingIndicator(data.message);
+                        break;
+                        
+                    case 'status':
+                        this.updateStatus(data.message, data.progress || 0);
+                        break;
+                        
+                    case 'message':
+                        this.hideTypingIndicator();
+                        this.addBotMessage(data.message);
+                        
+                        if (data.preview_url) {
+                            this.showPreview(data.preview_url);
+                        }
+                        
+                        this.isGenerating = false;
+                        this.sendButton.disabled = false;
+                        break;
+                        
+                    default:
+                        this.hideTypingIndicator();
+                        this.addBotMessage(data.message || 'ได้รับข้อมูล');
+                        this.isGenerating = false;
+                        this.sendButton.disabled = false;
+                }
+            }
+
+            addUserMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `<div class="bubble">${this.escapeHtml(message)}</div>`;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            addBotMessage(message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message';
+                messageDiv.innerHTML = `<div class="bubble">${this.formatMessage(message)}</div>`;
+                this.chatMessages.appendChild(messageDiv);
+                this.scrollToBottom();
+            }
+
+            showTypingIndicator(message = 'กำลังพิมพ์...') {
+                this.hideTypingIndicator(); // Remove existing
+                
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message bot-message typing-message';
+                typingDiv.innerHTML = `
+                    <div class="typing-indicator">
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        <span>${message}</span>
+                    </div>
+                `;
+                this.chatMessages.appendChild(typingDiv);
+                this.scrollToBottom();
+            }
+
+            hideTypingIndicator() {
+                const typing = this.chatMessages.querySelector('.typing-message');
+                if (typing) typing.remove();
+            }
+
+            updateStatus(message, progress) {
+                // Remove old status or update existing
+                let statusMsg = this.chatMessages.querySelector('.status-message');
+                if (!statusMsg) {
+                    statusMsg = document.createElement('div');
+                    statusMsg.className = 'status-message';
+                    this.chatMessages.appendChild(statusMsg);
+                }
+
+                statusMsg.innerHTML = `
+                    <span>${message}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                `;
+                this.scrollToBottom();
+            }
+
+            showPreview(url) {
+                this.currentPreviewUrl = url;
+                this.previewUrl.textContent = url;
+                this.previewHeader.style.display = 'flex';
+                this.emptyPreview.style.display = 'none';
+                this.previewFrame.style.display = 'block';
+                this.previewFrame.src = `http://localhost:8001${url}`;
+            }
+
+            formatMessage(message) {
+                return this.escapeHtml(message)
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            scrollToBottom() {
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AICodeChat();
+        });
+    </script>
+</body>
+</html>

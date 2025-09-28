@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro - Better Than Lovable 🚀</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass { backdrop-filter: blur(20px); background: rgba(255, 255, 255, 0.1); }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+        .message-bubble { animation: slideInUp 0.3s ease-out; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .typing-indicator { animation: pulse 1.5s infinite; }
+        .preview-frame { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .preview-frame:hover { transform: scale(1.02); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <header class="glass border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">A</span>
+                </div>
+                <h1 class="text-white font-semibold text-lg">AgentPro</h1>
+                <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">LIVE</span>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-white/80 text-sm">
+                <div class="flex items-center space-x-1">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span>AI Agents: Online</span>
+                </div>
+                <div id="projectCounter" class="bg-white/10 px-3 py-1 rounded-full">
+                    Projects: <span id="projectCount">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-80px)]">
+        
+        <!-- Chat Panel -->
+        <div class="glass rounded-2xl border border-white/20 flex flex-col">
+            <!-- Chat Header -->
+            <div class="p-4 border-b border-white/20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center animate-float">
+                        🤖
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">AI Assistant</h3>
+                        <p class="text-white/60 text-sm">Multi-Agent System Ready</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <div id="statusIndicator" class="flex items-center space-x-1 bg-green-500/20 text-green-300 px-2 py-1 rounded-full text-xs">
+                        <div class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                        <span>Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <div class="message-bubble flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        🚀
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3 max-w-xs">
+                        <p class="text-white text-sm">
+                            Hi! I'm your AI assistant powered by multiple agents. 
+                            Tell me what website you'd like to create and I'll build it for you!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="px-4 py-2 hidden">
+                <div class="flex items-center space-x-2 text-white/60 text-sm">
+                    <div class="flex space-x-1">
+                        <div class="w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-white/40 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 bg-white/40 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                    <span>AI is thinking...</span>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="p-4 border-t border-white/20">
+                <div class="flex space-x-3">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Describe the website you want to create..."
+                        class="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+                    >
+                    <button 
+                        id="sendButton"
+                        class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
+                    >
+                        Send
+                    </button>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-2 mt-3">
+                    <button onclick="quickSend('Create a modern restaurant website')" 
+                            class="bg-white/10 hover:bg-white/20 text-white/80 text-xs px-3 py-1 rounded-full transition-colors">
+                        🍕 Restaurant
+                    </button>
+                    <button onclick="quickSend('Build a portfolio website for a designer')" 
+                            class="bg-white/10 hover:bg-white/20 text-white/80 text-xs px-3 py-1 rounded-full transition-colors">
+                        💼 Portfolio
+                    </button>
+                    <button onclick="quickSend('Make an e-commerce store for fashion')" 
+                            class="bg-white/10 hover:bg-white/20 text-white/80 text-xs px-3 py-1 rounded-full transition-colors">
+                        🛍️ E-commerce
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="glass rounded-2xl border border-white/20 flex flex-col">
+            <!-- Preview Header -->
+            <div class="p-4 border-b border-white/20 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl flex items-center justify-center">
+                        🌐
+                    </div>
+                    <div>
+                        <h3 class="text-white font-semibold">Live Preview</h3>
+                        <p class="text-white/60 text-sm">Real-time website generation</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button id="refreshPreview" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors">
+                        🔄
+                    </button>
+                    <button id="openInNew" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-colors">
+                        🔗
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Content -->
+            <div class="flex-1 p-4">
+                <div id="previewContainer" class="w-full h-full bg-white/5 rounded-xl border border-white/10 overflow-hidden preview-frame">
+                    <iframe 
+                        id="previewFrame" 
+                        src="about:blank"
+                        class="w-full h-full border-0"
+                        sandbox="allow-scripts allow-same-origin"
+                    ></iframe>
+                </div>
+                
+                <!-- Placeholder when no preview -->
+                <div id="previewPlaceholder" class="flex flex-col items-center justify-center h-full text-white/60">
+                    <div class="w-24 h-24 bg-white/10 rounded-2xl flex items-center justify-center mb-4 animate-float">
+                        <span class="text-4xl">🎨</span>
+                    </div>
+                    <h4 class="text-lg font-semibold mb-2">Ready to Create</h4>
+                    <p class="text-center text-sm max-w-xs">
+                        Start a conversation and watch your website come to life in real-time!
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Preview Footer -->
+            <div class="p-4 border-t border-white/20">
+                <div class="flex items-center justify-between text-white/60 text-sm">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-1">
+                            <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span>Responsive</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span>Optimized</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <div class="w-2 h-2 bg-purple-400 rounded-full"></div>
+                            <span>Modern</span>
+                        </div>
+                    </div>
+                    
+                    <div id="previewUrl" class="bg-white/10 px-2 py-1 rounded text-xs hidden">
+                        <!-- URL will be shown here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workflow Status Modal -->
+    <div id="workflowModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="glass border border-white/20 rounded-2xl p-6 max-w-md w-full mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-white font-semibold text-lg">Multi-Agent Workflow</h3>
+                <button onclick="closeWorkflowModal()" class="text-white/60 hover:text-white">✕</button>
+            </div>
+            
+            <div id="workflowSteps" class="space-y-3">
+                <!-- Workflow steps will be populated here -->
+            </div>
+            
+            <div class="mt-4 p-3 bg-white/10 rounded-xl">
+                <div class="flex items-center space-x-2 text-white/80 text-sm">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span id="workflowStatus">Workflow in progress...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationHistory = [];
+        let currentWorkflowId = null;
+        let projectCount = 0;
+
+        // DOM Elements
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const messagesContainer = document.getElementById('messages');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const previewFrame = document.getElementById('previewFrame');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewUrl = document.getElementById('previewUrl');
+        const statusIndicator = document.getElementById('statusIndicator');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Load latest projects count
+            loadProjectCount();
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage('user', message);
+            messageInput.value = '';
+            
+            // Show typing indicator
+            showTyping();
+            updateStatus('thinking', 'AI is processing...');
+
+            try {
+                // Send to AI
+                const response = await fetch('http://localhost:8001/simple-chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: 'web_user',
+                        history: conversationHistory
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Hide typing
+                hideTyping();
+                
+                // Add AI response
+                addMessage('ai', data.response);
+
+                // Handle workflow
+                if (data.workflow_id) {
+                    currentWorkflowId = data.workflow_id;
+                    showWorkflowModal(data.workflow_id);
+                    updateStatus('working', 'Multi-Agent System Active');
+                }
+
+                // Handle preview
+                if (data.website_url) {
+                    showPreview(data.website_url);
+                    projectCount++;
+                    updateProjectCount();
+                }
+
+                // Update conversation history
+                conversationHistory.push(
+                    { role: 'user', content: message },
+                    { role: 'assistant', content: data.response }
+                );
+
+            } catch (error) {
+                hideTyping();
+                addMessage('ai', 'Sorry, I encountered an error. Please try again.');
+                updateStatus('error', 'Connection Error');
+                console.error('Error:', error);
+            }
+        }
+
+        function addMessage(sender, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message-bubble flex items-start space-x-3';
+            
+            if (sender === 'user') {
+                messageDiv.className += ' flex-row-reverse space-x-reverse';
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        👤
+                    </div>
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl px-4 py-3 max-w-xs">
+                        <p class="text-white text-sm">${content}</p>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center flex-shrink-0">
+                        🤖
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-3 max-w-xs">
+                        <p class="text-white text-sm">${content}</p>
+                    </div>
+                `;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            typingIndicator.classList.remove('hidden');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            typingIndicator.classList.add('hidden');
+        }
+
+        function showPreview(url) {
+            previewPlaceholder.style.display = 'none';
+            previewFrame.src = url;
+            previewUrl.textContent = url;
+            previewUrl.classList.remove('hidden');
+        }
+
+        function quickSend(message) {
+            messageInput.value = message;
+            sendMessage();
+        }
+
+        function updateStatus(type, message) {
+            const colors = {
+                ready: 'bg-green-500/20 text-green-300',
+                thinking: 'bg-yellow-500/20 text-yellow-300',
+                working: 'bg-blue-500/20 text-blue-300',
+                error: 'bg-red-500/20 text-red-300'
+            };
+            
+            statusIndicator.className = `flex items-center space-x-1 ${colors[type]} px-2 py-1 rounded-full text-xs`;
+            statusIndicator.innerHTML = `
+                <div class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></div>
+                <span>${message}</span>
+            `;
+        }
+
+        function updateProjectCount() {
+            document.getElementById('projectCount').textContent = projectCount;
+        }
+
+        async function loadProjectCount() {
+            try {
+                const response = await fetch('http://localhost:8001/latest-projects');
+                const data = await response.json();
+                projectCount = data.projects ? data.projects.length : 0;
+                updateProjectCount();
+            } catch (error) {
+                console.error('Error loading project count:', error);
+            }
+        }
+
+        function showWorkflowModal(workflowId) {
+            document.getElementById('workflowModal').classList.remove('hidden');
+            document.getElementById('workflowModal').classList.add('flex');
+            
+            // Start polling workflow status
+            pollWorkflowStatus(workflowId);
+        }
+
+        function closeWorkflowModal() {
+            document.getElementById('workflowModal').classList.add('hidden');
+            document.getElementById('workflowModal').classList.remove('flex');
+        }
+
+        async function pollWorkflowStatus(workflowId) {
+            try {
+                const response = await fetch(`http://localhost:8001/workflow/${workflowId}/status`);
+                const status = await response.json();
+                
+                updateWorkflowDisplay(status);
+                
+                // Continue polling if not complete
+                if (status.overall_progress < 100) {
+                    setTimeout(() => pollWorkflowStatus(workflowId), 2000);
+                } else {
+                    updateStatus('ready', 'Workflow Complete!');
+                    setTimeout(closeWorkflowModal, 3000);
+                }
+            } catch (error) {
+                console.error('Error polling workflow:', error);
+            }
+        }
+
+        function updateWorkflowDisplay(status) {
+            const stepsContainer = document.getElementById('workflowSteps');
+            const statusElement = document.getElementById('workflowStatus');
+            
+            stepsContainer.innerHTML = '';
+            
+            Object.entries(status.tasks || {}).forEach(([taskId, task]) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'flex items-center space-x-3 p-2 rounded-lg bg-white/5';
+                
+                let icon = '⏳';
+                let color = 'text-white/60';
+                
+                if (task.status === 'completed') {
+                    icon = '✅';
+                    color = 'text-green-400';
+                } else if (task.status === 'in_progress') {
+                    icon = '⚡';
+                    color = 'text-blue-400';
+                } else if (task.status === 'failed') {
+                    icon = '❌';
+                    color = 'text-red-400';
+                }
+                
+                stepDiv.innerHTML = `
+                    <span class="text-lg">${icon}</span>
+                    <div class="flex-1">
+                        <p class="${color} text-sm font-medium">${task.description}</p>
+                    </div>
+                `;
+                
+                stepsContainer.appendChild(stepDiv);
+            });
+            
+            statusElement.textContent = `Progress: ${Math.round(status.overall_progress || 0)}%`;
+        }
+
+        // Refresh preview
+        document.getElementById('refreshPreview').addEventListener('click', () => {
+            if (previewFrame.src !== 'about:blank') {
+                previewFrame.src = previewFrame.src;
+            }
+        });
+
+        // Open in new window
+        document.getElementById('openInNew').addEventListener('click', () => {
+            if (previewFrame.src !== 'about:blank') {
+                window.open(previewFrame.src, '_blank');
+            }
+        });
+    </script>
+</body>
+</html>

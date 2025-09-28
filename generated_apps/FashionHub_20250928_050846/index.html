@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="เว็บไซต์ขายเสื้อผ้าออนไลน์ที่มี gallery และ shopping cart">
+    <title>FashionHub - เสื้อผ้าแฟชั่น</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>FashionHub</h1>
+        <nav>
+            <ul>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#cart">Shopping Cart</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="gallery">
+            <h2>Gallery</h2>
+            <div class="gallery-container">
+                <div class="gallery-item" onclick="addToCart('Shirt 1', 299)">
+                    <img src="shirt1.jpg" alt="Shirt 1">
+                    <p>Shirt 1 - 299 บาท</p>
+                </div>
+                <div class="gallery-item" onclick="addToCart('Shirt 2', 399)">
+                    <img src="shirt2.jpg" alt="Shirt 2">
+                    <p>Shirt 2 - 399 บาท</p>
+                </div>
+                <div class="gallery-item" onclick="addToCart('Shirt 3', 499)">
+                    <img src="shirt3.jpg" alt="Shirt 3">
+                    <p>Shirt 3 - 499 บาท</p>
+                </div>
+            </div>
+        </section>
+        <section id="cart">
+            <h2>Shopping Cart</h2>
+            <div id="cart-items"></div>
+            <button onclick="checkout()">Checkout</button>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 FashionHub. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

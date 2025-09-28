@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        let websocket = new WebSocket('ws://localhost:8001/ws/chat');
+        
+        websocket.onopen = function(event) {
+            console.log('WebSocket connected');
+            document.getElementById('messages').innerHTML += '<div>✅ Connected to WebSocket</div>';
+        };
+        
+        websocket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('Received:', data);
+            document.getElementById('messages').innerHTML += `<div><strong>${data.type}:</strong> ${data.message || JSON.stringify(data)}</div>`;
+        };
+        
+        websocket.onclose = function(event) {
+            console.log('WebSocket disconnected');
+            document.getElementById('messages').innerHTML += '<div>❌ Disconnected</div>';
+        };
+        
+        websocket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+            document.getElementById('messages').innerHTML += '<div>⚠️ Error: ' + error + '</div>';
+        };
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(JSON.stringify({
+                    message: message
+                }));
+                document.getElementById('messages').innerHTML += `<div><strong>Sent:</strong> ${message}</div>`;
+                input.value = '';
+            }
+        }
+        
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

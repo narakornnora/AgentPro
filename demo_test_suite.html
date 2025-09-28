@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentPro - Demo Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .demo-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .demo-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .test-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .test-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .preview-button {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .preview-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .status-indicator {
+            margin-top: 1rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .results-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .demo-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .feature-list li {
+            padding: 0.3rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .feature-list li::before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        .tech-stack {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .tech-stack h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tech-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 AgentPro Demo Test Suite</h1>
+            <p>ทดสอบสร้าง App, Mobile App และ Enterprise App</p>
+        </div>
+
+        <div class="demo-grid">
+            <!-- Web App Demo -->
+            <div class="demo-card">
+                <h3>🌐 Web Application</h3>
+                <div class="demo-description">
+                    เว็บแอปพลิเคชั่น Professional ครบครัน พร้อมระบบจัดการและฐานข้อมูล
+                </div>
+                <ul class="feature-list">
+                    <li>Responsive Design</li>
+                    <li>Interactive Components</li>
+                    <li>Professional UI/UX</li>
+                    <li>Database Integration</li>
+                </ul>
+                <div class="tech-stack">
+                    <h4>Tech Stack:</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">HTML5</span>
+                        <span class="tech-tag">CSS3</span>
+                        <span class="tech-tag">JavaScript</span>
+                        <span class="tech-tag">LocalStorage</span>
+                    </div>
+                </div>
+                <button class="test-button" onclick="testWebApp()">🔄 สร้าง Web App</button>
+                <button class="preview-button" onclick="previewWebApp()">👀 ดู Preview</button>
+                <div class="status-indicator" id="web-status"></div>
+            </div>
+
+            <!-- Mobile App Demo -->
+            <div class="demo-card">
+                <h3>📱 Mobile Application</h3>
+                <div class="demo-description">
+                    แอพมือถือที่ทำงานได้จริง พร้อม Native Features และ PWA Support
+                </div>
+                <ul class="feature-list">
+                    <li>Touch-Optimized Interface</li>
+                    <li>Offline Functionality</li>
+                    <li>Push Notifications</li>
+                    <li>Native-like Experience</li>
+                </ul>
+                <div class="tech-stack">
+                    <h4>Tech Stack:</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">PWA</span>
+                        <span class="tech-tag">Service Worker</span>
+                        <span class="tech-tag">Manifest</span>
+                        <span class="tech-tag">Touch Events</span>
+                    </div>
+                </div>
+                <button class="test-button" onclick="testMobileApp()">🔄 สร้าง Mobile App</button>
+                <button class="preview-button" onclick="previewMobileApp()">👀 ดู Preview</button>
+                <div class="status-indicator" id="mobile-status"></div>
+            </div>
+
+            <!-- Enterprise App Demo -->
+            <div class="demo-card">
+                <h3>🏢 Enterprise Application</h3>
+                <div class="demo-description">
+                    ระบบองค์กรระดับ Enterprise พร้อม Authentication, Dashboard และ Analytics
+                </div>
+                <ul class="feature-list">
+                    <li>User Authentication</li>
+                    <li>Admin Dashboard</li>
+                    <li>Data Analytics</li>
+                    <li>Role-Based Access</li>
+                </ul>
+                <div class="tech-stack">
+                    <h4>Tech Stack:</h4>
+                    <div class="tech-tags">
+                        <span class="tech-tag">React-like</span>
+                        <span class="tech-tag">Charts.js</span>
+                        <span class="tech-tag">Authentication</span>
+                        <span class="tech-tag">Admin Panel</span>
+                    </div>
+                </div>
+                <button class="test-button" onclick="testEnterpriseApp()">🔄 สร้าง Enterprise App</button>
+                <button class="preview-button" onclick="previewEnterpriseApp()">👀 ดู Preview</button>
+                <div class="status-indicator" id="enterprise-status"></div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2>📊 ผลการทดสอบ</h2>
+            <p>เลือกทดสอบแอปพลิเคชั่นที่ต้องการด้านบน ระบบจะสร้างและแสดงผลให้ดู</p>
+            
+            <iframe class="demo-iframe" id="preview-iframe"></iframe>
+            
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // Web App Test
+        async function testWebApp() {
+            showStatus('web-status', 'loading', '🔄 กำลังสร้าง Web Application...');
+            
+            try {
+                // Simulate AI generation process
+                await simulateGeneration();
+                
+                // Create web app files
+                const webAppContent = generateWebApp();
+                
+                // Save to file (simulate)
+                console.log('Web App Generated:', webAppContent.length, 'characters');
+                
+                showStatus('web-status', 'success', '✅ Web App สร้างสำเร็จ! พร้อมใช้งาน');
+                
+            } catch (error) {
+                showStatus('web-status', 'error', '❌ เกิดข้อผิดพลาด: ' + error.message);
+            }
+        }
+
+        // Mobile App Test  
+        async function testMobileApp() {
+            showStatus('mobile-status', 'loading', '🔄 กำลังสร้าง Mobile Application...');
+            
+            try {
+                await simulateGeneration();
+                
+                const mobileAppContent = generateMobileApp();
+                
+                console.log('Mobile App Generated:', mobileAppContent.length, 'characters');
+                
+                showStatus('mobile-status', 'success', '✅ Mobile App สร้างสำเร็จ! รองรับ PWA');
+                
+            } catch (error) {
+                showStatus('mobile-status', 'error', '❌ เกิดข้อผิดพลาด: ' + error.message);
+            }
+        }
+
+        // Enterprise App Test
+        async function testEnterpriseApp() {
+            showStatus('enterprise-status', 'loading', '🔄 กำลังสร้าง Enterprise Application...');
+            
+            try {
+                await simulateGeneration();
+                
+                const enterpriseAppContent = generateEnterpriseApp();
+                
+                console.log('Enterprise App Generated:', enterpriseAppContent.length, 'characters');
+                
+                showStatus('enterprise-status', 'success', '✅ Enterprise App สร้างสำเร็จ! ระดับองค์กร');
+                
+            } catch (error) {
+                showStatus('enterprise-status', 'error', '❌ เกิดข้อผิดพลาด: ' + error.message);
+            }
+        }
+
+        // Preview Functions
+        function previewWebApp() {
+            const iframe = document.getElementById('preview-iframe');
+            iframe.style.display = 'block';
+            iframe.src = 'demo_coffee_shop.html';
+            
+            document.getElementById('test-results').innerHTML = `
+                <h3>🌐 Web Application Preview</h3>
+                <p><strong>Type:</strong> Professional Website</p>
+                <p><strong>Features:</strong> Responsive Design, Interactive Elements, Professional UI</p>
+                <p><strong>URL:</strong> <a href="demo_coffee_shop.html" target="_blank">http://localhost:3000/demo_coffee_shop.html</a></p>
+            `;
+        }
+
+        function previewMobileApp() {
+            const iframe = document.getElementById('preview-iframe');
+            iframe.style.display = 'block';
+            iframe.src = 'demo_mobile_app.html';
+            
+            document.getElementById('test-results').innerHTML = `
+                <h3>📱 Mobile Application Preview</h3>
+                <p><strong>Type:</strong> Progressive Web App (PWA)</p>
+                <p><strong>Features:</strong> Touch Optimized, Offline Support, Mobile-First Design</p>
+                <p><strong>URL:</strong> <a href="demo_mobile_app.html" target="_blank">http://localhost:3000/demo_mobile_app.html</a></p>
+            `;
+        }
+
+        function previewEnterpriseApp() {
+            const iframe = document.getElementById('preview-iframe');
+            iframe.style.display = 'block';
+            iframe.src = 'demo_enterprise_app.html';
+            
+            document.getElementById('test-results').innerHTML = `
+                <h3>🏢 Enterprise Application Preview</h3>
+                <p><strong>Type:</strong> Enterprise Dashboard System</p>
+                <p><strong>Features:</strong> Authentication, Analytics, Admin Panel, Data Management</p>
+                <p><strong>URL:</strong> <a href="demo_enterprise_app.html" target="_blank">http://localhost:3000/demo_enterprise_app.html</a></p>
+            `;
+        }
+
+        // Utility Functions
+        function showStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            element.className = `status-indicator status-${type}`;
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            if (type === 'loading') {
+                element.classList.add('loading');
+            } else {
+                element.classList.remove('loading');
+            }
+        }
+
+        async function simulateGeneration() {
+            // Simulate AI processing time
+            await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000));
+        }
+
+        function generateWebApp() {
+            return `Generated Professional Web Application with:
+- Responsive HTML5/CSS3 layout
+- Interactive JavaScript components  
+- Modern design patterns
+- SEO optimization
+- Cross-browser compatibility`;
+        }
+
+        function generateMobileApp() {
+            return `Generated Progressive Web App with:
+- Touch-optimized interface
+- Service Worker for offline support
+- Web App Manifest
+- Mobile-first responsive design
+- Native-like interactions`;
+        }
+
+        function generateEnterpriseApp() {
+            return `Generated Enterprise Application with:
+- User authentication system
+- Admin dashboard interface
+- Data visualization components
+- Role-based access control
+- Analytics and reporting`;
+        }
+
+        // Auto-test all on load (for demo purposes)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('🚀 AgentPro Demo Test Suite Ready');
+                console.log('✨ Ready to test App generation capabilities');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบ AI Chat Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            min-height: 60px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 24px;
+            cursor: pointer;
+            min-width: 60px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .messages {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 200px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .debug {
+            background: #e8f5e8;
+            border: 1px solid #c3e6c3;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🤖 ทดสอบ AI Chat Interface</h2>
+        <p>นี่คือการจำลองหน้า AI Chat แบบเรียบง่าย</p>
+
+        <div class="messages" id="messages">
+            <div class="message">
+                <strong>🤖 AI:</strong> สวัสดี! ผมพร้อมรับคำสั่งจากคุณ
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <textarea 
+                id="messageInput" 
+                placeholder="พิมพ์ข้อความของคุณที่นี่... (กด Enter เพื่อส่ง)"
+            ></textarea>
+            <button id="sendButton" disabled>🚀</button>
+        </div>
+
+        <div class="debug" id="debug">
+            <strong>Debug Log:</strong><br>
+        </div>
+    </div>
+
+    <script>
+        class AIAppGenerator {
+            constructor() {
+                console.log('🚀 AIAppGenerator starting...');
+                
+                this.messageInput = document.getElementById('messageInput');
+                this.sendButton = document.getElementById('sendButton');
+                this.messages = document.getElementById('messages');
+                this.debug = document.getElementById('debug');
+                
+                console.log('📝 Elements found:', {
+                    messageInput: !!this.messageInput,
+                    sendButton: !!this.sendButton,
+                    messages: !!this.messages
+                });
+                
+                if (!this.messageInput || !this.sendButton || !this.messages) {
+                    this.log('❌ ไม่พบ DOM elements ที่จำเป็น');
+                    return;
+                }
+                
+                this.selectedType = 'mobile';
+                this.selectedFramework = 'react_native';
+                
+                this.initializeEventListeners();
+                this.log('✅ AIAppGenerator initialized successfully');
+            }
+            
+            log(message) {
+                const time = new Date().toLocaleTimeString();
+                const logMessage = `[${time}] ${message}`;
+                console.log(logMessage);
+                
+                if (this.debug) {
+                    const logDiv = document.createElement('div');
+                    logDiv.className = 'log';
+                    logDiv.textContent = logMessage;
+                    this.debug.appendChild(logDiv);
+                    
+                    // Keep only last 15 logs
+                    while (this.debug.children.length > 16) { // 15 + header
+                        this.debug.removeChild(this.debug.children[1]); // Keep header
+                    }
+                    
+                    this.debug.scrollTop = this.debug.scrollHeight;
+                }
+            }
+            
+            initializeEventListeners() {
+                this.log('🔧 กำลังตั้งค่า Event Listeners...');
+                
+                // Message input
+                this.messageInput.addEventListener('input', () => {
+                    const hasText = this.messageInput.value.trim().length > 0;
+                    this.sendButton.disabled = !hasText;
+                    this.log(`📝 Input changed - ปุ่มส่ง: ${hasText ? 'เปิด' : 'ปิด'}`);
+                });
+                
+                // Enhanced Enter key handling
+                this.messageInput.addEventListener('keypress', (e) => {
+                    this.log(`🔔 Keypress: ${e.key}, Shift: ${e.shiftKey}`);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        this.log('✅ Enter detected - กำลังส่งข้อความ');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    }
+                });
+                
+                // Keydown as backup
+                this.messageInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        this.log('✅ Enter via keydown - กำลังส่งข้อความ');
+                        e.preventDefault();
+                        this.sendMessage();
+                        return false;
+                    }
+                });
+                
+                // Send button
+                this.sendButton.addEventListener('click', (e) => {
+                    this.log('🖱️ ปุ่มส่งถูกคลิก');
+                    e.preventDefault();
+                    this.sendMessage();
+                });
+                
+                // Focus input
+                setTimeout(() => {
+                    this.messageInput.focus();
+                    this.log('🎯 Auto focus ที่ช่องข้อความ');
+                }, 100);
+                
+                this.log('✅ Event Listeners ตั้งค่าเสร็จแล้ว');
+            }
+            
+            async sendMessage() {
+                this.log('🚀 sendMessage() called');
+                const message = this.messageInput.value.trim();
+                this.log(`📝 ข้อความ: "${message}"`);
+                
+                if (!message) {
+                    this.log('❌ ไม่มีข้อความให้ส่ง');
+                    return;
+                }
+                
+                // Add user message
+                this.addMessage('user', message);
+                
+                // Clear input
+                this.messageInput.value = '';
+                this.sendButton.disabled = true;
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    this.addMessage('ai', `ได้รับข้อความ: "${message}" - ระบบทำงานปกติ! ✅`);
+                    this.messageInput.focus();
+                }, 1000);
+                
+                this.log('✅ ส่งข้อความสำเร็จ');
+            }
+            
+            addMessage(sender, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                
+                const senderIcon = sender === 'user' ? '👤' : '🤖';
+                const senderName = sender === 'user' ? 'คุณ' : 'AI';
+                
+                messageDiv.innerHTML = `
+                    <strong>${senderIcon} ${senderName}:</strong> ${content}
+                `;
+                
+                this.messages.appendChild(messageDiv);
+                this.messages.scrollTop = this.messages.scrollHeight;
+                
+                this.log(`📨 เพิ่มข้อความ ${sender}: ${content.substring(0, 50)}...`);
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            console.error('❌ Global Error:', e);
+            alert(`JavaScript Error: ${e.message} (${e.filename}:${e.lineno})`);
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 DOM Content Loaded');
+            try {
+                window.appGenerator = new AIAppGenerator();
+                console.log('✅ AIAppGenerator created successfully');
+            } catch (error) {
+                console.error('❌ Failed to create AIAppGenerator:', error);
+                alert(`ไม่สามารถเริ่มต้นระบบได้: ${error.message}`);
+            }
+        });
+    </script>
+</body>
+</html>

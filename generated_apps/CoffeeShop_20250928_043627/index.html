@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ร้านกาแฟออนไลน์ที่ให้บริการสั่งซื้อกาแฟและขนมหวาน">
+    <title>CoffeeShop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>ยินดีต้อนรับสู่ CoffeeShop</h1>
+        <nav>
+            <ul>
+                <li><a href="#menu">เมนู</a></li>
+                <li><a href="#about">เกี่ยวกับเรา</a></li>
+                <li><a href="#contact">ติดต่อเรา</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="menu">
+            <h2>เมนูของเรา</h2>
+            <div class="menu-item" onclick="addToCart('Espresso')">
+                <h3>Espresso</h3>
+                <p>กาแฟเอสเพรสโซเข้มข้น</p>
+                <span>ราคา: 50 บาท</span>
+            </div>
+            <div class="menu-item" onclick="addToCart('Latte')">
+                <h3>Latte</h3>
+                <p>กาแฟลาเต้เนียนนุ่ม</p>
+                <span>ราคา: 60 บาท</span>
+            </div>
+            <div class="menu-item" onclick="addToCart('Cappuccino')">
+                <h3>Cappuccino</h3>
+                <p>กาแฟคาปูชิโน่ฟองนม</p>
+                <span>ราคา: 65 บาท</span>
+            </div>
+        </section>
+        <section id="about">
+            <h2>เกี่ยวกับเรา</h2>
+            <p>เราคือร้านกาแฟที่มีความหลงใหลในกาแฟและการบริการลูกค้า</p>
+        </section>
+        <section id="contact">
+            <h2>ติดต่อเรา</h2>
+            <form id="contact-form">
+                <label for="name">ชื่อ:</label>
+                <input type="text" id="name" required>
+                <label for="message">ข้อความ:</label>
+                <textarea id="message" required></textarea>
+                <button type="submit">ส่งข้อความ</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 CoffeeShop. สงวนลิขสิทธิ์.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

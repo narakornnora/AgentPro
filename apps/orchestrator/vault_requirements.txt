@@ -1,0 +1,45 @@
+# Secure Vault System Requirements
+
+# Core cryptography packages
+cryptography==41.0.7
+bcrypt==4.1.2
+
+# Web framework and API
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# JWT authentication
+PyJWT==2.8.0
+
+# Database
+sqlite3  # Built-in with Python
+
+# Additional security
+secrets  # Built-in with Python
+hashlib  # Built-in with Python
+
+# Async support
+asyncio  # Built-in with Python
+
+# Type hints
+pydantic==2.5.0
+typing-extensions==4.8.0
+
+# File handling
+pathlib  # Built-in with Python
+
+# JSON handling
+json  # Built-in with Python
+
+# Date/time
+datetime  # Built-in with Python
+
+# Regular expressions
+re  # Built-in with Python
+
+# Operating system interface
+os  # Built-in with Python
+
+# Logging
+logging  # Built-in with Python
