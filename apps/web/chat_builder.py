@@ -26,7 +26,7 @@ def chat_build(body: ChatIn):
     # โยนไปที่ /plan_build ให้สร้างเว็บ
     try:
         with httpx.Client(timeout=120.0) as client:
-            r = client.post("http://localhost:9000/plan_build", json={"prompt": prompt, "slug": body.slug})
+            r = client.post("http://localhost:8001/plan_build", json={"prompt": prompt, "slug": body.slug})
             data = r.json()
     except Exception as e:
         return {"ok": False, "error": str(e)}
@@ -36,5 +36,5 @@ def chat_build(body: ChatIn):
         "ok": True,
         "message": msg,
         "web_url": data.get("web_url"),
-        "slug": data.get("web_url","").split("/")[2] if data.get("web_url") else None
+        "slug": data.get("slug") or (data.get("web_url","").split("/")[2] if data.get("web_url") else None)
     }

@@ -616,7 +616,7 @@
                 this.messageInput.value = '';
                 
                 try {
-                    const response = await fetch('http://localhost:8006/chat', {
+                    const response = await fetch('http://localhost:8001/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -629,7 +629,7 @@
                     this.sessionId = result.session_id;
                     
                     if (result.action === 'ask_question') {
-                        this.addMessage(result.response, 'ai');
+                        this.typeAssistantMessage(result.response);
                     } else if (result.action === 'build_app') {
                         this.addMessage(result.response, 'ai');
                         this.startBuilding(result.requirements);
@@ -640,6 +640,28 @@
                 } catch (error) {
                     this.addMessage(`❌ เกิดข้อผิดพลาด: ${error.message}`, 'ai');
                 }
+            }
+            
+            typeAssistantMessage(text) {
+                const container = document.createElement('div');
+                container.className = 'message ai';
+                const bubble = document.createElement('div');
+                bubble.className = 'message-content';
+                container.appendChild(bubble);
+                this.messagesContainer.appendChild(container);
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+
+                let i = 0;
+                const speed = 10; // ms per char
+                const type = () => {
+                    if (i <= text.length) {
+                        bubble.textContent = text.slice(0, i);
+                        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                };
+                type();
             }
             
             startBuilding(requirements) {
@@ -658,9 +680,22 @@
             }
             
             setupWebSocket(requirements) {
-                // Simple demo - simulate app building
-                this.simulateAppBuilding(requirements);
-                
+                // Close previous connection if any
+                if (this.websocket && (this.websocket.readyState === WebSocket.OPEN || this.websocket.readyState === WebSocket.CONNECTING)) {
+                    try { this.websocket.close(); } catch (e) { /* ignore */ }
+                }
+
+                // Connect to real backend WebSocket
+                try {
+                    const wsUrl = 'ws://localhost:8001/ws';
+                    this.websocket = new WebSocket(wsUrl);
+                } catch (e) {
+                    // Fallback to simulation if browser blocks WS init
+                    console.warn('WebSocket init failed, falling back to simulation:', e);
+                    this.simulateAppBuilding(requirements);
+                    return;
+                }
+
                 this.websocket.onopen = () => {
                     console.log('WebSocket connected');
                     this.websocket.send(JSON.stringify({
@@ -668,26 +703,91 @@
                         requirements: requirements
                     }));
                 };
-                
+
                 this.websocket.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    
-                    if (data.type === 'exciting_status') {
-                        this.showExcitingStatus(data.icon, data.status);
-                    } else if (data.type === 'file_typing_start') {
-                        this.startFileTyping(data.filename, data.total_chars);
-                    } else if (data.type === 'file_typing_chunk') {
-                        this.showTypingChunk(data.filename, data.chunk, data.progress);
-                    } else if (data.type === 'file_typing_complete') {
-                        this.completeFileTyping(data.filename, data.content);
-                    } else if (data.type === 'app_completed') {
-                        this.onAppCompleted(data.result);
+
+                    // Map backend event types to UI handlers
+                    switch (data.type) {
+                        case 'status': {
+                            // Backend sends friendly message with emoji
+                            this.addExcitingMessage(data.message || 'กำลังดำเนินการ...');
+                            break;
+                        }
+                        case 'file_start': {
+                            const filename = data.file || data.filename;
+                            this.projectFiles[filename] = '';
+                            this.startFileTyping(filename, 0);
+                            break;
+                        }
+                        case 'typing_line': {
+                            const filename = data.file || data.filename;
+                            const line = (data.line ?? data.chunk ?? '') + '\n';
+                            // Accumulate file content locally
+                            this.projectFiles[filename] = (this.projectFiles[filename] || '') + line;
+                            // Backend progress is 0..100; UI expects 0..1
+                            const progress = typeof data.progress === 'number' ? (data.progress > 1 ? data.progress / 100 : data.progress) : 0;
+                            this.showTypingChunk(filename, line, progress);
+                            break;
+                        }
+                        case 'file_complete': {
+                            const filename = data.file || data.filename;
+                            const content = this.projectFiles[filename] || '';
+                            this.completeFileTyping(filename, content);
+                            break;
+                        }
+                        case 'preview_ready': {
+                            // Live preview of generated HTML content
+                            const html = data.html_content || '';
+                            if (html) {
+                                this.projectFiles['index.html'] = html;
+                                const blob = new Blob([html], { type: 'text/html' });
+                                const url = URL.createObjectURL(blob);
+                                this.webPreview.src = url;
+                                // Auto-switch to preview once to let user see progress immediately
+                                if (this.currentTab !== 'preview') {
+                                    this.switchTab('preview');
+                                }
+                            }
+                            break;
+                        }
+                        case 'build_complete': {
+                            // data contains: message, app_path, progress
+                            this.onAppCompleted(data);
+                            break;
+                        }
+                        case 'error': {
+                            this.addMessage(data.message || 'เกิดข้อผิดพลาด', 'ai');
+                            this.resetBuilding();
+                            break;
+                        }
+                        default: {
+                            // Support old simulated events just in case
+                            if (data.type === 'exciting_status') {
+                                this.showExcitingStatus(data.icon, data.status);
+                            } else if (data.type === 'file_typing_start') {
+                                this.startFileTyping(data.filename, data.total_chars);
+                            } else if (data.type === 'file_typing_chunk') {
+                                const progress = typeof data.progress === 'number' ? (data.progress > 1 ? data.progress / 100 : data.progress) : 0;
+                                this.showTypingChunk(data.filename, data.chunk, progress);
+                            } else if (data.type === 'file_typing_complete') {
+                                this.completeFileTyping(data.filename, data.content);
+                            } else if (data.type === 'app_completed') {
+                                this.onAppCompleted(data.result);
+                            }
+                            break;
+                        }
                     }
                 };
-                
+
                 this.websocket.onerror = () => {
-                    this.addMessage('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ', 'ai');
-                    this.resetBuilding();
+                    this.addMessage('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ WebSocket — สลับเป็นโหมดจำลอง', 'ai');
+                    // Fallback to simulation so user still sees results
+                    this.simulateAppBuilding(requirements);
+                };
+
+                this.websocket.onclose = () => {
+                    console.log('WebSocket closed');
                 };
             }
             
@@ -833,7 +933,21 @@
                 // Auto switch to preview tab with delay
                 setTimeout(() => {
                     this.switchTab('preview');
-                    this.loadWebPreview(result.app_path);
+                    // Prefer backend http_url if provided
+                    if (result && result.http_url) {
+                        const httpUrl = result.http_url;
+                        this.webPreview.src = httpUrl;
+                        this.addMessage(`🔗 เปิดแอปที่สร้าง: <a href='${httpUrl}' target='_blank' rel='noopener'>เปิดในแท็บใหม่</a>`, 'ai');
+                    } else if (result && result.app_path) {
+                        // Fallback: build URL pointing to FastAPI static mount /apps
+                        // result.app_path is like 'generated_apps/app_1'
+                        const clean = result.app_path.replace(/\\/g, '/').replace(/^\/?generated_apps\/?/, '');
+                        const httpUrl = `http://localhost:8001/apps/${clean}/index.html`;
+                        this.webPreview.src = httpUrl;
+                        this.addMessage(`🔗 เปิดแอปที่สร้าง: <a href='${httpUrl}' target='_blank' rel='noopener'>เปิดในแท็บใหม่</a>`, 'ai');
+                    } else {
+                        this.loadWebPreview(result && result.app_path);
+                    }
                 }, 2000);
             }
             

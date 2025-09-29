@@ -291,6 +291,7 @@ def chat_ai(req: ChatReq):
     
     return ChatResp(ok=True, slug=slug, web_url=web_url, files=[f"/app/{slug}/{Path(f).name}" for f in files])
 
+@app.websocket("/ws")
 @app.websocket("/ws/chat")
 async def websocket_chat_endpoint(websocket: WebSocket):
     """Streaming chat endpoint for smooth UI experience with conversation memory"""

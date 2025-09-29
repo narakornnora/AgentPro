@@ -397,7 +397,7 @@
 
             connect() {
                 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-                const wsUrl = `${protocol}//${window.location.hostname}:8001/ws/chat`;
+                const wsUrl = `${protocol}//${window.location.hostname}:8001/ws`;
                 
                 this.updateConnectionStatus('connecting', '🔄 กำลังเชื่อมต่อ...');
                 

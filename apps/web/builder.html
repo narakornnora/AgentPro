@@ -36,7 +36,7 @@
   </div>
 
   <script>
-    const API = 'http://localhost:9000';
+    const API = 'http://localhost:8001';
     let lastUrl = null;
 
     async function build(){
@@ -45,22 +45,45 @@
       setOut('กำลังสร้าง...');
 
       try{
-        const res = await fetch(API + '/plan_build', {
+        const res = await fetch(API + '/chat', {
           method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ message: prompt, session_id: 'builder' })
         });
         const data = await res.json();
         setOut(JSON.stringify(data, null, 2));
-        if(data.ok && data.web_url){
-          lastUrl = data.web_url;
-          document.getElementById('open').innerHTML =
-            `<a class="btn" href="${data.web_url}" target="_blank">เปิดเว็บที่สร้าง →</a>`;
+        
+        if(data.action === 'build_app'){
+          // สร้างแอปจริงๆ
+          await buildApp(data.requirements);
         }else{
-          document.getElementById('open').innerHTML = '';
+          setOut('AI Response: ' + data.response);
         }
       }catch(e){
         setOut('เกิดข้อผิดพลาด: ' + e);
         document.getElementById('open').innerHTML = '';
+      }
+    }
+
+    async function buildApp(requirements){
+      setOut('🚀 เริ่มสร้างแอป...');
+      
+      try{
+        const res = await fetch(API + '/build_app', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(requirements)
+        });
+        const data = await res.json();
+        
+        if(data.app_url){
+          lastUrl = data.app_url;
+          setOut('✅ สร้างเสร็จแล้ว!');
+          document.getElementById('open').innerHTML =
+            `<a class="btn" href="${data.app_url}" target="_blank">เปิดแอปที่สร้าง →</a>`;
+        }else{
+          setOut('❌ สร้างไม่สำเร็จ: ' + (data.error || 'ไม่ทราบสาเหตุ'));
+        }
+      }catch(e){
+        setOut('❌ Error: ' + e);
       }
     }
 

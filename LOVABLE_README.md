@@ -253,7 +253,7 @@ python main.py
 สำหรับ real-time chat:
 
 ```javascript  
-const ws = new WebSocket('ws://localhost:8080/ws/chat');
+const ws = new WebSocket('ws://localhost:8001/ws');
 ws.send(JSON.stringify({
     type: 'chat_message',
     message: 'สร้าง landing page'

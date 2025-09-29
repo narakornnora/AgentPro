@@ -397,16 +397,19 @@
         let ws = null;
         let sessionId = null;
         let currentProgress = 0;
+    // Use the stable endpoint only
+    let wsPath = '/ws';
 
         // Initialize WebSocket connection
         function initWebSocket() {
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.host}/ws/chat?user_id=user_${Date.now()}`;
+            const host = `${protocol}//${window.location.host}`;
+            const wsUrl = `${host}${wsPath}?user_id=user_${Date.now()}`;
             
             ws = new WebSocket(wsUrl);
             
             ws.onopen = function(event) {
-                console.log('WebSocket connected');
+                console.log('WebSocket connected', wsPath);
                 updateStatus('connected');
             };
             

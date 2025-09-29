@@ -9,7 +9,9 @@
     <button onclick="sendMessage()">Send</button>
 
     <script>
-        let websocket = new WebSocket('ws://localhost:8001/ws/chat');
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.hostname}:8001/ws`;
+    let websocket = new WebSocket(wsUrl);
         
         websocket.onopen = function(event) {
             console.log('WebSocket connected');
